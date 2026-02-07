@@ -16,488 +16,405 @@
 
     <style>
         :root {
-            --primary: #c5a059; /* SDC Gold */
+            --primary: #c5a059; /* Luxury Gold */
             --primary-dark: #b08d45;
-            --bg-body: #080808;
-            --bg-panel: #121212;
-            --bg-input: #1f1f1f;
-            --border: #2a2a2a;
-            --text-main: #e0e0e0;
-            --text-muted: #888888;
-            --header-height: 60px;
-            --sidebar-width: 250px;
-            --bottom-nav-height: 65px;
-            --safe-bottom: env(safe-area-inset-bottom);
+            --bg-dark: #0f0f0f;
+            --bg-panel: #1a1a1a;
+            --bg-input: #252525;
+            --border: #333;
+            --text-main: #fff;
+            --text-muted: #aaa;
+            --header-height: 65px;
+            --radius: 4px;
         }
 
-        /* RESET & BASE */
+        /* RESET */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { 
-            margin: 0; background: var(--bg-body); color: var(--text-main);
-            font-family: 'Open Sans', sans-serif; font-size: 14px; overflow: hidden; height: 100vh;
+            margin: 0; background: var(--bg-dark); color: var(--text-main);
+            font-family: 'Open Sans', sans-serif; font-size: 14px; height: 100vh; overflow: hidden;
         }
-        h1, h2, h3 { font-family: 'Montserrat', sans-serif; margin: 0; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
-        button { cursor: pointer; font-family: 'Montserrat', sans-serif; border: none; }
-        img { display: block; max-width: 100%; }
-        input, textarea, select { font-family: 'Open Sans', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Montserrat', sans-serif; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        button { font-family: 'Montserrat', sans-serif; cursor: pointer; }
+        input, select, textarea { font-family: 'Open Sans', sans-serif; }
 
-        /* ─── LAYOUT STRUCTURE ─── */
-        .app-shell { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
+        /* ─── UTILITIES ─── */
+        .flex { display: flex; align-items: center; }
+        .flex-col { display: flex; flex-direction: column; }
+        .justify-center { justify-content: center; }
+        .hidden { display: none; }
+        .text-gold { color: var(--primary); }
+        .w-full { width: 100%; }
+        .text-center { text-align: center; }
+
+        /* ─── COMPONENTS ─── */
+        .btn {
+            padding: 14px 24px; border: none; border-radius: var(--radius);
+            font-weight: 700; text-transform: uppercase; font-size: 13px;
+            transition: 0.2s; text-align: center;
+        }
+        .btn-gold { 
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
+            color: #000; box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
+        }
+        .btn-gold:active { transform: scale(0.98); }
+        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+
+        .input-group { margin-bottom: 15px; }
+        .input-label { display: block; color: var(--text-muted); font-size: 11px; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; }
+        .form-control {
+            width: 100%; padding: 12px 15px; background: #222; border: 1px solid #444;
+            color: #fff; border-radius: var(--radius); font-size: 14px;
+        }
+        .form-control:focus { border-color: var(--primary); background: #2a2a2a; }
+
+        /* ─── SPLASH / HERO (SDC Style) ─── */
+        .hero-bg {
+            position: absolute; inset: 0; 
+            background: url('https://cdni.pornpics.com/1280/1/86/13388789/13388789_001_c465.jpg') center/cover;
+        }
+        .hero-overlay {
+            position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.4) 100%);
+        }
+        .landing-container {
+            position: relative; z-index: 10; height: 100%; display: flex; align-items: center;
+            max-width: 1200px; margin: 0 auto; padding: 20px;
+        }
+        .reg-widget {
+            background: rgba(15, 15, 15, 0.95); backdrop-filter: blur(10px);
+            padding: 30px; border-radius: 6px; width: 100%; max-width: 420px;
+            border-top: 4px solid var(--primary); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
         
-        /* DESKTOP SIDEBAR */
+        /* ─── DASHBOARD LAYOUT ─── */
+        .app-shell { display: flex; height: 100vh; }
+        
+        /* SIDEBAR (Desktop) */
         .sidebar {
-            width: var(--sidebar-width); background: #000; border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; z-index: 10;
+            width: 260px; background: #000; border-right: 1px solid var(--border);
+            display: flex; flex-direction: column;
         }
-        .logo-area {
-            height: var(--header-height); display: flex; align-items: center; padding: 0 20px;
-            border-bottom: 1px solid var(--border); background: #000;
+        .nav-link {
+            padding: 15px 25px; color: var(--text-muted); font-weight: 600; display: flex; gap: 15px;
+            transition: 0.2s; border-left: 3px solid transparent; cursor: pointer;
         }
-        .logo { font-size: 18px; font-weight: 700; color: #fff; }
-        .logo span { color: var(--primary); }
-
-        .nav-items { flex: 1; padding: 20px 0; overflow-y: auto; }
-        .nav-item {
-            display: flex; align-items: center; gap: 15px; padding: 15px 25px;
-            color: var(--text-muted); transition: 0.2s; cursor: pointer; font-weight: 600;
-            font-family: 'Montserrat', sans-serif; font-size: 13px;
-        }
-        .nav-item i { font-size: 16px; width: 24px; text-align: center; }
-        .nav-item:hover, .nav-item.active { color: var(--primary); background: rgba(197, 160, 89, 0.05); border-right: 3px solid var(--primary); }
-        .nav-badge { background: var(--primary); color: #000; font-size: 10px; padding: 2px 6px; border-radius: 10px; margin-left: auto; }
-
-        /* MOBILE BOTTOM NAV */
+        .nav-link:hover, .nav-link.active { color: #fff; border-left-color: var(--primary); background: #111; }
+        
+        /* MOBILE NAV */
         .bottom-nav { display: none; }
-
-        /* MAIN CONTENT */
-        .main-view { flex: 1; display: flex; flex-direction: column; background: var(--bg-body); position: relative; }
         
-        .top-header {
-            height: var(--header-height); border-bottom: 1px solid var(--border); background: rgba(18,18,18,0.95);
+        /* MAIN AREA */
+        .main-content { flex: 1; background: var(--bg-dark); display: flex; flex-direction: column; position: relative; }
+        .top-bar {
+            height: var(--header-height); border-bottom: 1px solid var(--border);
             display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
-            backdrop-filter: blur(10px); z-index: 5;
+            background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); z-index: 20;
         }
-        
-        .content-scroll { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
+        .scroll-area { flex: 1; overflow-y: auto; padding: 20px; }
 
-        /* ─── UI COMPONENTS ─── */
-        /* PROFILE CARDS */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-        .card {
-            background: var(--bg-panel); border: 1px solid var(--border); border-radius: 4px; overflow: hidden;
-            position: relative; transition: 0.2s; cursor: pointer;
+        /* CARDS */
+        .profile-card {
+            background: var(--bg-panel); border: 1px solid var(--border); border-radius: 4px;
+            overflow: hidden; position: relative; margin-bottom: 0;
         }
-        .card:hover { transform: translateY(-4px); border-color: var(--primary); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .card-img-container { position: relative; padding-top: 100%; overflow: hidden; }
-        .card-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-        .card-overlay {
-            position: absolute; bottom: 0; left: 0; right: 0; padding: 40px 10px 10px;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-        }
-        .online-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px #2ecc71; }
-        
-        /* CHAT UI */
-        .chat-layout { display: flex; flex-direction: column; height: 100%; }
-        .chat-list { overflow-y: auto; flex: 1; }
-        .chat-item {
-            padding: 15px; border-bottom: 1px solid var(--border); display: flex; gap: 15px; cursor: pointer; transition: 0.2s;
-        }
-        .chat-item:hover { background: var(--bg-panel); }
-        .chat-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #333; }
-        .chat-active .chat-avatar { border-color: var(--primary); }
-        
-        .msg-area { flex: 1; display: flex; flex-direction: column; background: #000; }
-        .msg-scroll { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { padding: 10px 15px; border-radius: 8px; max-width: 75%; font-size: 14px; line-height: 1.4; }
-        .bubble-me { align-self: flex-end; background: var(--primary); color: #000; }
-        .bubble-them { align-self: flex-start; background: var(--bg-input); color: #fff; border: 1px solid var(--border); }
-        .bubble img { border-radius: 4px; margin-bottom: 5px; max-width: 200px; }
+        .card-img { width: 100%; height: 250px; object-fit: cover; }
+        .card-body { padding: 15px; }
 
-        .chat-input-bar {
-            padding: 15px; background: var(--bg-panel); border-top: 1px solid var(--border); display: flex; gap: 10px;
-        }
-        .input-box {
-            flex: 1; background: var(--bg-input); border: 1px solid var(--border); color: #fff;
-            padding: 10px 15px; border-radius: 20px;
-        }
+        /* GRID */
+        .grid-sys { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
 
-        /* FORMS */
-        .form-group { margin-bottom: 15px; }
-        .form-label { display: block; color: var(--text-muted); margin-bottom: 5px; font-size: 12px; text-transform: uppercase; }
-        .form-input { 
-            width: 100%; background: var(--bg-input); border: 1px solid var(--border); padding: 12px; 
-            color: #fff; border-radius: 4px; font-size: 14px;
-        }
-        .form-input:focus { border-color: var(--primary); }
-
-        /* ─── MOBILE OPTIMIZATIONS ─── */
+        /* ─── RESPONSIVE ─── */
         @media (max-width: 768px) {
+            .hero-overlay { background: rgba(0,0,0,0.7); }
+            .landing-container { justify-content: center; }
             .sidebar { display: none; }
             .bottom-nav {
                 display: flex; position: fixed; bottom: 0; left: 0; right: 0;
-                height: calc(var(--bottom-nav-height) + var(--safe-bottom));
-                background: rgba(10,10,10,0.95); backdrop-filter: blur(10px);
-                border-top: 1px solid var(--border); justify-content: space-around;
-                padding-bottom: var(--safe-bottom); z-index: 100;
+                height: 60px; background: #111; border-top: 1px solid #333; z-index: 100;
+                justify-content: space-around; padding-bottom: env(safe-area-inset-bottom);
             }
-            .b-nav-item {
-                flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-                color: var(--text-muted); font-size: 10px; gap: 4px;
-            }
-            .b-nav-item.active { color: var(--primary); }
-            .b-nav-item i { font-size: 20px; }
-            
-            .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .content-scroll { padding: 10px; }
+            .nav-icon { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #666; font-size: 10px; }
+            .nav-icon.active { color: var(--primary); }
+            .nav-icon i { font-size: 20px; margin-bottom: 4px; }
+            .scroll-area { padding-bottom: 80px; }
+            .grid-sys { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .card-img { height: 180px; }
         }
-
-        /* PHOTO MASKER STYLES */
-        .masker-overlay { position: fixed; inset: 0; background: #000; z-index: 2000; display: flex; flex-direction: column; }
-        .masker-canvas-area { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #111; }
-        .masker-controls { padding: 20px; background: #1a1a1a; padding-bottom: calc(20px + var(--safe-bottom)); }
-        
-        .btn { padding: 10px 20px; border-radius: 4px; font-weight: 600; text-transform: uppercase; font-size: 12px; }
-        .btn-gold { background: var(--primary); color: #000; }
-        .btn-dark { background: #333; color: #fff; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+        const { useState, useEffect } = React;
         const { createClient } = supabase;
 
-        // ─── SUPABASE ───
+        // --- SUPABASE CONFIG ---
         const supaUrl = "https://wtbswbokojmzmrehrajj.supabase.co"; 
         const supaKey = "sb_publishable_WCwKS1Du4LePjpVqPLZQzA_dsPFbDbd";
         const client = createClient(supaUrl, supaKey);
 
-        // ─── HELPER: FAKE DATA ───
-        const generateMockProfiles = () => [
-            { id: 101, username: 'DallasCouple_99', type: 'Couple (MF)', city: 'Dallas', img: 'https://images.unsplash.com/photo-1548545722-e87f71428383?w=500&q=80', online: true },
-            { id: 102, username: 'SecretWifeTX', type: 'Female', city: 'Plano', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&q=80', online: false },
-            { id: 103, username: 'FitBull34', type: 'Single Male', city: 'Frisco', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&q=80', online: true },
-            { id: 104, username: 'VelvetVixen', type: 'Female', city: 'Addison', img: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=500&q=80', online: true },
-            { id: 105, username: 'TwoOfUs', type: 'Couple (MF)', city: 'Fort Worth', img: 'https://images.unsplash.com/photo-1518556865737-124b89182352?w=500&q=80', online: false },
-            { id: 106, username: 'DiscreetGuy', type: 'Male', city: 'Dallas', img: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=500&q=80', online: true },
+        // --- MOCK PROFILES ---
+        const MOCK_PROFILES = [
+            { id: 1, name: 'DallasElite_99', type: 'Couple (MF)', loc: 'Highland Park', img: 'https://images.unsplash.com/photo-1548545722-e87f71428383?w=500&q=80', active: true },
+            { id: 2, name: 'SecretRose', type: 'Female', loc: 'Uptown', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&q=80', active: false },
+            { id: 3, name: 'FitGentTX', type: 'Male', loc: 'Frisco', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&q=80', active: true },
+            { id: 4, name: 'VelvetVibes', type: 'Female', loc: 'Plano', img: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=500&q=80', active: true },
+            { id: 5, name: 'NightOwl_XX', type: 'Couple (FF)', loc: 'Addison', img: 'https://images.unsplash.com/photo-1518556865737-124b89182352?w=500&q=80', active: false },
         ];
 
-        // ─── PHOTO MASKER COMPONENT ───
-        const Masker = ({ onSave, onCancel }) => {
-            const [img, setImg] = useState(null);
-            const [blur, setBlur] = useState(0);
-            const [mask, setMask] = useState(false);
-
-            const handleFile = (e) => {
-                const f = e.target.files[0];
-                if(f){ const r=new FileReader(); r.onload=ev=>setImg(ev.target.result); r.readAsDataURL(f); }
-            };
-
-            const save = () => {
-                const cvs = document.createElement('canvas'); const ctx=cvs.getContext('2d');
-                const i = new Image(); i.src=img; i.onload=()=>{
-                    cvs.width=500; cvs.height=500;
-                    ctx.filter = `blur(${blur}px)`; ctx.drawImage(i,0,0,500,500);
-                    ctx.filter='none'; if(mask){ctx.fillStyle='#000';ctx.fillRect(50,200,400,60);}
-                    onSave(cvs.toDataURL());
-                };
-            };
-
-            if(!img) return <div className="masker-overlay" style={{justifyContent:'center', alignItems:'center'}}><label className="btn btn-gold" style={{padding:20}}>UPLOAD PHOTO <input type="file" hidden onChange={handleFile}/></label><button className="btn btn-dark" style={{marginTop:20}} onClick={onCancel}>CANCEL</button></div>;
-
-            return (
-                <div className="masker-overlay">
-                    <div className="masker-canvas-area">
-                        <div style={{position:'relative'}}>
-                            <img src={img} style={{maxHeight:'60vh', filter:`blur(${blur}px)`}} />
-                            {mask && <div style={{position:'absolute', top:'45%', left:'10%', width:'80%', height:'10%', background:'#000'}}></div>}
-                        </div>
-                    </div>
-                    <div className="masker-controls">
-                        <div style={{display:'flex', justifyContent:'space-between', marginBottom:10, color:'#888', fontSize:10}}><span>CLEAR</span><span>BLURRY</span></div>
-                        <input type="range" min="0" max="20" value={blur} onChange={e=>setBlur(e.target.value)} style={{width:'100%', marginBottom:20, accentColor:'#c5a059'}} />
-                        <div style={{display:'flex', gap:10}}>
-                            <button className="btn btn-dark" style={{flex:1}} onClick={()=>setMask(!mask)}>{mask?'NO MASK':'ADD MASK'}</button>
-                            <button className="btn btn-gold" style={{flex:1}} onClick={save}>SEND SECURELY</button>
-                        </div>
-                        <button className="btn btn-dark" style={{width:'100%', marginTop:10}} onClick={onCancel}>CANCEL</button>
-                    </div>
-                </div>
-            );
-        };
-
-        // ─── MAIN APP ───
         function App() {
-            const [view, setView] = useState('splash');
-            const [user, setUser] = useState({ 
-                username: 'Member', 
-                city: 'Dallas, TX', 
-                type: 'Couple (MF)',
-                bio: 'We are a fun couple looking for like-minded friends.',
-                tagline: 'Here for a good time.'
+            // STATE
+            const [view, setView] = useState('landing'); // landing, register-1, register-2, promise, dashboard
+            const [user, setUser] = useState(null);
+            
+            // Registration State
+            const [regData, setRegData] = useState({
+                iam: 'Man', looking: 'Woman',
+                username: '', password: '', email: '',
+                city: 'Dallas', type: 'Single Male', tagline: ''
             });
-            const [editMode, setEditMode] = useState(false);
-            const [activeChat, setActiveChat] = useState(null);
-            const [profiles, setProfiles] = useState([]);
-            const [msgs, setMsgs] = useState({});
-            const [flirts, setFlirts] = useState([]); 
-            const [maskerOpen, setMaskerOpen] = useState(false);
-            const [panic, setPanic] = useState(false);
-            const [inputTxt, setInputTxt] = useState("");
 
+            // Init - Check for existing session
             useEffect(() => {
-                const fetch = async () => {
-                    const { data } = await client.from('profiles').select('*');
-                    const real = data || [];
-                    setProfiles([...real, ...generateMockProfiles()]);
-                };
-                fetch();
-                // Load local profile if exists
-                const saved = localStorage.getItem('vc_user_profile');
-                if(saved) setUser(JSON.parse(saved));
+                const saved = localStorage.getItem('vc_session');
+                if(saved) {
+                    setUser(JSON.parse(saved));
+                    setView('dashboard');
+                }
             }, []);
 
-            const saveProfile = (updatedUser) => {
-                setUser(updatedUser);
-                localStorage.setItem('vc_user_profile', JSON.stringify(updatedUser));
-                setEditMode(false);
+            // ACTIONS
+            const handleNextStep = () => {
+                if(!regData.iam) return;
+                setView('register-1');
             };
 
-            const sendMsg = (img=null) => {
-                if(!inputTxt && !img) return;
-                const cid = activeChat.id;
-                const newMsg = { me: true, txt: inputTxt, img, time: new Date() };
-                setMsgs(prev => ({ ...prev, [cid]: [...(prev[cid]||[]), newMsg] }));
-                setInputTxt("");
-                setMaskerOpen(false);
+            const handleCreateAccount = () => {
+                if(!regData.username || !regData.password) return alert("Please fill all fields");
+                setView('register-2');
             };
 
-            const toggleFlirt = (p) => {
-                if(flirts.find(f=>f.id===p.id)) setFlirts(flirts.filter(f=>f.id!==p.id));
-                else setFlirts([...flirts, p]);
+            const handleProfileDetails = () => {
+                if(!regData.city) return alert("City is required");
+                setView('promise');
             };
 
-            // ─── PANIC MODE ───
-            if(panic) return <div style={{height:'100vh', background:'#eee', color:'#333', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', fontFamily:'Arial'}}><h1>Weather</h1><h2>72° Dallas</h2><button onClick={()=>setPanic(false)} style={{position:'absolute', bottom:0, right:0, opacity:0, width:50, height:50}}></button></div>;
+            const handleFinishProfile = () => {
+                const newUser = { ...regData, id: Date.now() };
+                setUser(newUser);
+                localStorage.setItem('vc_session', JSON.stringify(newUser));
+                setView('dashboard');
+            };
 
-            // ─── SPLASH/LOGIN (WITH YOUR PHOTO) ───
-            if(view === 'splash') return (
-                <div style={{height:'100vh', background:'url(https://cdni.pornpics.com/1280/1/86/13388789/13388789_001_c465.jpg) center/cover'}}>
-                    <div style={{position:'absolute', inset:0, background:'rgba(0,0,0,0.5)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center'}}>
-                        <h1 style={{fontSize:40, color:'var(--primary)'}}>VELVET</h1>
-                        <p style={{color:'#fff', letterSpacing:3, marginBottom:40, textShadow:'0 2px 4px rgba(0,0,0,0.8)'}}>MEMBERS ONLY</p>
-                        <div style={{width:300, display:'flex', flexDirection:'column', gap:15}}>
-                            <button className="btn btn-gold" onClick={()=>{ setView('browse'); }}>MEMBER LOGIN</button>
-                            <button className="btn btn-dark" style={{border:'1px solid #444'}} onClick={()=>{ setView('browse'); }}>APPLY NOW</button>
+            const handleLogout = () => {
+                localStorage.removeItem('vc_session');
+                setUser(null);
+                setRegData({...regData, username:'', password:''});
+                setView('landing');
+            };
+
+            // --- VIEWS ---
+
+            // 1. LANDING PAGE (SDC Style Funnel)
+            if(view === 'landing') return (
+                <div style={{position:'relative', height:'100vh', width:'100vw'}}>
+                    <div className="hero-bg"></div>
+                    <div className="hero-overlay"></div>
+                    
+                    {/* Header */}
+                    <div style={{position:'absolute', top:0, width:'100%', padding:'20px', zIndex:20, display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                        <div style={{fontSize:22, fontWeight:700, color:'#fff', letterSpacing:2}}>VELVET <span className="text-gold">CIRCLE</span></div>
+                        <button className="btn btn-outline" style={{padding:'8px 20px', fontSize:11}}>MEMBER LOGIN</button>
+                    </div>
+
+                    <div className="landing-container">
+                        <div className="reg-widget">
+                            <h2 className="text-center" style={{fontSize:24, marginBottom:5}}>Join The Inner Circle</h2>
+                            <p className="text-center" style={{color:'#888', marginBottom:25}}>100% Private & Discreet</p>
+
+                            <div className="input-group">
+                                <label className="input-label">I am a</label>
+                                <select className="form-control" value={regData.iam} onChange={e=>setRegData({...regData, iam:e.target.value})}>
+                                    <option>Man</option>
+                                    <option>Woman</option>
+                                    <option>Couple (MF)</option>
+                                    <option>Couple (MM)</option>
+                                    <option>Couple (FF)</option>
+                                </select>
+                            </div>
+
+                            <div className="input-group">
+                                <label className="input-label">Looking For</label>
+                                <select className="form-control" value={regData.looking} onChange={e=>setRegData({...regData, looking:e.target.value})}>
+                                    <option>Woman</option>
+                                    <option>Man</option>
+                                    <option>Couple</option>
+                                    <option>Everything</option>
+                                </select>
+                            </div>
+
+                            <button className="btn btn-gold w-full" style={{marginTop:10}} onClick={handleNextStep}>
+                                VIEW SINGLES & COUPLES
+                            </button>
                         </div>
                     </div>
                 </div>
             );
 
-            // ─── MAIN LAYOUT ───
-            return (
+            // 2. REGISTRATION STEP 1 (Credentials)
+            if(view === 'register-1') return (
+                <div style={{height:'100vh', background:'#111', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                    <div className="reg-widget" style={{maxWidth:400}}>
+                        <h3 className="text-center text-gold" style={{marginBottom:20}}>Step 1: Account Access</h3>
+                        
+                        <div className="input-group">
+                            <label className="input-label">Choose Username</label>
+                            <input className="form-control" placeholder="e.g. DallasCouple" value={regData.username} onChange={e=>setRegData({...regData, username:e.target.value})} />
+                        </div>
+                        <div className="input-group">
+                            <label className="input-label">Password</label>
+                            <input type="password" class="form-control" placeholder="••••••" value={regData.password} onChange={e=>setRegData({...regData, password:e.target.value})} />
+                        </div>
+                        <div className="input-group">
+                            <label className="input-label">Email Address (Private)</label>
+                            <input type="email" class="form-control" placeholder="you@email.com" value={regData.email} onChange={e=>setRegData({...regData, email:e.target.value})} />
+                        </div>
+
+                        <button className="btn btn-gold w-full" onClick={handleCreateAccount}>NEXT STEP</button>
+                        <button className="btn w-full" style={{background:'none', color:'#666', marginTop:10}} onClick={()=>setView('landing')}>Cancel</button>
+                    </div>
+                </div>
+            );
+
+            // 3. REGISTRATION STEP 2 (Profile)
+            if(view === 'register-2') return (
+                <div style={{height:'100vh', background:'#111', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                    <div className="reg-widget" style={{maxWidth:400}}>
+                        <h3 className="text-center text-gold" style={{marginBottom:20}}>Step 2: Profile Details</h3>
+                        
+                        <div className="input-group">
+                            <label className="input-label">Location (City)</label>
+                            <input className="form-control" value={regData.city} onChange={e=>setRegData({...regData, city:e.target.value})} />
+                        </div>
+
+                        <div className="input-group">
+                            <label className="input-label">Profile Tagline</label>
+                            <input className="form-control" placeholder="e.g. Fun couple looking for friends" value={regData.tagline} onChange={e=>setRegData({...regData, tagline:e.target.value})} />
+                        </div>
+
+                        <div className="input-group">
+                            <label className="input-label">Relationship Status</label>
+                            <select className="form-control" value={regData.type} onChange={e=>setRegData({...regData, type:e.target.value})}>
+                                <option>Couple (Married)</option>
+                                <option>Couple (Dating)</option>
+                                <option>Single Male</option>
+                                <option>Single Female</option>
+                            </select>
+                        </div>
+
+                        <button className="btn btn-gold w-full" onClick={handleProfileDetails}>NEXT STEP</button>
+                    </div>
+                </div>
+            );
+
+            // 4. THE PROMISE (Community Rules)
+            if(view === 'promise') return (
+                <div style={{height:'100vh', background:'#000', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                    <div className="reg-widget" style={{maxWidth:500, textAlign:'center'}}>
+                        <i className="fas fa-lock text-gold" style={{fontSize:40, marginBottom:20}}></i>
+                        <h3 className="text-center" style={{marginBottom:20, color:'#fff'}}>The Velvet Promise</h3>
+                        
+                        <div style={{textAlign:'left', color:'#ccc', fontSize:13, lineHeight:1.6, marginBottom:30, background:'#222', padding:20, borderRadius:4}}>
+                            <p style={{marginBottom:10}}>1. <strong>Discretion is Paramount.</strong> What happens in the circle, stays in the circle.</p>
+                            <p style={{marginBottom:10}}>2. <strong>Respect Consent.</strong> All interactions must be consensual and enthusiastic.</p>
+                            <p>3. <strong>Authenticity.</strong> Be real. Verify your photos.</p>
+                        </div>
+
+                        <button className="btn btn-gold w-full" onClick={handleFinishProfile}>I AGREE - ENTER SITE</button>
+                    </div>
+                </div>
+            );
+
+            // 5. DASHBOARD (Logged In)
+            if(view === 'dashboard') return (
                 <div className="app-shell">
-                    {/* SIDEBAR (Desktop) */}
+                    {/* SIDEBAR */}
                     <div className="sidebar">
-                        <div className="logo-area"><div className="logo">VELVET <span>CIRCLE</span></div></div>
-                        <div className="nav-items">
-                            <div className={`nav-item ${view==='browse'?'active':''}`} onClick={()=>setView('browse')}><i className="fas fa-th-large"></i> Browse</div>
-                            <div className={`nav-item ${view==='messages'?'active':''}`} onClick={()=>setView('messages')}><i className="fas fa-comment-alt"></i> Messages</div>
-                            <div className={`nav-item ${view==='flirts'?'active':''}`} onClick={()=>setView('flirts')}><i className="fas fa-heart"></i> Connections <span className="nav-badge">{flirts.length}</span></div>
-                            <div className={`nav-item ${view==='profile'?'active':''}`} onClick={()=>setView('profile')}><i className="fas fa-user-circle"></i> My Profile</div>
+                        <div style={{height:65, borderBottom:'1px solid #222', display:'flex', alignItems:'center', paddingLeft:25, fontSize:18, fontWeight:700, color:'#fff', letterSpacing:1}}>
+                            VELVET <span className="text-gold">CIRCLE</span>
+                        </div>
+                        <div style={{flex:1, padding:'20px 0'}}>
+                            <div className="nav-link active"><i className="fas fa-th-large" style={{width:20}}></i> Browse Matches</div>
+                            <div className="nav-link"><i className="fas fa-comment-alt" style={{width:20}}></i> Inbox</div>
+                            <div className="nav-link"><i className="fas fa-heart" style={{width:20}}></i> Likes</div>
+                            <div className="nav-link"><i className="fas fa-user-circle" style={{width:20}}></i> My Profile</div>
                         </div>
                         <div style={{padding:20, borderTop:'1px solid #222'}}>
-                            <button className="btn btn-dark" style={{width:'100%'}} onClick={()=>setPanic(true)}>PANIC</button>
+                            <div style={{display:'flex', gap:10, alignItems:'center', marginBottom:15}}>
+                                <div style={{width:40, height:40, background:'#333', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--primary)'}}>
+                                    {user.username.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <div style={{fontWeight:600}}>{user.username}</div>
+                                    <div style={{fontSize:10, color:'#666'}}>Premium Member</div>
+                                </div>
+                            </div>
+                            <button className="btn btn-outline w-full" style={{fontSize:10}} onClick={handleLogout}>LOG OUT</button>
                         </div>
                     </div>
 
-                    {/* MAIN VIEW */}
-                    <div className="main-view">
-                        <div className="top-header">
-                            <h3>{view === 'messages' && activeChat ? activeChat.username : view.toUpperCase()}</h3>
-                            <div style={{display:'flex', gap:15}}>
-                                <i className="fas fa-bell" style={{color:'#666', fontSize:18}}></i>
-                                {user && <div className="online-dot"></div>}
+                    {/* MAIN CONTENT */}
+                    <div className="main-content">
+                        {/* TOP BAR */}
+                        <div className="top-bar">
+                            <h3 style={{fontSize:16}}>Recommended for You</h3>
+                            <div className="flex" style={{gap:15}}>
+                                <i className="fas fa-search" style={{color:'#888', fontSize:18}}></i>
+                                <i className="fas fa-bell" style={{color:'#888', fontSize:18}}></i>
                             </div>
                         </div>
 
-                        {/* CONTENT AREA */}
-                        <div className="content-scroll">
+                        {/* CONTENT */}
+                        <div className="scroll-area">
                             
-                            {/* BROWSE VIEW */}
-                            {view === 'browse' && (
-                                <div className="grid">
-                                    {profiles.map(p => (
-                                        <div key={p.id} className="card" onClick={()=>{ setActiveChat(p); setView('messages'); }}>
-                                            <div className="card-img-container">
-                                                <img src={p.img || p.photos?.[0]} className="card-img" />
-                                                <div className="card-overlay">
-                                                    <div style={{color:'#fff', fontWeight:700, fontSize:16}}>{p.username}</div>
-                                                    <div style={{color:'#ccc', fontSize:12}}>{p.type} • {p.city}</div>
-                                                </div>
-                                                {p.online && <div style={{position:'absolute', top:10, right:10, background:'rgba(0,0,0,0.6)', padding:'2px 8px', borderRadius:10, fontSize:10, color:'#2ecc71'}}><div className="online-dot"></div> ONLINE</div>}
-                                            </div>
-                                            <div style={{display:'flex', borderTop:'1px solid #333'}}>
-                                                <button style={{flex:1, background:'none', color:'#ccc', padding:10}} onClick={(e)=>{ e.stopPropagation(); toggleFlirt(p); }}>
-                                                    <i className={`${flirts.find(f=>f.id===p.id)?'fas':'far'} fa-heart`} style={{color: flirts.find(f=>f.id===p.id)?'#e74c3c':'#ccc'}}></i>
-                                                </button>
-                                                <button style={{flex:1, background:'none', color:'#ccc', padding:10}}><i className="fas fa-comment"></i></button>
-                                            </div>
-                                        </div>
-                                    ))}
+                            {/* SEARCH FILTERS */}
+                            <div style={{background:'var(--bg-panel)', padding:15, borderRadius:4, marginBottom:20, border:'1px solid #333'}}>
+                                <div style={{display:'flex', gap:10, overflowX:'auto'}}>
+                                    <select className="form-control" style={{width:'auto', minWidth:120}}><option>Near Me</option><option>Anywhere</option></select>
+                                    <select className="form-control" style={{width:'auto', minWidth:120}}><option>Online Now</option><option>New Today</option></select>
+                                    <select className="form-control" style={{width:'auto', minWidth:120}}><option>Women</option><option>Couples</option></select>
                                 </div>
-                            )}
+                            </div>
 
-                            {/* MESSAGES VIEW */}
-                            {view === 'messages' && (
-                                activeChat ? (
-                                    <div className="chat-layout" style={{height:'100%'}}>
-                                        <button onClick={()=>setActiveChat(null)} style={{background:'none', color:'#888', textAlign:'left', paddingBottom:10, display:'block'}}><i className="fas fa-arrow-left"></i> Back to Inbox</button>
-                                        <div className="msg-scroll">
-                                            <div style={{textAlign:'center', fontSize:10, color:'#444', marginBottom:20}}>ENCRYPTED CONVERSATION STARTED</div>
-                                            {(msgs[activeChat.id]||[]).map((m,i)=>(
-                                                <div key={i} className={`bubble ${m.me?'bubble-me':'bubble-them'}`}>
-                                                    {m.img && <img src={m.img} />}
-                                                    {m.txt}
-                                                </div>
-                                            ))}
+                            <div className="grid-sys">
+                                {MOCK_PROFILES.map(p => (
+                                    <div key={p.id} className="profile-card">
+                                        <div style={{position:'relative'}}>
+                                            <img src={p.img} className="card-img" />
+                                            <div style={{position:'absolute', bottom:0, width:'100%', padding:10, background:'linear-gradient(to top, rgba(0,0,0,0.9), transparent)'}}>
+                                                <div style={{color:'#fff', fontWeight:700}}>{p.name}</div>
+                                                <div style={{color:'#ccc', fontSize:11}}>{p.loc}</div>
+                                            </div>
+                                            {p.active && <div style={{position:'absolute', top:10, right:10, width:10, height:10, background:'#2ecc71', borderRadius:'50%', border:'2px solid #000'}}></div>}
                                         </div>
-                                        <div className="chat-input-bar">
-                                            <button style={{background:'none', color:'var(--primary)', fontSize:20}} onClick={()=>setMaskerOpen(true)}><i className="fas fa-camera"></i></button>
-                                            <input className="input-box" placeholder="Type a message..." value={inputTxt} onChange={e=>setInputTxt(e.target.value)} />
-                                            <button style={{background:'none', color:'var(--primary)', fontSize:20}} onClick={()=>sendMsg(null)}><i className="fas fa-paper-plane"></i></button>
+                                        <div className="card-body flex" style={{gap:5}}>
+                                            <button style={{flex:1, padding:8, background:'#222', border:'1px solid #333', color:'#fff', borderRadius:4}}><i className="fas fa-heart"></i></button>
+                                            <button style={{flex:1, padding:8, background:'#222', border:'1px solid #333', color:'#fff', borderRadius:4}}><i className="fas fa-comment"></i></button>
                                         </div>
                                     </div>
-                                ) : (
-                                    <div className="chat-list">
-                                        <div style={{paddingBottom:10, borderBottom:'1px solid #222', marginBottom:10, fontSize:12, color:'#666'}}>RECENT CONVERSATIONS</div>
-                                        {profiles.slice(0,4).map(p => (
-                                            <div key={p.id} className="chat-item" onClick={()=>setActiveChat(p)}>
-                                                <img src={p.img || p.photos?.[0]} className="chat-avatar" />
-                                                <div style={{flex:1}}>
-                                                    <div style={{display:'flex', justifyContent:'space-between'}}>
-                                                        <span style={{fontWeight:600, color:'#fff'}}>{p.username}</span>
-                                                        <span style={{fontSize:10, color:'#666'}}>2m ago</span>
-                                                    </div>
-                                                    <div style={{color:'#888', fontSize:12, marginTop:4}}>Sent a photo...</div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )
-                            )}
-
-                            {/* FLIRTS VIEW */}
-                            {view === 'flirts' && (
-                                <div>
-                                    <h3 style={{marginBottom:20, fontSize:16}}>My Connections</h3>
-                                    {flirts.length === 0 ? <div style={{color:'#666', textAlign:'center', marginTop:50}}>No flirts yet. Go browse!</div> : 
-                                    <div className="grid">
-                                        {flirts.map(p => (
-                                            <div key={p.id} className="card" onClick={()=>{ setActiveChat(p); setView('messages'); }}>
-                                                <div className="card-img-container">
-                                                    <img src={p.img || p.photos?.[0]} className="card-img" />
-                                                    <div className="card-overlay"><div style={{color:'#fff'}}>{p.username}</div></div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>}
-                                </div>
-                            )}
-
-                            {/* PROFILE VIEW (EDITABLE) */}
-                            {view === 'profile' && (
-                                <div>
-                                    {editMode ? (
-                                        <div style={{background:'var(--bg-panel)', padding:20, borderRadius:8, border:'1px solid var(--border)'}}>
-                                            <h3 style={{marginBottom:20, color:'var(--primary)'}}>Edit Profile</h3>
-                                            
-                                            <div className="form-group">
-                                                <label className="form-label">Username</label>
-                                                <input className="form-input" value={user.username} onChange={e=>setUser({...user, username:e.target.value})} />
-                                            </div>
-                                            
-                                            <div className="form-group">
-                                                <label className="form-label">Tagline (Appears on card)</label>
-                                                <input className="form-input" value={user.tagline} onChange={e=>setUser({...user, tagline:e.target.value})} />
-                                            </div>
-
-                                            <div className="form-group">
-                                                <label className="form-label">Profile Type</label>
-                                                <select className="form-input" value={user.type} onChange={e=>setUser({...user, type:e.target.value})}>
-                                                    <option>Couple (MF)</option>
-                                                    <option>Couple (MM)</option>
-                                                    <option>Couple (FF)</option>
-                                                    <option>Single Female</option>
-                                                    <option>Single Male</option>
-                                                </select>
-                                            </div>
-
-                                            <div className="form-group">
-                                                <label className="form-label">City</label>
-                                                <input className="form-input" value={user.city} onChange={e=>setUser({...user, city:e.target.value})} />
-                                            </div>
-
-                                            <div className="form-group">
-                                                <label className="form-label">Bio</label>
-                                                <textarea className="form-input" rows="4" value={user.bio} onChange={e=>setUser({...user, bio:e.target.value})} />
-                                            </div>
-
-                                            <div style={{display:'flex', gap:10}}>
-                                                <button className="btn btn-dark" style={{flex:1}} onClick={()=>setEditMode(false)}>Cancel</button>
-                                                <button className="btn btn-gold" style={{flex:1}} onClick={()=>saveProfile(user)}>Save Profile</button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div>
-                                            <div style={{textAlign:'center', marginBottom:30}}>
-                                                <div style={{width:100, height:100, background:'#222', borderRadius:'50%', margin:'0 auto 20px', display:'flex', alignItems:'center', justifyContent:'center', border:'2px solid var(--primary)'}}>
-                                                    <i className="fas fa-user" style={{fontSize:40, color:'#555'}}></i>
-                                                </div>
-                                                <h2>{user.username}</h2>
-                                                <p style={{color:'var(--primary)'}}>Premium Member</p>
-                                                <p style={{color:'#ccc', fontSize:12}}>{user.city} • {user.type}</p>
-                                                <p style={{color:'#888', fontStyle:'italic', marginTop:10}}>"{user.tagline}"</p>
-                                                
-                                                <div style={{marginTop:20, background:'var(--bg-panel)', padding:15, borderRadius:8, border:'1px solid #333', textAlign:'left'}}>
-                                                    <label style={{color:'#666', fontSize:10, textTransform:'uppercase'}}>About Us</label>
-                                                    <p style={{margin:0, color:'#ddd'}}>{user.bio}</p>
-                                                </div>
-
-                                                <button className="btn btn-gold" style={{marginTop:20, width:'100%'}} onClick={()=>setEditMode(true)}>EDIT PROFILE</button>
-                                            </div>
-                                            
-                                            <h4 style={{borderBottom:'1px solid #333', paddingBottom:10, marginBottom:15}}>Private Gallery</h4>
-                                            <div className="grid" style={{gridTemplateColumns:'repeat(3, 1fr)'}}>
-                                                <div style={{aspectRatio:'1', background:'#1f1f1f', display:'flex', alignItems:'center', justifyContent:'center', border:'1px dashed #444', cursor:'pointer'}} onClick={()=>setMaskerOpen(true)}>
-                                                    <div style={{textAlign:'center', color:'var(--primary)'}}><i className="fas fa-plus"></i><div style={{fontSize:10, marginTop:5}}>ADD</div></div>
-                                                </div>
-                                                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&q=80" style={{width:'100%', height:'100%', objectFit:'cover', borderRadius:4}} />
-                                            </div>
-                                            <button className="btn btn-dark" style={{width:'100%', marginTop:40}} onClick={()=>{ setView('splash'); }}>LOG OUT</button>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
+                                ))}
+                            </div>
                         </div>
                     </div>
 
-                    {/* BOTTOM NAV (Mobile Only) */}
+                    {/* MOBILE NAV */}
                     <div className="bottom-nav">
-                        <div className={`b-nav-item ${view==='browse'?'active':''}`} onClick={()=>setView('browse')}><i className="fas fa-th-large"></i><span>Home</span></div>
-                        <div className={`b-nav-item ${view==='messages'?'active':''}`} onClick={()=>setView('messages')}><i className="fas fa-comment-alt"></i><span>Chat</span></div>
-                        <div className={`b-nav-item ${view==='flirts'?'active':''}`} onClick={()=>setView('flirts')}><i className="fas fa-heart"></i><span>Likes</span></div>
-                        <div className={`b-nav-item ${view==='profile'?'active':''}`} onClick={()=>setView('profile')}><i className="fas fa-user"></i><span>Me</span></div>
+                        <div className="nav-icon active"><i className="fas fa-th-large"></i><span>Home</span></div>
+                        <div className="nav-icon"><i className="fas fa-comment"></i><span>Chat</span></div>
+                        <div className="nav-icon"><i className="fas fa-heart"></i><span>Likes</span></div>
+                        <div className="nav-icon"><i className="fas fa-user"></i><span>Me</span></div>
                     </div>
-
-                    {/* MODALS */}
-                    {maskerOpen && <Masker onCancel={()=>setMaskerOpen(false)} onSave={(img)=>{ 
-                        if(view==='messages'){ sendMsg(img); } 
-                        else { alert('Saved to gallery!'); setMaskerOpen(false); } 
-                    }} />}
-
                 </div>
             );
         }
