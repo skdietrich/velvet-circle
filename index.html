@@ -23,6 +23,7 @@
             --border: #222;
             --text-main: #e0e0e0;
             --text-muted: #888;
+            --safe-bottom: env(safe-area-inset-bottom);
         }
 
         /* ─── RESET ─── */
@@ -31,77 +32,71 @@
             margin: 0; background: var(--bg-dark); color: var(--text-main);
             font-family: 'Lato', sans-serif; font-size: 16px; height: 100vh; overflow: hidden;
         }
-        h1, h2, h3 { font-family: 'Cinzel', serif; margin: 0; font-weight: 400; color: var(--gold); }
+        h1, h2, h3, h4 { font-family: 'Cinzel', serif; margin: 0; font-weight: 400; color: var(--gold); }
         button { cursor: pointer; border: none; font-family: 'Lato', sans-serif; }
-        input, select, textarea { font-family: 'Lato', sans-serif; }
+        img { display: block; max-width: 100%; }
 
-        /* ─── UTILS ─── */
-        .flex-col { display: flex; flex-direction: column; }
-        .flex-center { display: flex; align-items: center; justify-content: center; }
-        .text-center { text-align: center; }
-        .w-full { width: 100%; }
-        .hidden { display: none; }
-        
         /* ─── UI COMPONENTS ─── */
         .btn-gold {
             background: linear-gradient(135deg, var(--gold), var(--gold-dim));
-            color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-            padding: 16px; border-radius: 4px; font-size: 14px; margin-top: 20px;
+            color: #000; font-weight: 700; text-transform: uppercase; padding: 12px 20px; 
+            border-radius: 4px; font-size: 12px; letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2); transition: 0.2s;
         }
-        .btn-gold:active { transform: scale(0.98); }
-        .btn-gold:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-icon { background: rgba(255,255,255,0.1); color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: 0.2s; }
+        .btn-icon:hover { background: var(--gold); color: #000; }
 
-        .input-group { margin-bottom: 20px; text-align: left; }
-        .input-label { display: block; color: var(--text-muted); font-size: 11px; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
-        .input-field {
-            background: #1a1a1a; border: 1px solid #333; color: #fff;
-            width: 100%; padding: 14px; border-radius: 4px; font-size: 16px;
-        }
-        .input-field:focus { border-color: var(--gold); }
+        /* ─── FUNNEL (Registration) ─── */
+        .funnel-bg { position: fixed; inset: 0; z-index: 0; background: url('https://cdni.pornpics.com/1280/1/86/13388789/13388789_001_c465.jpg') no-repeat center center/cover; }
+        .funnel-overlay { position: fixed; inset: 0; z-index: 1; background: linear-gradient(to top, #000 0%, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0.6) 100%); }
+        .funnel-container { position: relative; z-index: 10; height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .funnel-card { background: rgba(18,18,18,0.95); backdrop-filter: blur(15px); padding: 40px 30px; border-radius: 8px; border-top: 4px solid var(--gold); width: 100%; max-width: 450px; }
 
-        .pill-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-        .pill {
-            padding: 8px 16px; border: 1px solid #444; border-radius: 20px; 
-            font-size: 13px; color: #aaa; cursor: pointer; transition: 0.2s;
-        }
-        .pill.active { border-color: var(--gold); background: rgba(212, 175, 55, 0.1); color: var(--gold); }
-
-        /* ─── FUNNEL LAYOUT ─── */
-        .funnel-bg {
-            position: fixed; inset: 0; z-index: 0;
-            background: url('https://cdni.pornpics.com/1280/1/86/13388789/13388789_001_c465.jpg') no-repeat center center/cover;
-        }
-        .funnel-overlay {
-            position: fixed; inset: 0; z-index: 1;
-            background: linear-gradient(to top, #000 0%, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0.6) 100%);
-        }
-        .funnel-container {
-            position: relative; z-index: 10; height: 100vh; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; padding: 20px;
-        }
-        .funnel-card {
-            background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(15px);
-            width: 100%; max-width: 450px; padding: 40px 30px; border-radius: 8px;
-            border-top: 4px solid var(--gold); box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-        }
-        
-        /* ─── DASHBOARD ─── */
+        /* ─── DASHBOARD LAYOUT ─── */
         .app-shell { display: flex; height: 100vh; background: #000; }
-        .sidebar { width: 260px; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-        .main-content { flex: 1; display: flex; flex-direction: column; position: relative; }
-        .profile-header {
-            height: 300px; background-size: cover; background-position: center; position: relative;
-        }
-        .profile-avatar {
-            width: 120px; height: 120px; border-radius: 50%; border: 4px solid #000;
-            position: absolute; bottom: -60px; left: 20px; object-fit: cover;
-        }
-        .profile-body { margin-top: 70px; padding: 20px; }
+        .sidebar { width: 260px; border-right: 1px solid var(--border); display: flex; flex-direction: column; background: #080808; }
+        .nav-item { padding: 15px 25px; color: #aaa; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.2s; font-size: 14px; }
+        .nav-item:hover, .nav-item.active { color: var(--gold); background: rgba(212,175,55,0.05); border-right: 3px solid var(--gold); }
+        
+        .main-view { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        .top-bar { height: 60px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: rgba(10,10,10,0.95); z-index: 20; }
+        .content-scroll { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
 
+        /* ─── BROWSE GRID (Meat Market) ─── */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .member-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; position: relative; cursor: pointer; transition: 0.2s; }
+        .member-card:hover { border-color: var(--gold); transform: translateY(-3px); }
+        .card-img { width: 100%; height: 260px; object-fit: cover; }
+        .card-info { padding: 15px; position: absolute; bottom: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); }
+        .online-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; display: inline-block; margin-right: 6px; box-shadow: 0 0 5px #2ecc71; }
+
+        /* ─── MESSENGER ─── */
+        .chat-layout { display: flex; height: 100%; }
+        .chat-list { width: 300px; border-right: 1px solid var(--border); overflow-y: auto; background: #0a0a0a; }
+        .chat-item { padding: 15px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; gap: 15px; align-items: center; }
+        .chat-item:hover, .chat-item.active { background: #151515; }
+        .chat-window { flex: 1; display: flex; flex-direction: column; background: #000; }
+        .msg-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .msg-bubble { max-width: 70%; padding: 10px 15px; border-radius: 12px; font-size: 14px; line-height: 1.4; }
+        .msg-me { align-self: flex-end; background: var(--gold); color: #000; border-bottom-right-radius: 2px; }
+        .msg-them { align-self: flex-start; background: #222; color: #fff; border-bottom-left-radius: 2px; }
+        .chat-input { padding: 15px; border-top: 1px solid var(--border); display: flex; gap: 10px; background: #111; }
+
+        /* ─── MOBILE NAV ─── */
+        .bottom-nav { display: none; }
+        
         @media (max-width: 768px) {
             .sidebar { display: none; }
-            .funnel-card { padding: 30px 20px; }
+            .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: calc(65px + var(--safe-bottom)); background: #0a0a0a; border-top: 1px solid var(--border); z-index: 100; padding-bottom: var(--safe-bottom); }
+            .nav-icon { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #666; font-size: 10px; gap: 4px; }
+            .nav-icon.active { color: var(--gold); }
+            .nav-icon i { font-size: 20px; }
+            
+            .grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .card-img { height: 180px; }
+            .chat-list { display: none; } /* On mobile, handle chat list/view transition separately */
+            .chat-list.mobile-show { display: block; width: 100%; }
+            .chat-window.mobile-hide { display: none; }
         }
     </style>
 </head>
@@ -109,294 +104,273 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
         const { createClient } = supabase;
 
-        // ─── CONFIGURATION ───
-        const SUPABASE_URL = "https://wtbswbokojmzmrehrajj.supabase.co"; 
-        const SUPABASE_KEY = "sb_publishable_WCwKS1Du4LePjpVqPLZQzA_dsPFbDbd";
-        const client = createClient(SUPABASE_URL, SUPABASE_KEY);
+        // ─── INIT SUPABASE ───
+        const supaUrl = "https://wtbswbokojmzmrehrajj.supabase.co"; 
+        const supaKey = "sb_publishable_WCwKS1Du4LePjpVqPLZQzA_dsPFbDbd";
+        const client = createClient(supaUrl, supaKey);
 
-        // ─── OPTIONS DATA ───
-        const TYPES = ["Couple (MF)", "Couple (MM)", "Couple (FF)", "Single Female", "Single Male"];
-        const INTERESTS = ["Soft Swap", "Full Swap", "Same Room", "Separate Room", "Voyeurism", "Exhibitionism", "Group Fun", "Bi-Curious"];
+        // ─── SEED DATA (To populate the "Meat Market") ───
+        const MOCK_MEMBERS = [
+            { id: 101, name: "DallasCouple_99", type: "Couple (MF)", city: "Dallas", img: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=600", online: true },
+            { id: 102, name: "SecretRose", type: "Female", city: "Plano", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600", online: false },
+            { id: 103, name: "FitGent_TX", type: "Male", city: "Frisco", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=600", online: true },
+            { id: 104, name: "VelvetVixen", type: "Female", city: "Addison", img: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=600", online: true },
+            { id: 105, name: "NightOwl_XX", type: "Couple (FF)", city: "Uptown", img: "https://images.unsplash.com/photo-1518556865737-124b89182352?q=80&w=600", online: false },
+            { id: 106, name: "ThePlayboys", type: "Couple (MM)", city: "Oak Lawn", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600", online: true },
+            { id: 107, name: "Sarah_Private", type: "Female", city: "Fort Worth", img: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?q=80&w=600", online: false },
+            { id: 108, name: "MrGrey", type: "Male", city: "Dallas", img: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=600", online: true },
+        ];
 
         function App() {
-            const [step, setStep] = useState(0); // 0=Landing, 1=Identity, 2=Interests, 3=Photo, 4=Creds, 5=Dashboard
-            const [loading, setLoading] = useState(false);
+            // GLOBAL STATE
             const [user, setUser] = useState(null);
+            const [view, setView] = useState('browse'); // browse, chat, likes, profile
+            const [activeChat, setActiveChat] = useState(null);
+            const [likes, setLikes] = useState([]); // Array of IDs
+            const [chats, setChats] = useState({}); // { memberId: [messages] }
             
-            // FORM DATA
-            const [data, setData] = useState({
-                type: '', seeking: '', 
-                city: '', tagline: '', 
-                interests: [],
-                photoFile: null, photoPreview: null,
-                username: '', password: ''
-            });
+            // FUNNEL STATE
+            const [step, setStep] = useState(0); 
+            const [regData, setRegData] = useState({ type: 'Couple (MF)', city: 'Dallas', username: '' });
 
-            // CHECK LOGIN
+            // INIT
             useEffect(() => {
                 const saved = localStorage.getItem('vc_user');
                 if(saved) {
                     setUser(JSON.parse(saved));
-                    setStep(5);
+                    setStep(5); // Skip to dashboard
                 }
             }, []);
 
-            // ─── HANDLERS ───
-            
-            const toggleInterest = (tag) => {
-                if(data.interests.includes(tag)) setData({...data, interests: data.interests.filter(t=>t!==tag)});
-                else setData({...data, interests: [...data.interests, tag]});
+            // ─── ACTIONS ───
+            const handleReg = () => {
+                const newUser = { ...regData, id: Date.now() };
+                localStorage.setItem('vc_user', JSON.stringify(newUser));
+                setUser(newUser);
+                setStep(5);
             };
 
-            const handlePhotoSelect = (e) => {
-                const file = e.target.files[0];
-                if(file) {
-                    setData({
-                        ...data, 
-                        photoFile: file, 
-                        photoPreview: URL.createObjectURL(file)
-                    });
-                }
+            const toggleLike = (id) => {
+                setLikes(prev => prev.includes(id) ? prev.filter(x=>x!==id) : [...prev, id]);
             };
 
-            const handleRegister = async () => {
-                setLoading(true);
-                try {
-                    let photoUrl = null;
-
-                    // 1. UPLOAD PHOTO (Real)
-                    if(data.photoFile) {
-                        const fileName = `${Date.now()}_${data.username}`;
-                        const { data: uploadData, error: uploadError } = await client
-                            .storage.from('photos').upload(fileName, data.photoFile);
-                        
-                        if(uploadError) throw uploadError;
-                        
-                        const { data: urlData } = client.storage.from('photos').getPublicUrl(fileName);
-                        photoUrl = urlData.publicUrl;
-                    }
-
-                    // 2. CREATE PROFILE RECORD (Real)
-                    const newProfile = {
-                        username: data.username,
-                        profile_type: data.type,
-                        city: data.city,
-                        bio: data.tagline,
-                        interests: data.interests, // Ensure your DB has a JSON or Text array column for this
-                        photos: photoUrl ? [photoUrl] : []
-                    };
-
-                    const { error: dbError } = await client.from('profiles').insert([newProfile]);
-                    if(dbError) throw dbError;
-
-                    // 3. SAVE SESSION
-                    localStorage.setItem('vc_user', JSON.stringify(newProfile));
-                    setUser(newProfile);
-                    setStep(5); // Go to Dashboard
-
-                } catch (err) {
-                    alert("Error: " + err.message);
-                } finally {
-                    setLoading(false);
-                }
+            const startChat = (member) => {
+                setActiveChat(member);
+                setView('chat');
             };
 
-            // ─── RENDERERS ───
+            const sendMessage = (txt) => {
+                if(!txt.trim()) return;
+                const cid = activeChat.id;
+                const newMsg = { text: txt, me: true, ts: Date.now() };
+                setChats(prev => ({
+                    ...prev,
+                    [cid]: [...(prev[cid]||[]), newMsg]
+                }));
+            };
 
-            // STEP 0: LANDING
-            if(step === 0) return (
-                <div className="funnel-container">
-                    <div className="funnel-bg"></div>
-                    <div className="funnel-overlay"></div>
-                    <div className="funnel-card text-center">
-                        <h1 style={{fontSize:32, marginBottom:10}}>VELVET</h1>
-                        <p style={{color:'#aaa', letterSpacing:2, marginBottom:40}}>MEMBERS ONLY COMMUNITY</p>
-                        <button className="btn-gold" onClick={()=>setStep(1)}>APPLY FOR MEMBERSHIP</button>
-                        <p style={{marginTop:20, fontSize:12, color:'#666'}}>Existing members? <u style={{color:'#fff', cursor:'pointer'}}>Log In</u></p>
-                    </div>
-                </div>
-            );
+            // ─── VIEWS ───
 
-            // STEP 1: IDENTITY
-            if(step === 1) return (
-                <div className="funnel-container">
-                    <div className="funnel-bg"></div>
-                    <div className="funnel-overlay"></div>
-                    <div className="funnel-card">
-                        <div style={{fontSize:10, color:'var(--gold)', marginBottom:10}}>STEP 1 OF 4</div>
-                        <h2>The Basics</h2>
-                        <p style={{color:'#888', marginBottom:30}}>Tell us who you are.</p>
+            // 1. REGISTRATION FUNNEL
+            if(step < 5) {
+                return (
+                    <div className="funnel-container">
+                        <div className="funnel-bg"></div>
+                        <div className="funnel-overlay"></div>
                         
-                        <div className="input-group">
-                            <label className="input-label">I am a...</label>
-                            <select className="input-field" onChange={e=>setData({...data, type:e.target.value})}>
-                                <option value="">Select Identity</option>
-                                {TYPES.map(t=><option key={t}>{t}</option>)}
-                            </select>
-                        </div>
-                        
-                        <div className="input-group">
-                            <label className="input-label">Primary Location</label>
-                            <input className="input-field" placeholder="e.g. Dallas, TX" onChange={e=>setData({...data, city:e.target.value})} />
-                        </div>
+                        {step === 0 && (
+                            <div className="funnel-card text-center">
+                                <h1 style={{fontSize:32}}>VELVET</h1>
+                                <p style={{color:'#aaa', letterSpacing:2, marginBottom:40}}>MEMBERS ONLY</p>
+                                <button className="btn-gold w-full" onClick={()=>setStep(1)}>ENTER</button>
+                            </div>
+                        )}
 
-                        <button className="btn-gold" disabled={!data.type || !data.city} onClick={()=>setStep(2)}>NEXT STEP</button>
+                        {step === 1 && (
+                            <div className="funnel-card">
+                                <h3>I am a...</h3>
+                                <select className="input-field" style={{marginTop:20}} onChange={e=>setRegData({...regData, type:e.target.value})}>
+                                    <option>Couple (MF)</option><option>Single Female</option><option>Single Male</option>
+                                </select>
+                                <button className="btn-gold w-full" onClick={()=>setStep(2)}>NEXT</button>
+                            </div>
+                        )}
+
+                        {step === 2 && (
+                            <div className="funnel-card">
+                                <h3>Location</h3>
+                                <input className="input-field" style={{marginTop:20}} placeholder="City" onChange={e=>setRegData({...regData, city:e.target.value})} />
+                                <button className="btn-gold w-full" onClick={()=>setStep(3)}>NEXT</button>
+                            </div>
+                        )}
+
+                        {step === 3 && (
+                            <div className="funnel-card">
+                                <h3>Create Account</h3>
+                                <input className="input-field" style={{marginTop:20}} placeholder="Username" onChange={e=>setRegData({...regData, username:e.target.value})} />
+                                <button className="btn-gold w-full" onClick={handleReg}>FINISH</button>
+                            </div>
+                        )}
                     </div>
-                </div>
-            );
+                );
+            }
 
-            // STEP 2: INTERESTS (The "Commercial Depth")
-            if(step === 2) return (
-                <div className="funnel-container">
-                    <div className="funnel-bg"></div>
-                    <div className="funnel-overlay"></div>
-                    <div className="funnel-card">
-                        <div style={{fontSize:10, color:'var(--gold)', marginBottom:10}}>STEP 2 OF 4</div>
-                        <h2>Your Desires</h2>
-                        <p style={{color:'#888', marginBottom:30}}>What are you looking for?</p>
-                        
-                        <div className="pill-grid">
-                            {INTERESTS.map(tag => (
-                                <div key={tag} 
-                                     className={`pill ${data.interests.includes(tag)?'active':''}`}
-                                     onClick={()=>toggleInterest(tag)}>
-                                    {tag}
-                                </div>
-                            ))}
-                        </div>
-
-                        <button className="btn-gold" onClick={()=>setStep(3)}>NEXT STEP</button>
-                    </div>
-                </div>
-            );
-
-            // STEP 3: PHOTO UPLOAD
-            if(step === 3) return (
-                <div className="funnel-container">
-                    <div className="funnel-bg"></div>
-                    <div className="funnel-overlay"></div>
-                    <div className="funnel-card">
-                        <div style={{fontSize:10, color:'var(--gold)', marginBottom:10}}>STEP 3 OF 4</div>
-                        <h2>Verification Photo</h2>
-                        <p style={{color:'#888', marginBottom:30}}>Upload a profile photo. Face not required for privacy.</p>
-                        
-                        <div style={{border:'2px dashed #333', borderRadius:8, padding:40, textAlign:'center', marginBottom:20, position:'relative'}}>
-                            {data.photoPreview ? (
-                                <img src={data.photoPreview} style={{width:'100%', height:200, objectFit:'cover', borderRadius:4}} />
-                            ) : (
-                                <div style={{color:'#666'}}>
-                                    <i className="fas fa-camera" style={{fontSize:30, marginBottom:10}}></i>
-                                    <br/>Tap to Select
-                                </div>
-                            )}
-                            <input type="file" accept="image/*" onChange={handlePhotoSelect} 
-                                   style={{position:'absolute', inset:0, opacity:0, cursor:'pointer'}} />
-                        </div>
-
-                        <div className="input-group">
-                            <label className="input-label">Profile Tagline</label>
-                            <input className="input-field" placeholder="e.g. Fun couple seeking friends" onChange={e=>setData({...data, tagline:e.target.value})} />
-                        </div>
-
-                        <button className="btn-gold" disabled={!data.photoFile} onClick={()=>setStep(4)}>NEXT STEP</button>
-                    </div>
-                </div>
-            );
-
-            // STEP 4: CREDENTIALS (Final Gate)
-            if(step === 4) return (
-                <div className="funnel-container">
-                    <div className="funnel-bg"></div>
-                    <div className="funnel-overlay"></div>
-                    <div className="funnel-card">
-                        <div style={{fontSize:10, color:'var(--gold)', marginBottom:10}}>FINAL STEP</div>
-                        <h2>Account Access</h2>
-                        <p style={{color:'#888', marginBottom:30}}>Secure your profile.</p>
-                        
-                        <div className="input-group">
-                            <label className="input-label">Username</label>
-                            <input className="input-field" onChange={e=>setData({...data, username:e.target.value})} />
-                        </div>
-                        <div className="input-group">
-                            <label className="input-label">Password</label>
-                            <input type="password" class="input-field" onChange={e=>setData({...data, password:e.target.value})} />
-                        </div>
-
-                        <button className="btn-gold" onClick={handleRegister}>
-                            {loading ? <i className="fas fa-spinner fa-spin"></i> : "COMPLETE PROFILE"}
-                        </button>
-                    </div>
-                </div>
-            );
-
-            // DASHBOARD (The App)
-            if(step === 5 && user) return (
+            // 2. DASHBOARD
+            return (
                 <div className="app-shell">
-                    <div className="sidebar" style={{padding:20, borderRight:'1px solid #333'}}>
-                        <h3>VELVET</h3>
-                        <div style={{marginTop:40, color:'#aaa'}}>
-                            <div style={{padding:10, color:'var(--gold)'}}>Home</div>
-                            <div style={{padding:10}}>Messages</div>
-                            <div style={{padding:10}}>Matches</div>
-                            <div style={{padding:10}}>My Profile</div>
+                    {/* DESKTOP SIDEBAR */}
+                    <div className="sidebar">
+                        <div style={{height:60, display:'flex', alignItems:'center', paddingLeft:25, borderBottom:'1px solid #222'}}>
+                            <h3 style={{fontSize:18}}>VELVET</h3>
                         </div>
-                        <button onClick={()=>{localStorage.removeItem('vc_user'); setStep(0);}} style={{marginTop:'auto', color:'#666', background:'none', textAlign:'left'}}>Log Out</button>
+                        <div style={{padding:'20px 0'}}>
+                            <div className={`nav-item ${view==='browse'?'active':''}`} onClick={()=>setView('browse')}><i className="fas fa-th-large"></i> Browse</div>
+                            <div className={`nav-item ${view==='chat'?'active':''}`} onClick={()=>setView('chat')}><i className="fas fa-comment-alt"></i> Messages</div>
+                            <div className={`nav-item ${view==='likes'?'active':''}`} onClick={()=>setView('likes')}><i className="fas fa-heart"></i> Connections</div>
+                            <div className={`nav-item ${view==='profile'?'active':''}`} onClick={()=>setView('profile')}><i className="fas fa-user-circle"></i> Profile</div>
+                        </div>
                     </div>
-                    
-                    <div className="main-content">
-                        {/* COVER PHOTO (Use funnel bg as cover if no cover uploaded) */}
-                        <div className="profile-header" style={{backgroundImage: `url('https://cdni.pornpics.com/1280/1/86/13388789/13388789_001_c465.jpg')`}}>
-                            <div style={{position:'absolute', inset:0, background:'linear-gradient(to top, #000, transparent)'}}></div>
-                        </div>
+
+                    {/* MAIN CONTENT AREA */}
+                    <div className="main-view">
                         
-                        {/* AVATAR (Use the real uploaded photo) */}
-                        <img src={user.photos && user.photos.length > 0 ? user.photos[0] : 'https://via.placeholder.com/150'} className="profile-avatar" />
-                        
-                        <div className="profile-body">
-                            <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-end'}}>
-                                <div>
-                                    <h1 style={{fontSize:32, color:'#fff'}}>{user.username}</h1>
-                                    <p style={{color:'var(--gold)', fontSize:14}}>{user.profile_type} • {user.city}</p>
+                        {/* VIEW: BROWSE (THE MEAT MARKET) */}
+                        {view === 'browse' && (
+                            <>
+                                <div className="top-bar">
+                                    <h4>Members Nearby</h4>
+                                    <i className="fas fa-filter" style={{color:'#888'}}></i>
                                 </div>
-                                <button className="btn-gold" style={{width:'auto', padding:'10px 20px', marginTop:0}}>Edit Profile</button>
-                            </div>
-
-                            <hr style={{borderColor:'#333', margin:'30px 0'}} />
-
-                            <div style={{display:'grid', gridTemplateColumns:'1fr 2fr', gap:40}}>
-                                <div>
-                                    <h4 style={{color:'#666', marginBottom:15}}>ABOUT US</h4>
-                                    <p style={{color:'#ccc', lineHeight:1.6}}>"{user.bio}"</p>
-                                    
-                                    <h4 style={{color:'#666', marginTop:30, marginBottom:15}}>INTERESTS</h4>
-                                    <div className="pill-grid">
-                                        {user.interests && user.interests.map(i => (
-                                            <div key={i} style={{border:'1px solid #444', padding:'5px 12px', borderRadius:15, fontSize:12, color:'#888'}}>{i}</div>
+                                <div className="content-scroll">
+                                    <div className="grid">
+                                        {MOCK_MEMBERS.map(m => (
+                                            <div key={m.id} className="member-card" onClick={()=>startChat(m)}>
+                                                <img src={m.img} className="card-img" />
+                                                <div className="card-info">
+                                                    <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                                                        <h4 style={{color:'#fff', fontSize:14, margin:0}}>{m.name}</h4>
+                                                        {m.online && <div className="online-dot"></div>}
+                                                    </div>
+                                                    <div style={{color:'#aaa', fontSize:11}}>{m.type} • {m.city}</div>
+                                                    <div style={{display:'flex', gap:10, marginTop:10}}>
+                                                        <button className="btn-icon" onClick={(e)=>{e.stopPropagation(); toggleLike(m.id);}}>
+                                                            <i className={`${likes.includes(m.id)?'fas':'far'} fa-heart`} style={{color:likes.includes(m.id)?'var(--gold)':'#fff'}}></i>
+                                                        </button>
+                                                        <button className="btn-icon"><i className="fas fa-comment"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         ))}
                                     </div>
                                 </div>
-                                
-                                <div>
-                                    <h4 style={{color:'#666', marginBottom:15}}>PUBLIC GALLERY</h4>
-                                    <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:10}}>
-                                        {user.photos && user.photos.map(p => (
-                                            <img src={p} style={{width:'100%', aspectRatio:'1', objectFit:'cover', borderRadius:4}} />
+                            </>
+                        )}
+
+                        {/* VIEW: LIKES (FLIRT SYSTEM) */}
+                        {view === 'likes' && (
+                            <>
+                                <div className="top-bar"><h4>My Connections</h4></div>
+                                <div className="content-scroll">
+                                    {likes.length === 0 ? <div style={{textAlign:'center', color:'#666', marginTop:50}}>No connections yet. Start browsing!</div> : 
+                                    <div className="grid">
+                                        {MOCK_MEMBERS.filter(m => likes.includes(m.id)).map(m => (
+                                            <div key={m.id} className="member-card" onClick={()=>startChat(m)}>
+                                                <img src={m.img} className="card-img" />
+                                                <div className="card-info">
+                                                    <h4 style={{color:'#fff'}}>{m.name}</h4>
+                                                </div>
+                                            </div>
                                         ))}
-                                        <div style={{border:'1px dashed #333', borderRadius:4, display:'flex', alignItems:'center', justifyContent:'center', color:'#444', height:150}}>
-                                            + Add Photo
+                                    </div>}
+                                </div>
+                            </>
+                        )}
+
+                        {/* VIEW: CHAT (MESSENGER) */}
+                        {view === 'chat' && (
+                            <div className="chat-layout">
+                                {/* Chat List (Left) */}
+                                <div className={`chat-list ${!activeChat ? 'mobile-show' : ''}`}>
+                                    <div style={{padding:15, borderBottom:'1px solid #222', color:'#888', fontSize:12}}>RECENT</div>
+                                    {MOCK_MEMBERS.slice(0,5).map(m => (
+                                        <div key={m.id} className={`chat-item ${activeChat?.id===m.id?'active':''}`} onClick={()=>setActiveChat(m)}>
+                                            <img src={m.img} style={{width:40, height:40, borderRadius:'50%', objectFit:'cover'}} />
+                                            <div>
+                                                <div style={{color:'#fff', fontWeight:'bold'}}>{m.name}</div>
+                                                <div style={{color:'#666', fontSize:11}}>Click to chat</div>
+                                            </div>
                                         </div>
-                                    </div>
+                                    ))}
+                                </div>
+
+                                {/* Active Chat (Right) */}
+                                <div className={`chat-window ${!activeChat ? 'mobile-hide' : ''}`}>
+                                    {activeChat ? (
+                                        <>
+                                            <div className="top-bar">
+                                                <div style={{display:'flex', alignItems:'center', gap:10}}>
+                                                    <i className="fas fa-arrow-left" style={{color:'#888', cursor:'pointer'}} onClick={()=>setActiveChat(null)}></i>
+                                                    <img src={activeChat.img} style={{width:30, height:30, borderRadius:'50%'}} />
+                                                    <span style={{color:'#fff', fontWeight:'bold'}}>{activeChat.name}</span>
+                                                </div>
+                                            </div>
+                                            <div className="msg-area">
+                                                {(chats[activeChat.id] || []).map((msg, i) => (
+                                                    <div key={i} className={`msg-bubble ${msg.me ? 'msg-me' : 'msg-them'}`}>
+                                                        {msg.text}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="chat-input">
+                                                <input id="chatInput" className="input-field" style={{marginBottom:0, borderRadius:20}} placeholder="Type a message..." />
+                                                <button className="btn-icon" style={{background:'var(--gold)', color:'#000'}} 
+                                                    onClick={()=>{
+                                                        const el = document.getElementById('chatInput');
+                                                        sendMessage(el.value);
+                                                        el.value = '';
+                                                    }}>
+                                                    <i className="fas fa-paper-plane"></i>
+                                                </button>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div style={{display:'flex', alignItems:'center', justifyContent:'center', height:'100%', color:'#444'}}>
+                                            Select a member to chat
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-                        </div>
+                        )}
+
+                        {/* VIEW: PROFILE */}
+                        {view === 'profile' && (
+                            <div className="content-scroll">
+                                <div style={{textAlign:'center', marginTop:40}}>
+                                    <div style={{width:100, height:100, background:'#222', borderRadius:'50%', margin:'0 auto', display:'flex', alignItems:'center', justifyContent:'center', border:'2px solid var(--gold)'}}>
+                                        <i className="fas fa-user" style={{fontSize:40, color:'#555'}}></i>
+                                    </div>
+                                    <h2 style={{marginTop:15}}>{user.username}</h2>
+                                    <p style={{color:'var(--gold)'}}>Premium Member</p>
+                                    <p style={{color:'#888'}}>{user.city} • {user.type}</p>
+                                    <button className="btn-gold" style={{width:'auto', marginTop:20}} onClick={()=>{localStorage.removeItem('vc_user'); setStep(0);}}>LOG OUT</button>
+                                </div>
+                            </div>
+                        )}
+
+                    </div>
+
+                    {/* MOBILE BOTTOM NAV */}
+                    <div className="bottom-nav">
+                        <div className={`nav-icon ${view==='browse'?'active':''}`} onClick={()=>setView('browse')}><i className="fas fa-th-large"></i> Home</div>
+                        <div className={`nav-icon ${view==='chat'?'active':''}`} onClick={()=>setView('chat')}><i className="fas fa-comment-alt"></i> Chat</div>
+                        <div className={`nav-icon ${view==='likes'?'active':''}`} onClick={()=>setView('likes')}><i className="fas fa-heart"></i> Likes</div>
+                        <div className={`nav-icon ${view==='profile'?'active':''}`} onClick={()=>setView('profile')}><i className="fas fa-user"></i> Me</div>
                     </div>
                 </div>
             );
-
-            return null;
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
