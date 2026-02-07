@@ -39,6 +39,7 @@
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; margin: 0; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
         button { cursor: pointer; font-family: 'Montserrat', sans-serif; border: none; }
         img { display: block; max-width: 100%; }
+        input, textarea, select { font-family: 'Open Sans', sans-serif; }
 
         /* ─── LAYOUT STRUCTURE ─── */
         .app-shell { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
@@ -65,7 +66,7 @@
         .nav-item:hover, .nav-item.active { color: var(--primary); background: rgba(197, 160, 89, 0.05); border-right: 3px solid var(--primary); }
         .nav-badge { background: var(--primary); color: #000; font-size: 10px; padding: 2px 6px; border-radius: 10px; margin-left: auto; }
 
-        /* MOBILE BOTTOM NAV (Hidden on Desktop) */
+        /* MOBILE BOTTOM NAV */
         .bottom-nav { display: none; }
 
         /* MAIN CONTENT */
@@ -120,6 +121,15 @@
             padding: 10px 15px; border-radius: 20px;
         }
 
+        /* FORMS */
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; color: var(--text-muted); margin-bottom: 5px; font-size: 12px; text-transform: uppercase; }
+        .form-input { 
+            width: 100%; background: var(--bg-input); border: 1px solid var(--border); padding: 12px; 
+            color: #fff; border-radius: 4px; font-size: 14px;
+        }
+        .form-input:focus { border-color: var(--primary); }
+
         /* ─── MOBILE OPTIMIZATIONS ─── */
         @media (max-width: 768px) {
             .sidebar { display: none; }
@@ -163,7 +173,7 @@
         const supaKey = "sb_publishable_WCwKS1Du4LePjpVqPLZQzA_dsPFbDbd";
         const client = createClient(supaUrl, supaKey);
 
-        // ─── HELPER: FAKE DATA GENERATOR (Since DB might be empty) ───
+        // ─── HELPER: FAKE DATA ───
         const generateMockProfiles = () => [
             { id: 101, username: 'DallasCouple_99', type: 'Couple (MF)', city: 'Dallas', img: 'https://images.unsplash.com/photo-1548545722-e87f71428383?w=500&q=80', online: true },
             { id: 102, username: 'SecretWifeTX', type: 'Female', city: 'Plano', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&q=80', online: false },
@@ -178,7 +188,6 @@
             const [img, setImg] = useState(null);
             const [blur, setBlur] = useState(0);
             const [mask, setMask] = useState(false);
-            const ref = useRef();
 
             const handleFile = (e) => {
                 const f = e.target.files[0];
@@ -221,24 +230,39 @@
         // ─── MAIN APP ───
         function App() {
             const [view, setView] = useState('splash');
-            const [user, setUser] = useState(null);
+            const [user, setUser] = useState({ 
+                username: 'Member', 
+                city: 'Dallas, TX', 
+                type: 'Couple (MF)',
+                bio: 'We are a fun couple looking for like-minded friends.',
+                tagline: 'Here for a good time.'
+            });
+            const [editMode, setEditMode] = useState(false);
             const [activeChat, setActiveChat] = useState(null);
             const [profiles, setProfiles] = useState([]);
             const [msgs, setMsgs] = useState({});
-            const [flirts, setFlirts] = useState([]); // "Favorites"
+            const [flirts, setFlirts] = useState([]); 
             const [maskerOpen, setMaskerOpen] = useState(false);
             const [panic, setPanic] = useState(false);
             const [inputTxt, setInputTxt] = useState("");
 
             useEffect(() => {
-                // Initialize with DB data + Mock data to make it look "live"
                 const fetch = async () => {
                     const { data } = await client.from('profiles').select('*');
                     const real = data || [];
                     setProfiles([...real, ...generateMockProfiles()]);
                 };
                 fetch();
+                // Load local profile if exists
+                const saved = localStorage.getItem('vc_user_profile');
+                if(saved) setUser(JSON.parse(saved));
             }, []);
+
+            const saveProfile = (updatedUser) => {
+                setUser(updatedUser);
+                localStorage.setItem('vc_user_profile', JSON.stringify(updatedUser));
+                setEditMode(false);
+            };
 
             const sendMsg = (img=null) => {
                 if(!inputTxt && !img) return;
@@ -257,15 +281,15 @@
             // ─── PANIC MODE ───
             if(panic) return <div style={{height:'100vh', background:'#eee', color:'#333', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', fontFamily:'Arial'}}><h1>Weather</h1><h2>72° Dallas</h2><button onClick={()=>setPanic(false)} style={{position:'absolute', bottom:0, right:0, opacity:0, width:50, height:50}}></button></div>;
 
-            // ─── SPLASH/LOGIN ───
+            // ─── SPLASH/LOGIN (WITH YOUR PHOTO) ───
             if(view === 'splash') return (
-                <div style={{height:'100vh', background:'url(https://cdni.pornpics.com/1280/7/52/88123583/88123583_061_d7a9.jpg) center/cover'}}>
-                    <div style={{position:'absolute', inset:0, background:'rgba(0,0,0,0.8)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center'}}>
+                <div style={{height:'100vh', background:'url(https://cdni.pornpics.com/1280/1/86/13388789/13388789_001_c465.jpg) center/cover'}}>
+                    <div style={{position:'absolute', inset:0, background:'rgba(0,0,0,0.5)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center'}}>
                         <h1 style={{fontSize:40, color:'var(--primary)'}}>VELVET</h1>
-                        <p style={{color:'#aaa', letterSpacing:3, marginBottom:40}}>MEMBERS ONLY</p>
+                        <p style={{color:'#fff', letterSpacing:3, marginBottom:40, textShadow:'0 2px 4px rgba(0,0,0,0.8)'}}>MEMBERS ONLY</p>
                         <div style={{width:300, display:'flex', flexDirection:'column', gap:15}}>
-                            <button className="btn btn-gold" onClick={()=>{ setUser({username:'Member'}); setView('browse'); }}>MEMBER LOGIN</button>
-                            <button className="btn btn-dark" style={{border:'1px solid #444'}} onClick={()=>{ setUser({username:'NewUser'}); setView('browse'); }}>APPLY NOW</button>
+                            <button className="btn btn-gold" onClick={()=>{ setView('browse'); }}>MEMBER LOGIN</button>
+                            <button className="btn btn-dark" style={{border:'1px solid #444'}} onClick={()=>{ setView('browse'); }}>APPLY NOW</button>
                         </div>
                     </div>
                 </div>
@@ -382,27 +406,78 @@
                                 </div>
                             )}
 
-                            {/* PROFILE VIEW */}
+                            {/* PROFILE VIEW (EDITABLE) */}
                             {view === 'profile' && (
                                 <div>
-                                    <div style={{textAlign:'center', marginBottom:30}}>
-                                        <div style={{width:100, height:100, background:'#222', borderRadius:'50%', margin:'0 auto 20px', display:'flex', alignItems:'center', justifyContent:'center', border:'2px solid var(--primary)'}}>
-                                            <i className="fas fa-user" style={{fontSize:40, color:'#555'}}></i>
+                                    {editMode ? (
+                                        <div style={{background:'var(--bg-panel)', padding:20, borderRadius:8, border:'1px solid var(--border)'}}>
+                                            <h3 style={{marginBottom:20, color:'var(--primary)'}}>Edit Profile</h3>
+                                            
+                                            <div className="form-group">
+                                                <label className="form-label">Username</label>
+                                                <input className="form-input" value={user.username} onChange={e=>setUser({...user, username:e.target.value})} />
+                                            </div>
+                                            
+                                            <div className="form-group">
+                                                <label className="form-label">Tagline (Appears on card)</label>
+                                                <input className="form-input" value={user.tagline} onChange={e=>setUser({...user, tagline:e.target.value})} />
+                                            </div>
+
+                                            <div className="form-group">
+                                                <label className="form-label">Profile Type</label>
+                                                <select className="form-input" value={user.type} onChange={e=>setUser({...user, type:e.target.value})}>
+                                                    <option>Couple (MF)</option>
+                                                    <option>Couple (MM)</option>
+                                                    <option>Couple (FF)</option>
+                                                    <option>Single Female</option>
+                                                    <option>Single Male</option>
+                                                </select>
+                                            </div>
+
+                                            <div className="form-group">
+                                                <label className="form-label">City</label>
+                                                <input className="form-input" value={user.city} onChange={e=>setUser({...user, city:e.target.value})} />
+                                            </div>
+
+                                            <div className="form-group">
+                                                <label className="form-label">Bio</label>
+                                                <textarea className="form-input" rows="4" value={user.bio} onChange={e=>setUser({...user, bio:e.target.value})} />
+                                            </div>
+
+                                            <div style={{display:'flex', gap:10}}>
+                                                <button className="btn btn-dark" style={{flex:1}} onClick={()=>setEditMode(false)}>Cancel</button>
+                                                <button className="btn btn-gold" style={{flex:1}} onClick={()=>saveProfile(user)}>Save Profile</button>
+                                            </div>
                                         </div>
-                                        <h2>{user.username}</h2>
-                                        <p style={{color:'var(--primary)'}}>Premium Member</p>
-                                    </div>
-                                    
-                                    <h4 style={{borderBottom:'1px solid #333', paddingBottom:10, marginBottom:15}}>Private Gallery</h4>
-                                    <div className="grid" style={{gridTemplateColumns:'repeat(3, 1fr)'}}>
-                                        <div style={{aspectRatio:'1', background:'#1f1f1f', display:'flex', alignItems:'center', justifyContent:'center', border:'1px dashed #444', cursor:'pointer'}} onClick={()=>setMaskerOpen(true)}>
-                                            <div style={{textAlign:'center', color:'var(--primary)'}}><i className="fas fa-plus"></i><div style={{fontSize:10, marginTop:5}}>ADD</div></div>
+                                    ) : (
+                                        <div>
+                                            <div style={{textAlign:'center', marginBottom:30}}>
+                                                <div style={{width:100, height:100, background:'#222', borderRadius:'50%', margin:'0 auto 20px', display:'flex', alignItems:'center', justifyContent:'center', border:'2px solid var(--primary)'}}>
+                                                    <i className="fas fa-user" style={{fontSize:40, color:'#555'}}></i>
+                                                </div>
+                                                <h2>{user.username}</h2>
+                                                <p style={{color:'var(--primary)'}}>Premium Member</p>
+                                                <p style={{color:'#ccc', fontSize:12}}>{user.city} • {user.type}</p>
+                                                <p style={{color:'#888', fontStyle:'italic', marginTop:10}}>"{user.tagline}"</p>
+                                                
+                                                <div style={{marginTop:20, background:'var(--bg-panel)', padding:15, borderRadius:8, border:'1px solid #333', textAlign:'left'}}>
+                                                    <label style={{color:'#666', fontSize:10, textTransform:'uppercase'}}>About Us</label>
+                                                    <p style={{margin:0, color:'#ddd'}}>{user.bio}</p>
+                                                </div>
+
+                                                <button className="btn btn-gold" style={{marginTop:20, width:'100%'}} onClick={()=>setEditMode(true)}>EDIT PROFILE</button>
+                                            </div>
+                                            
+                                            <h4 style={{borderBottom:'1px solid #333', paddingBottom:10, marginBottom:15}}>Private Gallery</h4>
+                                            <div className="grid" style={{gridTemplateColumns:'repeat(3, 1fr)'}}>
+                                                <div style={{aspectRatio:'1', background:'#1f1f1f', display:'flex', alignItems:'center', justifyContent:'center', border:'1px dashed #444', cursor:'pointer'}} onClick={()=>setMaskerOpen(true)}>
+                                                    <div style={{textAlign:'center', color:'var(--primary)'}}><i className="fas fa-plus"></i><div style={{fontSize:10, marginTop:5}}>ADD</div></div>
+                                                </div>
+                                                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&q=80" style={{width:'100%', height:'100%', objectFit:'cover', borderRadius:4}} />
+                                            </div>
+                                            <button className="btn btn-dark" style={{width:'100%', marginTop:40}} onClick={()=>{ setView('splash'); }}>LOG OUT</button>
                                         </div>
-                                        {/* Placeholder user photos */}
-                                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&q=80" style={{width:'100%', height:'100%', objectFit:'cover', borderRadius:4}} />
-                                        <img src="https://images.unsplash.com/photo-1520155701217-23b24c614587?w=300&q=80" style={{width:'100%', height:'100%', objectFit:'cover', borderRadius:4, filter:'blur(5px)'}} />
-                                    </div>
-                                    <button className="btn btn-dark" style={{width:'100%', marginTop:40}} onClick={()=>{ setUser(null); setView('splash'); }}>LOG OUT</button>
+                                    )}
                                 </div>
                             )}
 
@@ -432,4 +507,3 @@
     </script>
 </body>
 </html>
-
