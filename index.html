@@ -2,408 +2,336 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#000000">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Weather</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Velvet Circle | Private Lifestyle Community</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
     <style>
         :root {
-            --bg: #050505;
-            --surface: rgba(30, 30, 35, 0.7);
-            --surface-light: rgba(255, 255, 255, 0.08);
-            --gold: #D4AF37;
-            --gold-glow: rgba(212, 175, 55, 0.3);
-            --text-main: #FFFFFF;
-            --text-sec: #888888;
-            --accent: #7B2CBF; 
-            --danger: #FF3B30;
-            --font-head: 'Playfair Display', serif;
-            --font-body: 'Inter', sans-serif;
-            --glass: blur(20px) saturate(180%);
-            --safe-top: env(safe-area-inset-top);
-            --safe-bottom: env(safe-area-inset-bottom);
+            --bg-body: #0a0a0a;
+            --bg-card: #141414;
+            --bg-header: #111111;
+            --primary: #c5a059; /* SDC/Kasidie Gold */
+            --primary-hover: #e6c278;
+            --text-main: #f0f0f0;
+            --text-muted: #888888;
+            --border: #333333;
+            --radius: 4px; /* Professional, square look */
+            --max-width: 1200px; /* Standard Website Width */
         }
 
-        /* RESET */
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        /* ─── RESET & BASE ─── */
+        * { box-sizing: border-box; outline: none; }
         body { 
-            margin: 0; background: var(--bg); color: var(--text-main); 
-            font-family: var(--font-body); overflow: hidden; height: 100vh; width: 100vw;
+            margin: 0; background: var(--bg-body); color: var(--text-main);
+            font-family: 'Lato', sans-serif; font-size: 16px; line-height: 1.5;
         }
+        h1, h2, h3, h4 { font-family: 'Cinzel', serif; font-weight: 400; margin: 0; color: var(--primary); }
+        a { color: var(--primary); text-decoration: none; cursor: pointer; }
+        
+        /* ─── LAYOUT ─── */
+        .container {
+            max-width: var(--max-width); margin: 0 auto; padding: 0 20px;
+            width: 100%;
+        }
+        
+        /* HEADER (Professional Navbar) */
+        header {
+            background: var(--bg-header); border-bottom: 1px solid var(--primary);
+            padding: 15px 0; position: sticky; top: 0; z-index: 100;
+        }
+        .nav-flex { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
+        .logo span { color: var(--primary); }
+        .nav-links { display: flex; gap: 20px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-item { cursor: pointer; padding: 5px 0; border-bottom: 2px solid transparent; transition: 0.3s; color: #fff; }
+        .nav-item:hover, .nav-item.active { border-color: var(--primary); color: var(--primary); }
 
-        /* TYPOGRAPHY */
-        h1, h2, h3 { font-family: var(--font-head); font-weight: 400; margin: 0; }
-        p { margin: 0; line-height: 1.5; color: var(--text-sec); }
-
-        /* UI ELEMENTS */
-        .app-container {
-            height: 100%; width: 100%; overflow-y: auto; overflow-x: hidden;
-            padding-top: calc(var(--safe-top) + 20px);
-            padding-bottom: calc(var(--safe-bottom) + 80px);
-            padding-left: 20px; padding-right: 20px;
-            background: radial-gradient(circle at top right, #1a0b1e 0%, #000000 60%);
+        /* ─── FORMS & DROPDOWNS (Commercial Style) ─── */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 12px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 1px; }
+        
+        input, select, textarea {
+            width: 100%; padding: 12px 15px;
+            background: #1a1a1a; border: 1px solid var(--border);
+            color: #fff; font-family: 'Lato', sans-serif; font-size: 15px;
+            border-radius: var(--radius); transition: 0.2s;
+            appearance: none; /* Remove default browser styling */
         }
-
-        /* INPUTS */
-        .input-group { position: relative; margin-bottom: 20px; width: 100%; }
-        .input-field {
-            width: 100%; background: var(--surface-light); border: 1px solid rgba(255,255,255,0.1);
-            padding: 16px; border-radius: 12px; color: #fff; font-size: 16px; font-family: var(--font-body);
-            transition: 0.3s;
+        /* Custom arrow for select */
+        select {
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23c5a059%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto;
         }
-        .input-field:focus { border-color: var(--gold); background: rgba(212, 175, 55, 0.05); }
-        .input-label {
-            position: absolute; top: -8px; left: 12px; background: var(--bg); padding: 0 4px;
-            font-size: 12px; color: var(--gold); font-weight: 600; letter-spacing: 1px;
-        }
+        input:focus, select:focus { border-color: var(--primary); background: #222; }
 
         /* BUTTONS */
         .btn {
-            width: 100%; padding: 16px; border-radius: 12px; border: none; font-size: 14px;
-            font-weight: 600; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
-            transition: transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 8px;
+            display: inline-block; width: 100%; padding: 14px;
+            background: var(--primary); color: #000;
+            text-transform: uppercase; font-weight: 700; letter-spacing: 1px; font-size: 14px;
+            border: none; border-radius: var(--radius); cursor: pointer; transition: 0.2s; text-align: center;
         }
-        .btn:active { transform: scale(0.98); }
-        .btn-primary { 
-            background: linear-gradient(135deg, var(--gold), #997d26); 
-            color: #000; box-shadow: 0 4px 20px var(--gold-glow);
-        }
-        .btn-outline { 
-            background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-main); 
-        }
-        .btn-ghost { background: transparent; color: var(--text-sec); }
+        .btn:hover { background: var(--primary-hover); }
+        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: rgba(197, 160, 89, 0.1); }
 
-        /* CARDS */
+        /* ─── PROFILE CARDS (Grid System) ─── */
+        .grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px; margin-top: 30px;
+        }
         .card {
-            background: var(--surface-light); backdrop-filter: var(--glass);
-            border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 16px; margin-bottom: 12px;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); overflow: hidden; transition: 0.3s;
+            position: relative;
+        }
+        .card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .card-img {
+            width: 100%; height: 280px; object-fit: cover;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-body { padding: 20px; }
+        .card-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+        .card-meta { font-size: 13px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 15px; }
+        .tag {
+            display: inline-block; padding: 4px 8px; font-size: 10px; text-transform: uppercase;
+            border: 1px solid #444; color: #aaa; margin-right: 5px; border-radius: 2px;
         }
 
-        /* NAVIGATION */
-        .nav-bar {
-            position: fixed; bottom: 0; left: 0; right: 0; height: calc(65px + var(--safe-bottom));
-            background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            display: flex; justify-content: space-around; padding-bottom: var(--safe-bottom);
-            z-index: 100;
+        /* ─── MOBILE OPTIMIZATIONS ─── */
+        @media (max-width: 768px) {
+            .nav-links span { display: none; } /* Hide text on mobile nav, keep icons if added */
+            .nav-links { gap: 15px; font-size: 12px; }
+            .grid { grid-template-columns: 1fr; } /* Stack cards on mobile */
+            .form-grid { grid-template-columns: 1fr; } /* Stack forms */
         }
-        .nav-item {
-            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: var(--text-sec); font-size: 10px; gap: 4px; transition: 0.2s;
-        }
-        .nav-item i { font-size: 24px; }
-        .nav-item.active { color: var(--gold); }
-
-        /* CHAT BUBBLES */
-        .msg { padding: 12px 16px; border-radius: 18px; max-width: 80%; margin-bottom: 8px; font-size: 15px; line-height: 1.4; position: relative; word-wrap: break-word; }
-        .msg-me { align-self: flex-end; background: linear-gradient(135deg, var(--gold), #bfa140); color: #000; border-bottom-right-radius: 4px; }
-        .msg-them { align-self: flex-start; background: var(--surface); color: #fff; border-bottom-left-radius: 4px; }
-        .msg-img { border-radius: 12px; max-width: 100%; display: block; margin-bottom: 4px; }
-
-        /* ANIMATIONS */
-        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes fadeIn { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
-
-        /* UTILS */
-        .flex-row { display: flex; align-items: center; justify-content: space-between; }
-        .text-gold { color: var(--gold); }
-        .avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.1); background: #222; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+        const { useState, useEffect } = React;
         const { createClient } = supabase;
 
-        // --- ICONS ---
-        const Icon = ({ name }) => <i className={`ri-${name}`}></i>;
+        // ─── INIT SUPABASE ───
+        const supaUrl = "https://wtbswbokojmzmrehrajj.supabase.co"; 
+        const supaKey = "sb_publishable_WCwKS1Du4LePjpVqPLZQzA_dsPFbDbd";
+        const client = createClient(supaUrl, supaKey);
 
-        // --- COMPONENTS ---
-        const Input = ({ label, type="text", value, onChange }) => (
-            <div className="input-group">
-                <input className="input-field" type={type} value={value} onChange={onChange} placeholder=" " />
-                <label className="input-label">{label}</label>
-            </div>
-        );
-
-        // --- PHOTO MASKER (Premium UI) ---
-        const Masker = ({ onSave, onClose }) => {
-            const [img, setImg] = useState(null);
-            const [blur, setBlur] = useState(5);
-            const [mask, setMask] = useState(false);
-            const canvasRef = useRef(null);
-
-            const handleFile = (e) => {
-                const f = e.target.files[0];
-                if(f) { const r = new FileReader(); r.onload=ev=>setImg(ev.target.result); r.readAsDataURL(f); }
-            };
-
-            const save = () => {
-                const cvs = canvasRef.current;
-                const ctx = cvs.getContext('2d');
-                const i = new Image();
-                i.src = img;
-                i.onload = () => {
-                    cvs.width = 500; cvs.height = 500;
-                    ctx.filter = `blur(${blur}px)`;
-                    ctx.drawImage(i,0,0,500,500);
-                    ctx.filter = 'none';
-                    if(mask) { ctx.fillStyle='#000'; ctx.fillRect(0, 200, 500, 60); }
-                    onSave(cvs.toDataURL('image/jpeg', 0.8));
-                };
-            };
-
-            if(!img) return (
-                <div style={{position:'fixed', inset:0, background:'#000', zIndex:999, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center'}}>
-                    <h2 className="text-gold" style={{marginBottom:20}}>Secure Upload</h2>
-                    <label className="btn btn-outline" style={{width:200}}>
-                        <Icon name="camera-fill"/> Select Photo
-                        <input type="file" hidden accept="image/*" onChange={handleFile}/>
-                    </label>
-                    <button onClick={onClose} className="btn btn-ghost" style={{marginTop:20}}>Cancel</button>
-                </div>
-            );
-
-            return (
-                <div style={{position:'fixed', inset:0, background:'#000', zIndex:999, display:'flex', flexDirection:'column', padding:20}}>
-                    <div style={{flex:1, display:'flex', alignItems:'center', justifyContent:'center', position:'relative', overflow:'hidden'}}>
-                        <canvas ref={canvasRef} style={{display:'none'}}/>
-                        <img src={img} style={{maxWidth:'100%', maxHeight:'60vh', filter:`blur(${blur}px)`, borderRadius:12}} />
-                        {mask && <div style={{position:'absolute', width:'100%', height:40, background:'#000', top:'50%', transform:'translateY(-50%)'}}></div>}
-                    </div>
-                    
-                    <div style={{background:'#111', padding:20, borderRadius:20}}>
-                        <div className="flex-row" style={{marginBottom:20}}>
-                            <span style={{fontSize:12, color:'#888'}}>BLUR INTENSITY</span>
-                            <input type="range" min="0" max="20" value={blur} onChange={e=>setBlur(e.target.value)} style={{width:'60%', accentColor:'#D4AF37'}}/>
-                        </div>
-                        <div className="flex-row" style={{gap:10}}>
-                            <button className="btn btn-outline" onClick={()=>setMask(!mask)}>{mask ? 'Remove Mask' : 'Add Eye Bar'}</button>
-                            <button className="btn btn-primary" onClick={save}>Secure & Send</button>
-                        </div>
-                        <button onClick={onClose} className="btn btn-ghost" style={{marginTop:10}}>Cancel</button>
-                    </div>
-                </div>
-            );
-        };
-
-        // --- MAIN APP ---
+        // ─── APP ───
         function App() {
-            const [view, setView] = useState("splash");
-            const [user, setUser] = useState(null);
+            const [view, setView] = useState('splash');
             const [profiles, setProfiles] = useState([]);
-            const [panic, setPanic] = useState(false);
-            const [client, setClient] = useState(null);
+            const [user, setUser] = useState(null);
             
-            // Temporary State
-            const [form, setForm] = useState({ u:'', p:'', city:'' });
-            const [activeChat, setActiveChat] = useState(null);
-            const [msgs, setMsgs] = useState({});
-            const [txt, setTxt] = useState('');
-            const [masker, setMasker] = useState(false);
+            // Search Filters
+            const [filters, setFilters] = useState({ gender: 'All', location: '' });
 
-            // ─── CONFIGURATION ───
-            const APP_KEY = "vc_v7_final";
-            
+            // Load Data
             useEffect(() => {
-                // 1. SUPABASE CONNECTION (KEYS PRE-LOADED)
-                const url = "https://wtbswbokojmzmrehrajj.supabase.co"; 
-                const key = "sb_publishable_WCwKS1Du4LePjpVqPLZQzA_dsPFbDbd";
-
-                if (url.includes("http")) {
-                    const _c = createClient(url, key);
-                    setClient(_c);
-                    _c.from('profiles').select('*').then(({data, error}) => {
-                        if(data) setProfiles(p => [...p, ...data]);
-                        if(error) console.error("Supabase Error:", error);
-                    });
-                }
-
-                // 2. LOAD LOCAL
-                const localUser = JSON.parse(localStorage.getItem(APP_KEY+'user'));
-                if(localUser) { setUser(localUser); setView('home'); }
+                const fetchProfiles = async () => {
+                    const { data } = await client.from('profiles').select('*');
+                    if (data) setProfiles(data);
+                };
+                fetchProfiles();
             }, []);
 
-            const saveUser = (u) => {
-                setUser(u);
-                localStorage.setItem(APP_KEY+'user', JSON.stringify(u));
-            };
+            // ─── COMPONENTS ───
 
-            // ─── PANIC SCREEN (Weather) ───
-            if(panic) return (
-                <div style={{height:'100vh', background:'#2C3E50', color:'#fff', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', fontFamily:'Helvetica'}}>
-                    <h1 style={{fontSize:90, fontWeight:100}}>72°</h1>
-                    <h2 style={{fontSize:24, fontWeight:400}}>Dallas</h2>
-                    <div style={{marginTop:40, display:'flex', gap:20}}>
-                        <div style={{textAlign:'center'}}>Now<br/>☀️</div>
-                        <div style={{textAlign:'center'}}>1PM<br/>⛅</div>
-                        <div style={{textAlign:'center'}}>2PM<br/>☁️</div>
+            const Header = () => (
+                <header>
+                    <div className="container nav-flex">
+                        <div className="logo" onClick={()=>setView('home')}>VELVET <span>CIRCLE</span></div>
+                        {user ? (
+                            <div className="nav-links">
+                                <div className={`nav-item ${view==='home'?'active':''}`} onClick={()=>setView('home')}>Browse</div>
+                                <div className={`nav-item ${view==='chat'?'active':''}`} onClick={()=>setView('chat')}>Messages</div>
+                                <div className={`nav-item ${view==='profile'?'active':''}`} onClick={()=>setView('profile')}>Profile</div>
+                                <div className="nav-item" onClick={()=>{setUser(null); setView('splash');}}>Logout</div>
+                            </div>
+                        ) : (
+                            <div className="nav-links">
+                                <div className="nav-item" onClick={()=>setView('login')}>Login</div>
+                                <div className="nav-item" style={{color:'var(--primary)'}} onClick={()=>setView('register')}>Apply</div>
+                            </div>
+                        )}
                     </div>
-                    <button onClick={()=>setPanic(false)} style={{position:'absolute', bottom:0, right:0, width:50, height:50, opacity:0}}/>
-                </div>
+                </header>
             );
 
-            // ─── SPLASH ───
-            if(view === "splash") return (
-                <div className="app-container" style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', background:'url(https://images.unsplash.com/photo-1535581652167-3d6b98c0678c?q=80&w=1000&auto=format&fit=crop) no-repeat center/cover'}}>
-                    <div style={{position:'absolute', inset:0, background:'rgba(0,0,0,0.7)'}}></div>
-                    <div style={{zIndex:1, width:'100%', textAlign:'center'}}>
-                        <h1 style={{fontSize:48, color:'var(--gold)', letterSpacing:2}}>VELVET</h1>
-                        <p style={{fontSize:12, letterSpacing:4, textTransform:'uppercase', marginTop:10, marginBottom:60}}>The Inner Circle</p>
-                        
-                        <div style={{padding:20, display:'flex', flexDirection:'column', gap:12}}>
-                            <button className="btn btn-primary" onClick={()=>setView('register')}>Apply for Membership</button>
-                            <button className="btn btn-outline" onClick={()=>setView('login')}>Member Login</button>
+            // ─── VIEWS ───
+
+            if(view === 'splash') return (
+                <>
+                    <Header />
+                    <div style={{
+                        height:'90vh', background:'url(https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070&auto=format&fit=crop) center/cover',
+                        display:'flex', alignItems:'center', justifyContent:'center', position:'relative'
+                    }}>
+                        <div style={{position:'absolute', inset:0, background:'linear-gradient(to top, #0a0a0a, transparent)'}}></div>
+                        <div className="container" style={{position:'relative', zIndex:2, textAlign:'center', maxWidth:600}}>
+                            <h1 style={{fontSize:'3.5rem', marginBottom:20}}>The Lifestyle Standard</h1>
+                            <p style={{fontSize:'1.2rem', marginBottom:40, color:'#ddd'}}>
+                                An exclusive community for couples and singles seeking genuine connections. 
+                                Secure. Discreet. Sophisticated.
+                            </p>
+                            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:20}}>
+                                <button className="btn" onClick={()=>setView('register')}>Apply Now</button>
+                                <button className="btn btn-outline" onClick={()=>setView('login')}>Member Login</button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    <footer style={{padding:'40px 0', textAlign:'center', borderTop:'1px solid #333', fontSize:12, color:'#666'}}>
+                        <div className="container">
+                            © 2026 Velvet Circle LLC. All Rights Reserved. 18+ Only.
+                            <br/>Privacy Policy | Terms of Service | Safety Tips
+                        </div>
+                    </footer>
+                </>
             );
 
-            // ─── LOGIN / REGISTER ───
-            if(view === "login" || view === "register") return (
-                <div className="app-container fade-in" style={{display:'flex', flexDirection:'column', justifyContent:'center'}}>
-                    <h1 style={{color:'var(--gold)', marginBottom:30}}>{view === 'login' ? 'Welcome Back' : 'Join Us'}</h1>
-                    
-                    <Input label="Username" value={form.u} onChange={e=>setForm({...form, u:e.target.value})} />
-                    <Input label="Password" type="password" value={form.p} onChange={e=>setForm({...form, p:e.target.value})} />
-                    {view === 'register' && <Input label="City" value={form.city} onChange={e=>setForm({...form, city:e.target.value})} />}
+            if(view === 'login' || view === 'register') return (
+                <>
+                    <Header />
+                    <div className="container" style={{maxWidth:500, marginTop:60, marginBottom:100}}>
+                        <div style={{background:'var(--bg-card)', padding:40, borderRadius:'var(--radius)', border:'1px solid var(--border)'}}>
+                            <h2 style={{textAlign:'center', marginBottom:30}}>{view === 'login' ? 'Member Access' : 'New Application'}</h2>
+                            
+                            <div className="form-group">
+                                <label>Username</label>
+                                <input type="text" placeholder="Enter your alias" />
+                            </div>
 
-                    <button className="btn btn-primary" onClick={async ()=>{
-                        if(!form.u) return;
-                        
-                        // Local State
-                        const newUser = { id: Date.now(), username: form.u, city: form.city || 'Dallas', type: 'Member' };
-                        
-                        // Supabase Sync
-                        if(client && view === 'register') {
-                            await client.from('profiles').insert([{ 
-                                username: form.u, 
-                                city: form.city, 
-                                is_discreet: true 
-                            }]);
-                        }
-                        
-                        saveUser(newUser);
-                        setView('home');
-                    }}>
-                        {view === 'login' ? 'ENTER' : 'CREATE ACCOUNT'}
-                    </button>
-                    
-                    <button className="btn btn-ghost" style={{marginTop:20}} onClick={()=>setView('splash')}>Back</button>
-                </div>
+                            <div className="form-group">
+                                <label>Password</label>
+                                <input type="password" placeholder="••••••••" />
+                            </div>
+
+                            {view === 'register' && (
+                                <>
+                                    <div className="form-group">
+                                        <label>I am a...</label>
+                                        <select>
+                                            <option>Man</option>
+                                            <option>Woman</option>
+                                            <option>Couple (MF)</option>
+                                            <option>Couple (MM)</option>
+                                            <option>Couple (FF)</option>
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Location</label>
+                                        <select>
+                                            <option>Dallas, TX</option>
+                                            <option>Houston, TX</option>
+                                            <option>Austin, TX</option>
+                                            <option>New York, NY</option>
+                                            <option>Los Angeles, CA</option>
+                                        </select>
+                                    </div>
+                                </>
+                            )}
+
+                            <button className="btn" style={{marginTop:20}} onClick={()=>{
+                                setUser({ username: 'DemoUser', type: 'Premium' });
+                                setView('home');
+                            }}>
+                                {view === 'login' ? 'Secure Login' : 'Submit Application'}
+                            </button>
+
+                            <p style={{textAlign:'center', marginTop:20, fontSize:13}}>
+                                {view === 'login' ? "Don't have an account? " : "Already a member? "}
+                                <span style={{color:'var(--primary)', cursor:'pointer'}} onClick={()=>setView(view==='login'?'register':'login')}>
+                                    {view === 'login' ? 'Apply Here' : 'Log In'}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </>
             );
 
-            // ─── HOME ───
-            if(view === "home") return (
-                <div className="app-container fade-in">
-                    <div className="flex-row" style={{marginBottom:20}}>
-                        <h2 style={{fontSize:24}}>Discover</h2>
-                        <i className="ri-flashlight-fill" style={{color:'var(--danger)', fontSize:24}} onClick={()=>setPanic(true)}></i>
-                    </div>
-
-                    <div style={{overflowX:'auto', display:'flex', gap:12, paddingBottom:20}}>
-                        {['Nearby', 'New', 'Online', 'Travel'].map(t=>(
-                            <span key={t} style={{padding:'6px 16px', borderRadius:20, border:'1px solid rgba(255,255,255,0.2)', fontSize:12}}>{t}</span>
-                        ))}
-                    </div>
-
-                    {profiles.map(p => (
-                        <div key={p.id} className="card flex-row" onClick={()=>{ setActiveChat(p); setView('chat'); }}>
-                            <div style={{display:'flex', gap:16, alignItems:'center'}}>
-                                <div className="avatar" style={{display:'flex', alignItems:'center', justifyContent:'center'}}>
-                                    {p.username?.[0]}
+            if(view === 'home') return (
+                <>
+                    <Header />
+                    <div className="container" style={{marginTop:30, marginBottom:60}}>
+                        {/* SEARCH BAR (Commercial Style) */}
+                        <div style={{background:'var(--bg-card)', padding:20, borderRadius:'var(--radius)', border:'1px solid var(--border)', marginBottom:30}}>
+                            <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:15}}>
+                                <h3>Member Search</h3>
+                                <span style={{fontSize:12, color:'var(--primary)'}}>ADVANCED SEARCH +</span>
+                            </div>
+                            <div className="form-grid" style={{gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', marginBottom:0}}>
+                                <div>
+                                    <label>I'm Looking For</label>
+                                    <select onChange={e=>setFilters({...filters, gender:e.target.value})}>
+                                        <option value="All">Everyone</option>
+                                        <option value="Female">Women</option>
+                                        <option value="Couple">Couples</option>
+                                    </select>
                                 </div>
                                 <div>
-                                    <div style={{fontWeight:600, fontSize:16}}>{p.username}</div>
-                                    <div style={{fontSize:12, color:'var(--text-sec)'}}>{p.city || 'Unknown'} • {p.profile_type || 'Member'}</div>
+                                    <label>Location</label>
+                                    <select>
+                                        <option>Within 50 Miles</option>
+                                        <option>Within 100 Miles</option>
+                                        <option>Anywhere</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Last Active</label>
+                                    <select>
+                                        <option>Online Now</option>
+                                        <option>Today</option>
+                                        <option>This Week</option>
+                                    </select>
+                                </div>
+                                <div style={{display:'flex', alignItems:'end'}}>
+                                    <button className="btn">Search</button>
                                 </div>
                             </div>
-                            <div className="btn-outline" style={{width:40, height:40, borderRadius:'50%', padding:0, display:'flex', alignItems:'center', justifyContent:'center'}}>
-                                <Icon name="chat-3-line"/>
-                            </div>
                         </div>
-                    ))}
-                    {profiles.length === 0 && <div style={{textAlign:'center', padding:20, color:'#666'}}>No members found yet.</div>}
-                    
-                    <div style={{height:40}}></div>
-                    <Nav view={view} setView={setView} />
-                </div>
+
+                        <h3 style={{borderBottom:'1px solid #333', paddingBottom:10, marginBottom:20}}>Featured Members</h3>
+                        
+                        <div className="grid">
+                            {profiles.length > 0 ? profiles.map(p => (
+                                <div key={p.id} className="card" onClick={()=>setView('profile')}>
+                                    <img src={p.photos?.[0] || `https://ui-avatars.com/api/?name=${p.username}&background=random&size=300`} className="card-img" />
+                                    <div className="card-body">
+                                        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                                            <div className="card-title">{p.username}</div>
+                                            <div style={{width:10, height:10, background:'#2ed573', borderRadius:'50%'}}></div>
+                                        </div>
+                                        <div className="card-meta">{p.city || 'Dallas, TX'} • {p.profile_type || 'Member'}</div>
+                                        <div>
+                                            <span className="tag">Lifestyle</span>
+                                            <span className="tag">Verfied</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )) : (
+                                <div style={{color:'#666', gridColumn:'1/-1', textAlign:'center', padding:40}}>
+                                    Connecting to secure database...
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </>
             );
 
-            // ─── CHAT ───
-            if(view === "chat" && activeChat) return (
-                <div className="app-container fade-in" style={{padding:0, display:'flex', flexDirection:'column', background:'#000'}}>
-                    {/* Header */}
-                    <div style={{padding:'40px 20px 10px', background:'rgba(20,20,20,0.9)', backdropFilter:'blur(10px)', borderBottom:'1px solid #222', display:'flex', alignItems:'center', gap:10}}>
-                        <i className="ri-arrow-left-line" style={{fontSize:24}} onClick={()=>setView('home')}></i>
-                        <span style={{fontWeight:600}}>{activeChat.username}</span>
-                    </div>
-
-                    {/* Messages */}
-                    <div style={{flex:1, overflowY:'auto', padding:20, display:'flex', flexDirection:'column'}}>
-                        <div style={{textAlign:'center', color:'#444', fontSize:10, marginBottom:20}}>ENCRYPTED CONVERSATION</div>
-                        {(msgs[activeChat.id] || []).map((m,i)=>(
-                            <div key={i} className={`msg ${m.me ? 'msg-me' : 'msg-them'}`}>
-                                {m.img && <img src={m.img} className="msg-img"/>}
-                                {m.txt}
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Input */}
-                    <div style={{padding:16, background:'#111', display:'flex', gap:10, alignItems:'center'}}>
-                        <i className="ri-camera-lens-line" style={{fontSize:24, color:'var(--gold)'}} onClick={()=>setMasker(true)}></i>
-                        <input className="input-field" style={{margin:0, padding:12, borderRadius:20}} placeholder="Message..." value={txt} onChange={e=>setTxt(e.target.value)}/>
-                        <i className="ri-send-plane-fill" style={{fontSize:24, color:'var(--gold)'}} onClick={()=>{
-                            if(!txt) return;
-                            const m = { txt, me: true };
-                            setMsgs(prev => ({ ...prev, [activeChat.id]: [...(prev[activeChat.id]||[]), m] }));
-                            setTxt('');
-                        }}></i>
-                    </div>
-
-                    {masker && <Masker onClose={()=>setMasker(false)} onSave={(img)=>{
-                        const m = { img, me: true };
-                        setMsgs(prev => ({ ...prev, [activeChat.id]: [...(prev[activeChat.id]||[]), m] }));
-                        setMasker(false);
-                    }}/>}
-                </div>
-            );
-
-            // ─── NAV BAR ───
-            function Nav({ view, setView }) {
-                return (
-                    <div className="nav-bar">
-                        <div className={`nav-item ${view==='home'?'active':''}`} onClick={()=>setView('home')}>
-                            <Icon name="home-5-line"/> <span>Home</span>
-                        </div>
-                        <div className={`nav-item ${view==='chats'?'active':''}`} onClick={()=>setView('home')}>
-                            <Icon name="message-2-line"/> <span>Chats</span>
-                        </div>
-                        <div className={`nav-item ${view==='profile'?'active':''}`} onClick={()=>{
-                            setUser(null); setView('splash');
-                        }}>
-                            <Icon name="user-line"/> <span>Profile</span>
-                        </div>
-                    </div>
-                );
-            }
-
-            return null;
+            return <div>Page Not Found</div>;
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
