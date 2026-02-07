@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#0a0a0a">
     <title>Velvet Circle | Elite Lifestyle</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -16,129 +16,92 @@
 
     <style>
         :root {
-            --primary: #c5a059; /* Luxury Gold */
-            --primary-dark: #b08d45;
-            --bg-dark: #0f0f0f;
-            --bg-panel: #1a1a1a;
-            --bg-input: #252525;
-            --border: #333;
-            --text-main: #fff;
-            --text-muted: #aaa;
-            --header-height: 65px;
-            --radius: 4px;
+            --gold: #D4AF37;
+            --gold-dim: #8a701e;
+            --bg-dark: #050505;
+            --bg-panel: #121212;
+            --border: #222;
+            --text-main: #e0e0e0;
+            --text-muted: #888;
         }
 
-        /* RESET */
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        /* ─── RESET ─── */
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
         body { 
             margin: 0; background: var(--bg-dark); color: var(--text-main);
-            font-family: 'Open Sans', sans-serif; font-size: 14px; height: 100vh; overflow: hidden;
+            font-family: 'Lato', sans-serif; font-size: 16px; height: 100vh; overflow: hidden;
         }
-        h1, h2, h3, h4 { font-family: 'Montserrat', sans-serif; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
-        button { font-family: 'Montserrat', sans-serif; cursor: pointer; }
-        input, select, textarea { font-family: 'Open Sans', sans-serif; }
+        h1, h2, h3 { font-family: 'Cinzel', serif; margin: 0; font-weight: 400; color: var(--gold); }
+        button { cursor: pointer; border: none; font-family: 'Lato', sans-serif; }
+        input, select, textarea { font-family: 'Lato', sans-serif; }
 
-        /* ─── UTILITIES ─── */
-        .flex { display: flex; align-items: center; }
+        /* ─── UTILS ─── */
         .flex-col { display: flex; flex-direction: column; }
-        .justify-center { justify-content: center; }
-        .hidden { display: none; }
-        .text-gold { color: var(--primary); }
-        .w-full { width: 100%; }
+        .flex-center { display: flex; align-items: center; justify-content: center; }
         .text-center { text-align: center; }
-
-        /* ─── COMPONENTS ─── */
-        .btn {
-            padding: 14px 24px; border: none; border-radius: var(--radius);
-            font-weight: 700; text-transform: uppercase; font-size: 13px;
-            transition: 0.2s; text-align: center;
-        }
-        .btn-gold { 
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
-            color: #000; box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
+        .w-full { width: 100%; }
+        .hidden { display: none; }
+        
+        /* ─── UI COMPONENTS ─── */
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+            color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            padding: 16px; border-radius: 4px; font-size: 14px; margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2); transition: 0.2s;
         }
         .btn-gold:active { transform: scale(0.98); }
-        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        .btn-gold:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .input-group { margin-bottom: 15px; }
-        .input-label { display: block; color: var(--text-muted); font-size: 11px; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; }
-        .form-control {
-            width: 100%; padding: 12px 15px; background: #222; border: 1px solid #444;
-            color: #fff; border-radius: var(--radius); font-size: 14px;
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-label { display: block; color: var(--text-muted); font-size: 11px; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
+        .input-field {
+            background: #1a1a1a; border: 1px solid #333; color: #fff;
+            width: 100%; padding: 14px; border-radius: 4px; font-size: 16px;
         }
-        .form-control:focus { border-color: var(--primary); background: #2a2a2a; }
+        .input-field:focus { border-color: var(--gold); }
 
-        /* ─── SPLASH / HERO (SDC Style) ─── */
-        .hero-bg {
-            position: absolute; inset: 0; 
-            background: url('https://cdni.pornpics.com/1280/1/86/13388789/13388789_001_c465.jpg') center/cover;
+        .pill-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+        .pill {
+            padding: 8px 16px; border: 1px solid #444; border-radius: 20px; 
+            font-size: 13px; color: #aaa; cursor: pointer; transition: 0.2s;
         }
-        .hero-overlay {
-            position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.4) 100%);
+        .pill.active { border-color: var(--gold); background: rgba(212, 175, 55, 0.1); color: var(--gold); }
+
+        /* ─── FUNNEL LAYOUT ─── */
+        .funnel-bg {
+            position: fixed; inset: 0; z-index: 0;
+            background: url('https://cdni.pornpics.com/1280/1/86/13388789/13388789_001_c465.jpg') no-repeat center center/cover;
         }
-        .landing-container {
-            position: relative; z-index: 10; height: 100%; display: flex; align-items: center;
-            max-width: 1200px; margin: 0 auto; padding: 20px;
+        .funnel-overlay {
+            position: fixed; inset: 0; z-index: 1;
+            background: linear-gradient(to top, #000 0%, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0.6) 100%);
         }
-        .reg-widget {
-            background: rgba(15, 15, 15, 0.95); backdrop-filter: blur(10px);
-            padding: 30px; border-radius: 6px; width: 100%; max-width: 420px;
-            border-top: 4px solid var(--primary); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        .funnel-container {
+            position: relative; z-index: 10; height: 100vh; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; padding: 20px;
+        }
+        .funnel-card {
+            background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(15px);
+            width: 100%; max-width: 450px; padding: 40px 30px; border-radius: 8px;
+            border-top: 4px solid var(--gold); box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
         
-        /* ─── DASHBOARD LAYOUT ─── */
-        .app-shell { display: flex; height: 100vh; }
-        
-        /* SIDEBAR (Desktop) */
-        .sidebar {
-            width: 260px; background: #000; border-right: 1px solid var(--border);
-            display: flex; flex-direction: column;
+        /* ─── DASHBOARD ─── */
+        .app-shell { display: flex; height: 100vh; background: #000; }
+        .sidebar { width: 260px; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .main-content { flex: 1; display: flex; flex-direction: column; position: relative; }
+        .profile-header {
+            height: 300px; background-size: cover; background-position: center; position: relative;
         }
-        .nav-link {
-            padding: 15px 25px; color: var(--text-muted); font-weight: 600; display: flex; gap: 15px;
-            transition: 0.2s; border-left: 3px solid transparent; cursor: pointer;
+        .profile-avatar {
+            width: 120px; height: 120px; border-radius: 50%; border: 4px solid #000;
+            position: absolute; bottom: -60px; left: 20px; object-fit: cover;
         }
-        .nav-link:hover, .nav-link.active { color: #fff; border-left-color: var(--primary); background: #111; }
-        
-        /* MOBILE NAV */
-        .bottom-nav { display: none; }
-        
-        /* MAIN AREA */
-        .main-content { flex: 1; background: var(--bg-dark); display: flex; flex-direction: column; position: relative; }
-        .top-bar {
-            height: var(--header-height); border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
-            background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); z-index: 20;
-        }
-        .scroll-area { flex: 1; overflow-y: auto; padding: 20px; }
+        .profile-body { margin-top: 70px; padding: 20px; }
 
-        /* CARDS */
-        .profile-card {
-            background: var(--bg-panel); border: 1px solid var(--border); border-radius: 4px;
-            overflow: hidden; position: relative; margin-bottom: 0;
-        }
-        .card-img { width: 100%; height: 250px; object-fit: cover; }
-        .card-body { padding: 15px; }
-
-        /* GRID */
-        .grid-sys { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
-
-        /* ─── RESPONSIVE ─── */
         @media (max-width: 768px) {
-            .hero-overlay { background: rgba(0,0,0,0.7); }
-            .landing-container { justify-content: center; }
             .sidebar { display: none; }
-            .bottom-nav {
-                display: flex; position: fixed; bottom: 0; left: 0; right: 0;
-                height: 60px; background: #111; border-top: 1px solid #333; z-index: 100;
-                justify-content: space-around; padding-bottom: env(safe-area-inset-bottom);
-            }
-            .nav-icon { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #666; font-size: 10px; }
-            .nav-icon.active { color: var(--primary); }
-            .nav-icon i { font-size: 20px; margin-bottom: 4px; }
-            .scroll-area { padding-bottom: 80px; }
-            .grid-sys { grid-template-columns: 1fr 1fr; gap: 10px; }
-            .card-img { height: 180px; }
+            .funnel-card { padding: 30px 20px; }
         }
     </style>
 </head>
@@ -149,274 +112,291 @@
         const { useState, useEffect } = React;
         const { createClient } = supabase;
 
-        // --- SUPABASE CONFIG ---
-        const supaUrl = "https://wtbswbokojmzmrehrajj.supabase.co"; 
-        const supaKey = "sb_publishable_WCwKS1Du4LePjpVqPLZQzA_dsPFbDbd";
-        const client = createClient(supaUrl, supaKey);
+        // ─── CONFIGURATION ───
+        const SUPABASE_URL = "https://wtbswbokojmzmrehrajj.supabase.co"; 
+        const SUPABASE_KEY = "sb_publishable_WCwKS1Du4LePjpVqPLZQzA_dsPFbDbd";
+        const client = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- MOCK PROFILES ---
-        const MOCK_PROFILES = [
-            { id: 1, name: 'DallasElite_99', type: 'Couple (MF)', loc: 'Highland Park', img: 'https://images.unsplash.com/photo-1548545722-e87f71428383?w=500&q=80', active: true },
-            { id: 2, name: 'SecretRose', type: 'Female', loc: 'Uptown', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&q=80', active: false },
-            { id: 3, name: 'FitGentTX', type: 'Male', loc: 'Frisco', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&q=80', active: true },
-            { id: 4, name: 'VelvetVibes', type: 'Female', loc: 'Plano', img: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=500&q=80', active: true },
-            { id: 5, name: 'NightOwl_XX', type: 'Couple (FF)', loc: 'Addison', img: 'https://images.unsplash.com/photo-1518556865737-124b89182352?w=500&q=80', active: false },
-        ];
+        // ─── OPTIONS DATA ───
+        const TYPES = ["Couple (MF)", "Couple (MM)", "Couple (FF)", "Single Female", "Single Male"];
+        const INTERESTS = ["Soft Swap", "Full Swap", "Same Room", "Separate Room", "Voyeurism", "Exhibitionism", "Group Fun", "Bi-Curious"];
 
         function App() {
-            // STATE
-            const [view, setView] = useState('landing'); // landing, register-1, register-2, promise, dashboard
+            const [step, setStep] = useState(0); // 0=Landing, 1=Identity, 2=Interests, 3=Photo, 4=Creds, 5=Dashboard
+            const [loading, setLoading] = useState(false);
             const [user, setUser] = useState(null);
             
-            // Registration State
-            const [regData, setRegData] = useState({
-                iam: 'Man', looking: 'Woman',
-                username: '', password: '', email: '',
-                city: 'Dallas', type: 'Single Male', tagline: ''
+            // FORM DATA
+            const [data, setData] = useState({
+                type: '', seeking: '', 
+                city: '', tagline: '', 
+                interests: [],
+                photoFile: null, photoPreview: null,
+                username: '', password: ''
             });
 
-            // Init - Check for existing session
+            // CHECK LOGIN
             useEffect(() => {
-                const saved = localStorage.getItem('vc_session');
+                const saved = localStorage.getItem('vc_user');
                 if(saved) {
                     setUser(JSON.parse(saved));
-                    setView('dashboard');
+                    setStep(5);
                 }
             }, []);
 
-            // ACTIONS
-            const handleNextStep = () => {
-                if(!regData.iam) return;
-                setView('register-1');
+            // ─── HANDLERS ───
+            
+            const toggleInterest = (tag) => {
+                if(data.interests.includes(tag)) setData({...data, interests: data.interests.filter(t=>t!==tag)});
+                else setData({...data, interests: [...data.interests, tag]});
             };
 
-            const handleCreateAccount = () => {
-                if(!regData.username || !regData.password) return alert("Please fill all fields");
-                setView('register-2');
+            const handlePhotoSelect = (e) => {
+                const file = e.target.files[0];
+                if(file) {
+                    setData({
+                        ...data, 
+                        photoFile: file, 
+                        photoPreview: URL.createObjectURL(file)
+                    });
+                }
             };
 
-            const handleProfileDetails = () => {
-                if(!regData.city) return alert("City is required");
-                setView('promise');
+            const handleRegister = async () => {
+                setLoading(true);
+                try {
+                    let photoUrl = null;
+
+                    // 1. UPLOAD PHOTO (Real)
+                    if(data.photoFile) {
+                        const fileName = `${Date.now()}_${data.username}`;
+                        const { data: uploadData, error: uploadError } = await client
+                            .storage.from('photos').upload(fileName, data.photoFile);
+                        
+                        if(uploadError) throw uploadError;
+                        
+                        const { data: urlData } = client.storage.from('photos').getPublicUrl(fileName);
+                        photoUrl = urlData.publicUrl;
+                    }
+
+                    // 2. CREATE PROFILE RECORD (Real)
+                    const newProfile = {
+                        username: data.username,
+                        profile_type: data.type,
+                        city: data.city,
+                        bio: data.tagline,
+                        interests: data.interests, // Ensure your DB has a JSON or Text array column for this
+                        photos: photoUrl ? [photoUrl] : []
+                    };
+
+                    const { error: dbError } = await client.from('profiles').insert([newProfile]);
+                    if(dbError) throw dbError;
+
+                    // 3. SAVE SESSION
+                    localStorage.setItem('vc_user', JSON.stringify(newProfile));
+                    setUser(newProfile);
+                    setStep(5); // Go to Dashboard
+
+                } catch (err) {
+                    alert("Error: " + err.message);
+                } finally {
+                    setLoading(false);
+                }
             };
 
-            const handleFinishProfile = () => {
-                const newUser = { ...regData, id: Date.now() };
-                setUser(newUser);
-                localStorage.setItem('vc_session', JSON.stringify(newUser));
-                setView('dashboard');
-            };
+            // ─── RENDERERS ───
 
-            const handleLogout = () => {
-                localStorage.removeItem('vc_session');
-                setUser(null);
-                setRegData({...regData, username:'', password:''});
-                setView('landing');
-            };
-
-            // --- VIEWS ---
-
-            // 1. LANDING PAGE (SDC Style Funnel)
-            if(view === 'landing') return (
-                <div style={{position:'relative', height:'100vh', width:'100vw'}}>
-                    <div className="hero-bg"></div>
-                    <div className="hero-overlay"></div>
-                    
-                    {/* Header */}
-                    <div style={{position:'absolute', top:0, width:'100%', padding:'20px', zIndex:20, display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                        <div style={{fontSize:22, fontWeight:700, color:'#fff', letterSpacing:2}}>VELVET <span className="text-gold">CIRCLE</span></div>
-                        <button className="btn btn-outline" style={{padding:'8px 20px', fontSize:11}}>MEMBER LOGIN</button>
-                    </div>
-
-                    <div className="landing-container">
-                        <div className="reg-widget">
-                            <h2 className="text-center" style={{fontSize:24, marginBottom:5}}>Join The Inner Circle</h2>
-                            <p className="text-center" style={{color:'#888', marginBottom:25}}>100% Private & Discreet</p>
-
-                            <div className="input-group">
-                                <label className="input-label">I am a</label>
-                                <select className="form-control" value={regData.iam} onChange={e=>setRegData({...regData, iam:e.target.value})}>
-                                    <option>Man</option>
-                                    <option>Woman</option>
-                                    <option>Couple (MF)</option>
-                                    <option>Couple (MM)</option>
-                                    <option>Couple (FF)</option>
-                                </select>
-                            </div>
-
-                            <div className="input-group">
-                                <label className="input-label">Looking For</label>
-                                <select className="form-control" value={regData.looking} onChange={e=>setRegData({...regData, looking:e.target.value})}>
-                                    <option>Woman</option>
-                                    <option>Man</option>
-                                    <option>Couple</option>
-                                    <option>Everything</option>
-                                </select>
-                            </div>
-
-                            <button className="btn btn-gold w-full" style={{marginTop:10}} onClick={handleNextStep}>
-                                VIEW SINGLES & COUPLES
-                            </button>
-                        </div>
+            // STEP 0: LANDING
+            if(step === 0) return (
+                <div className="funnel-container">
+                    <div className="funnel-bg"></div>
+                    <div className="funnel-overlay"></div>
+                    <div className="funnel-card text-center">
+                        <h1 style={{fontSize:32, marginBottom:10}}>VELVET</h1>
+                        <p style={{color:'#aaa', letterSpacing:2, marginBottom:40}}>MEMBERS ONLY COMMUNITY</p>
+                        <button className="btn-gold" onClick={()=>setStep(1)}>APPLY FOR MEMBERSHIP</button>
+                        <p style={{marginTop:20, fontSize:12, color:'#666'}}>Existing members? <u style={{color:'#fff', cursor:'pointer'}}>Log In</u></p>
                     </div>
                 </div>
             );
 
-            // 2. REGISTRATION STEP 1 (Credentials)
-            if(view === 'register-1') return (
-                <div style={{height:'100vh', background:'#111', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                    <div className="reg-widget" style={{maxWidth:400}}>
-                        <h3 className="text-center text-gold" style={{marginBottom:20}}>Step 1: Account Access</h3>
+            // STEP 1: IDENTITY
+            if(step === 1) return (
+                <div className="funnel-container">
+                    <div className="funnel-bg"></div>
+                    <div className="funnel-overlay"></div>
+                    <div className="funnel-card">
+                        <div style={{fontSize:10, color:'var(--gold)', marginBottom:10}}>STEP 1 OF 4</div>
+                        <h2>The Basics</h2>
+                        <p style={{color:'#888', marginBottom:30}}>Tell us who you are.</p>
                         
                         <div className="input-group">
-                            <label className="input-label">Choose Username</label>
-                            <input className="form-control" placeholder="e.g. DallasCouple" value={regData.username} onChange={e=>setRegData({...regData, username:e.target.value})} />
+                            <label className="input-label">I am a...</label>
+                            <select className="input-field" onChange={e=>setData({...data, type:e.target.value})}>
+                                <option value="">Select Identity</option>
+                                {TYPES.map(t=><option key={t}>{t}</option>)}
+                            </select>
                         </div>
+                        
                         <div className="input-group">
-                            <label className="input-label">Password</label>
-                            <input type="password" class="form-control" placeholder="••••••" value={regData.password} onChange={e=>setRegData({...regData, password:e.target.value})} />
-                        </div>
-                        <div className="input-group">
-                            <label className="input-label">Email Address (Private)</label>
-                            <input type="email" class="form-control" placeholder="you@email.com" value={regData.email} onChange={e=>setRegData({...regData, email:e.target.value})} />
+                            <label className="input-label">Primary Location</label>
+                            <input className="input-field" placeholder="e.g. Dallas, TX" onChange={e=>setData({...data, city:e.target.value})} />
                         </div>
 
-                        <button className="btn btn-gold w-full" onClick={handleCreateAccount}>NEXT STEP</button>
-                        <button className="btn w-full" style={{background:'none', color:'#666', marginTop:10}} onClick={()=>setView('landing')}>Cancel</button>
+                        <button className="btn-gold" disabled={!data.type || !data.city} onClick={()=>setStep(2)}>NEXT STEP</button>
                     </div>
                 </div>
             );
 
-            // 3. REGISTRATION STEP 2 (Profile)
-            if(view === 'register-2') return (
-                <div style={{height:'100vh', background:'#111', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                    <div className="reg-widget" style={{maxWidth:400}}>
-                        <h3 className="text-center text-gold" style={{marginBottom:20}}>Step 2: Profile Details</h3>
+            // STEP 2: INTERESTS (The "Commercial Depth")
+            if(step === 2) return (
+                <div className="funnel-container">
+                    <div className="funnel-bg"></div>
+                    <div className="funnel-overlay"></div>
+                    <div className="funnel-card">
+                        <div style={{fontSize:10, color:'var(--gold)', marginBottom:10}}>STEP 2 OF 4</div>
+                        <h2>Your Desires</h2>
+                        <p style={{color:'#888', marginBottom:30}}>What are you looking for?</p>
                         
-                        <div className="input-group">
-                            <label className="input-label">Location (City)</label>
-                            <input className="form-control" value={regData.city} onChange={e=>setRegData({...regData, city:e.target.value})} />
+                        <div className="pill-grid">
+                            {INTERESTS.map(tag => (
+                                <div key={tag} 
+                                     className={`pill ${data.interests.includes(tag)?'active':''}`}
+                                     onClick={()=>toggleInterest(tag)}>
+                                    {tag}
+                                </div>
+                            ))}
+                        </div>
+
+                        <button className="btn-gold" onClick={()=>setStep(3)}>NEXT STEP</button>
+                    </div>
+                </div>
+            );
+
+            // STEP 3: PHOTO UPLOAD
+            if(step === 3) return (
+                <div className="funnel-container">
+                    <div className="funnel-bg"></div>
+                    <div className="funnel-overlay"></div>
+                    <div className="funnel-card">
+                        <div style={{fontSize:10, color:'var(--gold)', marginBottom:10}}>STEP 3 OF 4</div>
+                        <h2>Verification Photo</h2>
+                        <p style={{color:'#888', marginBottom:30}}>Upload a profile photo. Face not required for privacy.</p>
+                        
+                        <div style={{border:'2px dashed #333', borderRadius:8, padding:40, textAlign:'center', marginBottom:20, position:'relative'}}>
+                            {data.photoPreview ? (
+                                <img src={data.photoPreview} style={{width:'100%', height:200, objectFit:'cover', borderRadius:4}} />
+                            ) : (
+                                <div style={{color:'#666'}}>
+                                    <i className="fas fa-camera" style={{fontSize:30, marginBottom:10}}></i>
+                                    <br/>Tap to Select
+                                </div>
+                            )}
+                            <input type="file" accept="image/*" onChange={handlePhotoSelect} 
+                                   style={{position:'absolute', inset:0, opacity:0, cursor:'pointer'}} />
                         </div>
 
                         <div className="input-group">
                             <label className="input-label">Profile Tagline</label>
-                            <input className="form-control" placeholder="e.g. Fun couple looking for friends" value={regData.tagline} onChange={e=>setRegData({...regData, tagline:e.target.value})} />
+                            <input className="input-field" placeholder="e.g. Fun couple seeking friends" onChange={e=>setData({...data, tagline:e.target.value})} />
                         </div>
 
-                        <div className="input-group">
-                            <label className="input-label">Relationship Status</label>
-                            <select className="form-control" value={regData.type} onChange={e=>setRegData({...regData, type:e.target.value})}>
-                                <option>Couple (Married)</option>
-                                <option>Couple (Dating)</option>
-                                <option>Single Male</option>
-                                <option>Single Female</option>
-                            </select>
-                        </div>
-
-                        <button className="btn btn-gold w-full" onClick={handleProfileDetails}>NEXT STEP</button>
+                        <button className="btn-gold" disabled={!data.photoFile} onClick={()=>setStep(4)}>NEXT STEP</button>
                     </div>
                 </div>
             );
 
-            // 4. THE PROMISE (Community Rules)
-            if(view === 'promise') return (
-                <div style={{height:'100vh', background:'#000', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                    <div className="reg-widget" style={{maxWidth:500, textAlign:'center'}}>
-                        <i className="fas fa-lock text-gold" style={{fontSize:40, marginBottom:20}}></i>
-                        <h3 className="text-center" style={{marginBottom:20, color:'#fff'}}>The Velvet Promise</h3>
+            // STEP 4: CREDENTIALS (Final Gate)
+            if(step === 4) return (
+                <div className="funnel-container">
+                    <div className="funnel-bg"></div>
+                    <div className="funnel-overlay"></div>
+                    <div className="funnel-card">
+                        <div style={{fontSize:10, color:'var(--gold)', marginBottom:10}}>FINAL STEP</div>
+                        <h2>Account Access</h2>
+                        <p style={{color:'#888', marginBottom:30}}>Secure your profile.</p>
                         
-                        <div style={{textAlign:'left', color:'#ccc', fontSize:13, lineHeight:1.6, marginBottom:30, background:'#222', padding:20, borderRadius:4}}>
-                            <p style={{marginBottom:10}}>1. <strong>Discretion is Paramount.</strong> What happens in the circle, stays in the circle.</p>
-                            <p style={{marginBottom:10}}>2. <strong>Respect Consent.</strong> All interactions must be consensual and enthusiastic.</p>
-                            <p>3. <strong>Authenticity.</strong> Be real. Verify your photos.</p>
+                        <div className="input-group">
+                            <label className="input-label">Username</label>
+                            <input className="input-field" onChange={e=>setData({...data, username:e.target.value})} />
+                        </div>
+                        <div className="input-group">
+                            <label className="input-label">Password</label>
+                            <input type="password" class="input-field" onChange={e=>setData({...data, password:e.target.value})} />
                         </div>
 
-                        <button className="btn btn-gold w-full" onClick={handleFinishProfile}>I AGREE - ENTER SITE</button>
+                        <button className="btn-gold" onClick={handleRegister}>
+                            {loading ? <i className="fas fa-spinner fa-spin"></i> : "COMPLETE PROFILE"}
+                        </button>
                     </div>
                 </div>
             );
 
-            // 5. DASHBOARD (Logged In)
-            if(view === 'dashboard') return (
+            // DASHBOARD (The App)
+            if(step === 5 && user) return (
                 <div className="app-shell">
-                    {/* SIDEBAR */}
-                    <div className="sidebar">
-                        <div style={{height:65, borderBottom:'1px solid #222', display:'flex', alignItems:'center', paddingLeft:25, fontSize:18, fontWeight:700, color:'#fff', letterSpacing:1}}>
-                            VELVET <span className="text-gold">CIRCLE</span>
+                    <div className="sidebar" style={{padding:20, borderRight:'1px solid #333'}}>
+                        <h3>VELVET</h3>
+                        <div style={{marginTop:40, color:'#aaa'}}>
+                            <div style={{padding:10, color:'var(--gold)'}}>Home</div>
+                            <div style={{padding:10}}>Messages</div>
+                            <div style={{padding:10}}>Matches</div>
+                            <div style={{padding:10}}>My Profile</div>
                         </div>
-                        <div style={{flex:1, padding:'20px 0'}}>
-                            <div className="nav-link active"><i className="fas fa-th-large" style={{width:20}}></i> Browse Matches</div>
-                            <div className="nav-link"><i className="fas fa-comment-alt" style={{width:20}}></i> Inbox</div>
-                            <div className="nav-link"><i className="fas fa-heart" style={{width:20}}></i> Likes</div>
-                            <div className="nav-link"><i className="fas fa-user-circle" style={{width:20}}></i> My Profile</div>
-                        </div>
-                        <div style={{padding:20, borderTop:'1px solid #222'}}>
-                            <div style={{display:'flex', gap:10, alignItems:'center', marginBottom:15}}>
-                                <div style={{width:40, height:40, background:'#333', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--primary)'}}>
-                                    {user.username.charAt(0).toUpperCase()}
-                                </div>
-                                <div>
-                                    <div style={{fontWeight:600}}>{user.username}</div>
-                                    <div style={{fontSize:10, color:'#666'}}>Premium Member</div>
-                                </div>
-                            </div>
-                            <button className="btn btn-outline w-full" style={{fontSize:10}} onClick={handleLogout}>LOG OUT</button>
-                        </div>
+                        <button onClick={()=>{localStorage.removeItem('vc_user'); setStep(0);}} style={{marginTop:'auto', color:'#666', background:'none', textAlign:'left'}}>Log Out</button>
                     </div>
-
-                    {/* MAIN CONTENT */}
+                    
                     <div className="main-content">
-                        {/* TOP BAR */}
-                        <div className="top-bar">
-                            <h3 style={{fontSize:16}}>Recommended for You</h3>
-                            <div className="flex" style={{gap:15}}>
-                                <i className="fas fa-search" style={{color:'#888', fontSize:18}}></i>
-                                <i className="fas fa-bell" style={{color:'#888', fontSize:18}}></i>
-                            </div>
+                        {/* COVER PHOTO (Use funnel bg as cover if no cover uploaded) */}
+                        <div className="profile-header" style={{backgroundImage: `url('https://cdni.pornpics.com/1280/1/86/13388789/13388789_001_c465.jpg')`}}>
+                            <div style={{position:'absolute', inset:0, background:'linear-gradient(to top, #000, transparent)'}}></div>
                         </div>
-
-                        {/* CONTENT */}
-                        <div className="scroll-area">
-                            
-                            {/* SEARCH FILTERS */}
-                            <div style={{background:'var(--bg-panel)', padding:15, borderRadius:4, marginBottom:20, border:'1px solid #333'}}>
-                                <div style={{display:'flex', gap:10, overflowX:'auto'}}>
-                                    <select className="form-control" style={{width:'auto', minWidth:120}}><option>Near Me</option><option>Anywhere</option></select>
-                                    <select className="form-control" style={{width:'auto', minWidth:120}}><option>Online Now</option><option>New Today</option></select>
-                                    <select className="form-control" style={{width:'auto', minWidth:120}}><option>Women</option><option>Couples</option></select>
+                        
+                        {/* AVATAR (Use the real uploaded photo) */}
+                        <img src={user.photos && user.photos.length > 0 ? user.photos[0] : 'https://via.placeholder.com/150'} className="profile-avatar" />
+                        
+                        <div className="profile-body">
+                            <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-end'}}>
+                                <div>
+                                    <h1 style={{fontSize:32, color:'#fff'}}>{user.username}</h1>
+                                    <p style={{color:'var(--gold)', fontSize:14}}>{user.profile_type} • {user.city}</p>
                                 </div>
+                                <button className="btn-gold" style={{width:'auto', padding:'10px 20px', marginTop:0}}>Edit Profile</button>
                             </div>
 
-                            <div className="grid-sys">
-                                {MOCK_PROFILES.map(p => (
-                                    <div key={p.id} className="profile-card">
-                                        <div style={{position:'relative'}}>
-                                            <img src={p.img} className="card-img" />
-                                            <div style={{position:'absolute', bottom:0, width:'100%', padding:10, background:'linear-gradient(to top, rgba(0,0,0,0.9), transparent)'}}>
-                                                <div style={{color:'#fff', fontWeight:700}}>{p.name}</div>
-                                                <div style={{color:'#ccc', fontSize:11}}>{p.loc}</div>
-                                            </div>
-                                            {p.active && <div style={{position:'absolute', top:10, right:10, width:10, height:10, background:'#2ecc71', borderRadius:'50%', border:'2px solid #000'}}></div>}
-                                        </div>
-                                        <div className="card-body flex" style={{gap:5}}>
-                                            <button style={{flex:1, padding:8, background:'#222', border:'1px solid #333', color:'#fff', borderRadius:4}}><i className="fas fa-heart"></i></button>
-                                            <button style={{flex:1, padding:8, background:'#222', border:'1px solid #333', color:'#fff', borderRadius:4}}><i className="fas fa-comment"></i></button>
+                            <hr style={{borderColor:'#333', margin:'30px 0'}} />
+
+                            <div style={{display:'grid', gridTemplateColumns:'1fr 2fr', gap:40}}>
+                                <div>
+                                    <h4 style={{color:'#666', marginBottom:15}}>ABOUT US</h4>
+                                    <p style={{color:'#ccc', lineHeight:1.6}}>"{user.bio}"</p>
+                                    
+                                    <h4 style={{color:'#666', marginTop:30, marginBottom:15}}>INTERESTS</h4>
+                                    <div className="pill-grid">
+                                        {user.interests && user.interests.map(i => (
+                                            <div key={i} style={{border:'1px solid #444', padding:'5px 12px', borderRadius:15, fontSize:12, color:'#888'}}>{i}</div>
+                                        ))}
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h4 style={{color:'#666', marginBottom:15}}>PUBLIC GALLERY</h4>
+                                    <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:10}}>
+                                        {user.photos && user.photos.map(p => (
+                                            <img src={p} style={{width:'100%', aspectRatio:'1', objectFit:'cover', borderRadius:4}} />
+                                        ))}
+                                        <div style={{border:'1px dashed #333', borderRadius:4, display:'flex', alignItems:'center', justifyContent:'center', color:'#444', height:150}}>
+                                            + Add Photo
                                         </div>
                                     </div>
-                                ))}
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    {/* MOBILE NAV */}
-                    <div className="bottom-nav">
-                        <div className="nav-icon active"><i className="fas fa-th-large"></i><span>Home</span></div>
-                        <div className="nav-icon"><i className="fas fa-comment"></i><span>Chat</span></div>
-                        <div className="nav-icon"><i className="fas fa-heart"></i><span>Likes</span></div>
-                        <div className="nav-icon"><i className="fas fa-user"></i><span>Me</span></div>
-                    </div>
                 </div>
             );
+
+            return null;
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
