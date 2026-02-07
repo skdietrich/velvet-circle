@@ -2,13 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Velvet Circle | Exclusive Dating</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <title>Velvet Circle | Elite Lifestyle</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -18,411 +16,413 @@
 
     <style>
         :root {
-            --primary: #c5a059; /* Luxury Gold */
+            --primary: #c5a059; /* SDC Gold */
             --primary-dark: #b08d45;
-            --bg-dark: #0f0f0f;
-            --bg-panel: #1a1a1a;
-            --bg-input: #252525;
-            --border: #333333;
-            --text-main: #ffffff;
-            --text-muted: #a0a0a0;
-            --danger: #e74c3c;
-            --success: #2ecc71;
-            --header-height: 70px;
-            --sidebar-width: 260px;
+            --bg-body: #080808;
+            --bg-panel: #121212;
+            --bg-input: #1f1f1f;
+            --border: #2a2a2a;
+            --text-main: #e0e0e0;
+            --text-muted: #888888;
+            --header-height: 60px;
+            --sidebar-width: 250px;
+            --bottom-nav-height: 65px;
+            --safe-bottom: env(safe-area-inset-bottom);
         }
 
-        /* ─── RESET & TYPOGRAPHY ─── */
-        * { box-sizing: border-box; outline: none; -webkit-font-smoothing: antialiased; }
+        /* RESET & BASE */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { 
-            margin: 0; padding: 0; 
-            background-color: var(--bg-dark); color: var(--text-main);
-            font-family: 'Open Sans', sans-serif; font-size: 14px;
+            margin: 0; background: var(--bg-body); color: var(--text-main);
+            font-family: 'Open Sans', sans-serif; font-size: 14px; overflow: hidden; height: 100vh;
         }
-        h1, h2, h3, h4, h5 { font-family: 'Montserrat', sans-serif; margin: 0; color: #fff; }
-        a { text-decoration: none; color: inherit; transition: 0.2s; }
-        ul { list-style: none; padding: 0; margin: 0; }
-        button { cursor: pointer; font-family: 'Montserrat', sans-serif; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; margin: 0; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+        button { cursor: pointer; font-family: 'Montserrat', sans-serif; border: none; }
+        img { display: block; max-width: 100%; }
 
-        /* ─── UTILITIES ─── */
-        .flex { display: flex; align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .gap-10 { gap: 10px; }
-        .text-gold { color: var(--primary) !important; }
-        .text-center { text-align: center; }
-        .hidden-mobile { display: block; }
+        /* ─── LAYOUT STRUCTURE ─── */
+        .app-shell { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
         
-        @media (max-width: 768px) {
-            .hidden-mobile { display: none !important; }
-            .mobile-stack { flex-direction: column; }
-        }
-
-        /* ─── BUTTONS & INPUTS ─── */
-        .btn {
-            padding: 12px 24px; border-radius: 4px; border: none;
-            font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
-            font-size: 13px; transition: all 0.2s;
-        }
-        .btn-primary { background: var(--primary); color: #000; }
-        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
-        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
-        .btn-outline:hover { background: rgba(197, 160, 89, 0.1); }
-        
-        .form-control {
-            width: 100%; padding: 12px 15px; background: var(--bg-input);
-            border: 1px solid var(--border); border-radius: 4px;
-            color: #fff; font-size: 14px; margin-bottom: 15px;
-        }
-        .form-control:focus { border-color: var(--primary); }
-        label { display: block; margin-bottom: 8px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
-
-        /* ─── LAYOUT: HERO / LANDING ─── */
-        .hero-section {
-            height: 100vh; width: 100%; position: relative;
-            background: url('https://images.unsplash.com/photo-1539185441755-769473a23570?q=80&w=2071&auto=format&fit=crop') no-repeat center center/cover;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .hero-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 100%); }
-        .hero-content {
-            position: relative; z-index: 10; width: 100%; max-width: 1200px; padding: 20px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .hero-text { max-width: 600px; }
-        .hero-h1 { font-size: 48px; font-weight: 700; line-height: 1.1; margin-bottom: 20px; text-transform: uppercase; }
-        .hero-p { font-size: 18px; color: #ddd; margin-bottom: 40px; line-height: 1.6; }
-        
-        .auth-card {
-            background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(10px);
-            padding: 40px; border-radius: 8px; width: 400px; border-top: 4px solid var(--primary);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-
-        /* ─── LAYOUT: APP / DASHBOARD ─── */
-        .app-layout { display: flex; height: 100vh; overflow: hidden; }
-        
-        /* SIDEBAR */
+        /* DESKTOP SIDEBAR */
         .sidebar {
-            width: var(--sidebar-width); background: #121212; border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; flex-shrink: 0;
+            width: var(--sidebar-width); background: #000; border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; z-index: 10;
         }
-        .logo-area { height: var(--header-height); display: flex; align-items: center; padding-left: 25px; border-bottom: 1px solid var(--border); }
-        .logo-text { font-size: 20px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
-        .logo-text span { color: var(--primary); }
-        
-        .nav-menu { flex: 1; padding: 20px 0; overflow-y: auto; }
-        .nav-link {
-            display: flex; align-items: center; padding: 12px 25px; color: var(--text-muted);
-            font-size: 14px; font-weight: 500; transition: 0.2s; border-left: 3px solid transparent;
+        .logo-area {
+            height: var(--header-height); display: flex; align-items: center; padding: 0 20px;
+            border-bottom: 1px solid var(--border); background: #000;
         }
-        .nav-link i { width: 30px; font-size: 16px; }
-        .nav-link:hover, .nav-link.active { background: #1f1f1f; color: #fff; border-left-color: var(--primary); }
+        .logo { font-size: 18px; font-weight: 700; color: #fff; }
+        .logo span { color: var(--primary); }
 
-        .user-mini { padding: 20px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 15px; }
-        .avatar-sm { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
-        
+        .nav-items { flex: 1; padding: 20px 0; overflow-y: auto; }
+        .nav-item {
+            display: flex; align-items: center; gap: 15px; padding: 15px 25px;
+            color: var(--text-muted); transition: 0.2s; cursor: pointer; font-weight: 600;
+            font-family: 'Montserrat', sans-serif; font-size: 13px;
+        }
+        .nav-item i { font-size: 16px; width: 24px; text-align: center; }
+        .nav-item:hover, .nav-item.active { color: var(--primary); background: rgba(197, 160, 89, 0.05); border-right: 3px solid var(--primary); }
+        .nav-badge { background: var(--primary); color: #000; font-size: 10px; padding: 2px 6px; border-radius: 10px; margin-left: auto; }
+
+        /* MOBILE BOTTOM NAV (Hidden on Desktop) */
+        .bottom-nav { display: none; }
+
         /* MAIN CONTENT */
-        .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-dark); }
+        .main-view { flex: 1; display: flex; flex-direction: column; background: var(--bg-body); position: relative; }
         
-        .top-bar {
-            height: var(--header-height); border-bottom: 1px solid var(--border); background: var(--bg-panel);
-            display: flex; align-items: center; justify-content: space-between; padding: 0 30px;
+        .top-header {
+            height: var(--header-height); border-bottom: 1px solid var(--border); background: rgba(18,18,18,0.95);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            backdrop-filter: blur(10px); z-index: 5;
         }
         
-        .content-scroll { flex: 1; overflow-y: auto; padding: 30px; }
+        .content-scroll { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
 
-        /* GRID SYSTEM (SDC Style) */
-        .profile-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px;
-        }
-        .profile-card {
+        /* ─── UI COMPONENTS ─── */
+        /* PROFILE CARDS */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .card {
             background: var(--bg-panel); border: 1px solid var(--border); border-radius: 4px; overflow: hidden;
-            transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; position: relative;
+            position: relative; transition: 0.2s; cursor: pointer;
         }
-        .profile-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-color: var(--primary); }
-        .card-img-wrap { position: relative; height: 240px; width: 100%; overflow: hidden; }
-        .card-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .profile-card:hover .card-img { transform: scale(1.05); }
+        .card:hover { transform: translateY(-4px); border-color: var(--primary); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .card-img-container { position: relative; padding-top: 100%; overflow: hidden; }
+        .card-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+        .card-overlay {
+            position: absolute; bottom: 0; left: 0; right: 0; padding: 40px 10px 10px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+        }
+        .online-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px #2ecc71; }
         
-        .online-badge {
-            position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); 
-            padding: 4px 8px; border-radius: 20px; font-size: 10px; color: var(--success);
-            display: flex; align-items: center; gap: 5px; backdrop-filter: blur(4px);
+        /* CHAT UI */
+        .chat-layout { display: flex; flex-direction: column; height: 100%; }
+        .chat-list { overflow-y: auto; flex: 1; }
+        .chat-item {
+            padding: 15px; border-bottom: 1px solid var(--border); display: flex; gap: 15px; cursor: pointer; transition: 0.2s;
         }
-        .online-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; }
+        .chat-item:hover { background: var(--bg-panel); }
+        .chat-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #333; }
+        .chat-active .chat-avatar { border-color: var(--primary); }
+        
+        .msg-area { flex: 1; display: flex; flex-direction: column; background: #000; }
+        .msg-scroll { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { padding: 10px 15px; border-radius: 8px; max-width: 75%; font-size: 14px; line-height: 1.4; }
+        .bubble-me { align-self: flex-end; background: var(--primary); color: #000; }
+        .bubble-them { align-self: flex-start; background: var(--bg-input); color: #fff; border: 1px solid var(--border); }
+        .bubble img { border-radius: 4px; margin-bottom: 5px; max-width: 200px; }
 
-        .card-info { padding: 15px; }
-        .card-name { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 4px; }
-        .card-detail { font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; }
-        
-        /* MOBILE OVERRIDES */
-        @media (max-width: 768px) {
-            .hero-section { background-position: 70% center; }
-            .hero-content { flex-direction: column; text-align: center; padding-top: 80px; }
-            .hero-text { margin-bottom: 40px; }
-            .hero-h1 { font-size: 36px; }
-            .auth-card { width: 100%; }
-            
-            .app-layout { flex-direction: column; }
-            .sidebar { 
-                width: 100%; height: 60px; flex-direction: row; border-right: none; border-top: 1px solid var(--border);
-                order: 2; /* Move to bottom */ justify-content: space-around; padding: 0;
-            }
-            .logo-area, .user-mini { display: none; }
-            .nav-menu { display: flex; flex-direction: row; padding: 0; width: 100%; }
-            .nav-link { flex: 1; flex-direction: column; justify-content: center; padding: 5px; font-size: 10px; border-left: none; border-top: 3px solid transparent; }
-            .nav-link i { margin-bottom: 4px; font-size: 18px; width: auto; }
-            .nav-link:hover, .nav-link.active { border-left-color: transparent; border-top-color: var(--primary); }
-            
-            .main-content { order: 1; }
-            .content-scroll { padding: 15px; }
-            .profile-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .card-img-wrap { height: 180px; }
+        .chat-input-bar {
+            padding: 15px; background: var(--bg-panel); border-top: 1px solid var(--border); display: flex; gap: 10px;
         }
+        .input-box {
+            flex: 1; background: var(--bg-input); border: 1px solid var(--border); color: #fff;
+            padding: 10px 15px; border-radius: 20px;
+        }
+
+        /* ─── MOBILE OPTIMIZATIONS ─── */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .bottom-nav {
+                display: flex; position: fixed; bottom: 0; left: 0; right: 0;
+                height: calc(var(--bottom-nav-height) + var(--safe-bottom));
+                background: rgba(10,10,10,0.95); backdrop-filter: blur(10px);
+                border-top: 1px solid var(--border); justify-content: space-around;
+                padding-bottom: var(--safe-bottom); z-index: 100;
+            }
+            .b-nav-item {
+                flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+                color: var(--text-muted); font-size: 10px; gap: 4px;
+            }
+            .b-nav-item.active { color: var(--primary); }
+            .b-nav-item i { font-size: 20px; }
+            
+            .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .content-scroll { padding: 10px; }
+        }
+
+        /* PHOTO MASKER STYLES */
+        .masker-overlay { position: fixed; inset: 0; background: #000; z-index: 2000; display: flex; flex-direction: column; }
+        .masker-canvas-area { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #111; }
+        .masker-controls { padding: 20px; background: #1a1a1a; padding-bottom: calc(20px + var(--safe-bottom)); }
+        
+        .btn { padding: 10px 20px; border-radius: 4px; font-weight: 600; text-transform: uppercase; font-size: 12px; }
+        .btn-gold { background: var(--primary); color: #000; }
+        .btn-dark { background: #333; color: #fff; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
         const { createClient } = supabase;
 
-        // ─── INIT SUPABASE ───
+        // ─── SUPABASE ───
         const supaUrl = "https://wtbswbokojmzmrehrajj.supabase.co"; 
         const supaKey = "sb_publishable_WCwKS1Du4LePjpVqPLZQzA_dsPFbDbd";
         const client = createClient(supaUrl, supaKey);
 
-        // ─── APP COMPONENT ───
-        function App() {
-            const [session, setSession] = useState(null);
-            const [view, setView] = useState('browse'); // browse, messages, profile
-            const [profiles, setProfiles] = useState([]);
-            
-            // Initial Data Load
-            useEffect(() => {
-                const loadData = async () => {
-                    const { data } = await client.from('profiles').select('*');
-                    if (data) setProfiles(data);
-                };
-                loadData();
-            }, []);
+        // ─── HELPER: FAKE DATA GENERATOR (Since DB might be empty) ───
+        const generateMockProfiles = () => [
+            { id: 101, username: 'DallasCouple_99', type: 'Couple (MF)', city: 'Dallas', img: 'https://images.unsplash.com/photo-1548545722-e87f71428383?w=500&q=80', online: true },
+            { id: 102, username: 'SecretWifeTX', type: 'Female', city: 'Plano', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&q=80', online: false },
+            { id: 103, username: 'FitBull34', type: 'Single Male', city: 'Frisco', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&q=80', online: true },
+            { id: 104, username: 'VelvetVixen', type: 'Female', city: 'Addison', img: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=500&q=80', online: true },
+            { id: 105, username: 'TwoOfUs', type: 'Couple (MF)', city: 'Fort Worth', img: 'https://images.unsplash.com/photo-1518556865737-124b89182352?w=500&q=80', online: false },
+            { id: 106, username: 'DiscreetGuy', type: 'Male', city: 'Dallas', img: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=500&q=80', online: true },
+        ];
 
-            // ─── AUTH HANDLER ───
-            const handleLogin = (e) => {
-                e.preventDefault();
-                // Simulating login for demo
-                setSession({ 
-                    username: 'VelvetUser', 
-                    type: 'Premium Member', 
-                    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop'
-                });
+        // ─── PHOTO MASKER COMPONENT ───
+        const Masker = ({ onSave, onCancel }) => {
+            const [img, setImg] = useState(null);
+            const [blur, setBlur] = useState(0);
+            const [mask, setMask] = useState(false);
+            const ref = useRef();
+
+            const handleFile = (e) => {
+                const f = e.target.files[0];
+                if(f){ const r=new FileReader(); r.onload=ev=>setImg(ev.target.result); r.readAsDataURL(f); }
             };
 
-            // ─── CONDITIONAL RENDER: LANDING PAGE ───
-            if (!session) {
-                return (
-                    <div className="hero-section">
-                        <div className="hero-overlay"></div>
-                        
-                        {/* HEADER */}
-                        <div style={{position:'absolute', top:0, left:0, width:'100%', padding:'20px 40px', zIndex:20, display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                            <div className="logo-text" style={{fontSize:24}}>VELVET <span>CIRCLE</span></div>
-                            <div className="hidden-mobile">
-                                <button className="btn btn-outline" style={{borderColor:'#fff', color:'#fff', marginRight:10}}>Members Login</button>
-                                <button className="btn btn-primary">Support</button>
-                            </div>
-                        </div>
+            const save = () => {
+                const cvs = document.createElement('canvas'); const ctx=cvs.getContext('2d');
+                const i = new Image(); i.src=img; i.onload=()=>{
+                    cvs.width=500; cvs.height=500;
+                    ctx.filter = `blur(${blur}px)`; ctx.drawImage(i,0,0,500,500);
+                    ctx.filter='none'; if(mask){ctx.fillStyle='#000';ctx.fillRect(50,200,400,60);}
+                    onSave(cvs.toDataURL());
+                };
+            };
 
-                        <div className="hero-content">
-                            <div className="hero-text hidden-mobile">
-                                <h1 className="hero-h1">The Standard for<br/>Private Dating</h1>
-                                <p className="hero-p">
-                                    Join the world's most exclusive community for open-minded couples and singles.
-                                    Discreet. Secure. Authentic.
-                                </p>
-                                <div style={{display:'flex', gap:20}}>
-                                    <div style={{textAlign:'center'}}>
-                                        <h3 className="text-gold">1.2M+</h3>
-                                        <span style={{color:'#888', textTransform:'uppercase', fontSize:12}}>Members</span>
-                                    </div>
-                                    <div style={{textAlign:'center'}}>
-                                        <h3 className="text-gold">100%</h3>
-                                        <span style={{color:'#888', textTransform:'uppercase', fontSize:12}}>Verified</span>
-                                    </div>
-                                </div>
-                            </div>
+            if(!img) return <div className="masker-overlay" style={{justifyContent:'center', alignItems:'center'}}><label className="btn btn-gold" style={{padding:20}}>UPLOAD PHOTO <input type="file" hidden onChange={handleFile}/></label><button className="btn btn-dark" style={{marginTop:20}} onClick={onCancel}>CANCEL</button></div>;
 
-                            <div className="auth-card">
-                                <h2 className="text-center" style={{marginBottom:10}}>Member Access</h2>
-                                <p className="text-center" style={{fontSize:12, marginBottom:30, color:'#888'}}>SECURE SSL ENCRYPTED CONNECTION</p>
-                                
-                                <form onSubmit={handleLogin}>
-                                    <label>Username or Email</label>
-                                    <input type="text" class="form-control" placeholder="Enter ID" />
-                                    
-                                    <label>Password</label>
-                                    <input type="password" class="form-control" placeholder="••••••••" />
-                                    
-                                    <div style={{display:'flex', justifyContent:'space-between', marginBottom:20, fontSize:12, color:'#888'}}>
-                                        <label style={{textTransform:'none', fontWeight:400}}>
-                                            <input type="checkbox" style={{marginRight:5}} /> Remember me
-                                        </label>
-                                        <a href="#">Forgot Password?</a>
-                                    </div>
-
-                                    <button type="submit" className="btn btn-primary" style={{width:'100%'}}>Log In Securely</button>
-                                </form>
-
-                                <div style={{textAlign:'center', marginTop:20, borderTop:'1px solid #333', paddingTop:20}}>
-                                    <p style={{marginBottom:10}}>Not a member yet?</p>
-                                    <button className="btn btn-outline" style={{width:'100%'}}>Create Free Profile</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
-            }
-
-            // ─── APP LAYOUT (LOGGED IN) ───
             return (
-                <div className="app-layout">
-                    {/* SIDEBAR NAVIGATION */}
-                    <div className="sidebar">
-                        <div className="logo-area">
-                            <div className="logo-text">VELVET <span>CIRCLE</span></div>
+                <div className="masker-overlay">
+                    <div className="masker-canvas-area">
+                        <div style={{position:'relative'}}>
+                            <img src={img} style={{maxHeight:'60vh', filter:`blur(${blur}px)`}} />
+                            {mask && <div style={{position:'absolute', top:'45%', left:'10%', width:'80%', height:'10%', background:'#000'}}></div>}
                         </div>
-                        
-                        <div className="nav-menu">
-                            <div className={`nav-link ${view==='browse'?'active':''}`} onClick={()=>setView('browse')}>
-                                <i className="fas fa-th-large"></i> Browse
-                            </div>
-                            <div className={`nav-link ${view==='search'?'active':''}`} onClick={()=>setView('browse')}>
-                                <i className="fas fa-search"></i> Search
-                            </div>
-                            <div className={`nav-link ${view==='messages'?'active':''}`} onClick={()=>setView('messages')}>
-                                <i className="fas fa-envelope"></i> Messages
-                                <span style={{marginLeft:'auto', background:'var(--primary)', color:'#000', fontSize:10, padding:'2px 6px', borderRadius:10}}>3</span>
-                            </div>
-                            <div className={`nav-link ${view==='events'?'active':''}`} onClick={()=>setView('browse')}>
-                                <i className="fas fa-calendar-alt"></i> Events
-                            </div>
-                            <div className={`nav-link ${view==='hotlist'?'active':''}`} onClick={()=>setView('browse')}>
-                                <i className="fas fa-fire"></i> Hotlist
-                            </div>
+                    </div>
+                    <div className="masker-controls">
+                        <div style={{display:'flex', justifyContent:'space-between', marginBottom:10, color:'#888', fontSize:10}}><span>CLEAR</span><span>BLURRY</span></div>
+                        <input type="range" min="0" max="20" value={blur} onChange={e=>setBlur(e.target.value)} style={{width:'100%', marginBottom:20, accentColor:'#c5a059'}} />
+                        <div style={{display:'flex', gap:10}}>
+                            <button className="btn btn-dark" style={{flex:1}} onClick={()=>setMask(!mask)}>{mask?'NO MASK':'ADD MASK'}</button>
+                            <button className="btn btn-gold" style={{flex:1}} onClick={save}>SEND SECURELY</button>
                         </div>
+                        <button className="btn btn-dark" style={{width:'100%', marginTop:10}} onClick={onCancel}>CANCEL</button>
+                    </div>
+                </div>
+            );
+        };
 
-                        <div className="user-mini">
-                            <img src={session.img} className="avatar-sm" />
-                            <div>
-                                <div style={{fontWeight:700, fontSize:13}}>{session.username}</div>
-                                <div style={{color:'var(--primary)', fontSize:11, textTransform:'uppercase'}}>Premium</div>
-                            </div>
-                            <i className="fas fa-sign-out-alt" style={{marginLeft:'auto', cursor:'pointer', color:'#666'}} onClick={()=>setSession(null)}></i>
+        // ─── MAIN APP ───
+        function App() {
+            const [view, setView] = useState('splash');
+            const [user, setUser] = useState(null);
+            const [activeChat, setActiveChat] = useState(null);
+            const [profiles, setProfiles] = useState([]);
+            const [msgs, setMsgs] = useState({});
+            const [flirts, setFlirts] = useState([]); // "Favorites"
+            const [maskerOpen, setMaskerOpen] = useState(false);
+            const [panic, setPanic] = useState(false);
+            const [inputTxt, setInputTxt] = useState("");
+
+            useEffect(() => {
+                // Initialize with DB data + Mock data to make it look "live"
+                const fetch = async () => {
+                    const { data } = await client.from('profiles').select('*');
+                    const real = data || [];
+                    setProfiles([...real, ...generateMockProfiles()]);
+                };
+                fetch();
+            }, []);
+
+            const sendMsg = (img=null) => {
+                if(!inputTxt && !img) return;
+                const cid = activeChat.id;
+                const newMsg = { me: true, txt: inputTxt, img, time: new Date() };
+                setMsgs(prev => ({ ...prev, [cid]: [...(prev[cid]||[]), newMsg] }));
+                setInputTxt("");
+                setMaskerOpen(false);
+            };
+
+            const toggleFlirt = (p) => {
+                if(flirts.find(f=>f.id===p.id)) setFlirts(flirts.filter(f=>f.id!==p.id));
+                else setFlirts([...flirts, p]);
+            };
+
+            // ─── PANIC MODE ───
+            if(panic) return <div style={{height:'100vh', background:'#eee', color:'#333', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', fontFamily:'Arial'}}><h1>Weather</h1><h2>72° Dallas</h2><button onClick={()=>setPanic(false)} style={{position:'absolute', bottom:0, right:0, opacity:0, width:50, height:50}}></button></div>;
+
+            // ─── SPLASH/LOGIN ───
+            if(view === 'splash') return (
+                <div style={{height:'100vh', background:'url(https://images.unsplash.com/photo-1621570169561-0c2a2e193ee1?q=80&w=2070&auto=format&fit=crop) center/cover'}}>
+                    <div style={{position:'absolute', inset:0, background:'rgba(0,0,0,0.8)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center'}}>
+                        <h1 style={{fontSize:40, color:'var(--primary)'}}>VELVET</h1>
+                        <p style={{color:'#aaa', letterSpacing:3, marginBottom:40}}>MEMBERS ONLY</p>
+                        <div style={{width:300, display:'flex', flexDirection:'column', gap:15}}>
+                            <button className="btn btn-gold" onClick={()=>{ setUser({username:'Member'}); setView('browse'); }}>MEMBER LOGIN</button>
+                            <button className="btn btn-dark" style={{border:'1px solid #444'}} onClick={()=>{ setUser({username:'NewUser'}); setView('browse'); }}>APPLY NOW</button>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            // ─── MAIN LAYOUT ───
+            return (
+                <div className="app-shell">
+                    {/* SIDEBAR (Desktop) */}
+                    <div className="sidebar">
+                        <div className="logo-area"><div className="logo">VELVET <span>CIRCLE</span></div></div>
+                        <div className="nav-items">
+                            <div className={`nav-item ${view==='browse'?'active':''}`} onClick={()=>setView('browse')}><i className="fas fa-th-large"></i> Browse</div>
+                            <div className={`nav-item ${view==='messages'?'active':''}`} onClick={()=>setView('messages')}><i className="fas fa-comment-alt"></i> Messages</div>
+                            <div className={`nav-item ${view==='flirts'?'active':''}`} onClick={()=>setView('flirts')}><i className="fas fa-heart"></i> Connections <span className="nav-badge">{flirts.length}</span></div>
+                            <div className={`nav-item ${view==='profile'?'active':''}`} onClick={()=>setView('profile')}><i className="fas fa-user-circle"></i> My Profile</div>
+                        </div>
+                        <div style={{padding:20, borderTop:'1px solid #222'}}>
+                            <button className="btn btn-dark" style={{width:'100%'}} onClick={()=>setPanic(true)}>PANIC</button>
                         </div>
                     </div>
 
-                    {/* MAIN CONTENT AREA */}
-                    <div className="main-content">
-                        {/* TOP BAR */}
-                        <div className="top-bar">
-                            <h3 style={{fontSize:18}}>{view === 'browse' ? 'Member Overview' : 'Messages'}</h3>
+                    {/* MAIN VIEW */}
+                    <div className="main-view">
+                        <div className="top-header">
+                            <h3>{view === 'messages' && activeChat ? activeChat.username : view.toUpperCase()}</h3>
                             <div style={{display:'flex', gap:15}}>
-                                <button className="btn btn-primary" style={{padding:'8px 16px', fontSize:11}}>
-                                    <i className="fas fa-crown" style={{marginRight:5}}></i> Upgrade
-                                </button>
-                                <button className="btn btn-outline" style={{padding:'8px 16px', fontSize:11}}>
-                                    <i className="fas fa-bolt" style={{marginRight:5}}></i> Panic
-                                </button>
+                                <i className="fas fa-bell" style={{color:'#666', fontSize:18}}></i>
+                                {user && <div className="online-dot"></div>}
                             </div>
                         </div>
 
-                        {/* SCROLLABLE CONTENT */}
+                        {/* CONTENT AREA */}
                         <div className="content-scroll">
                             
-                            {/* SEARCH FILTERS (Like SDC) */}
+                            {/* BROWSE VIEW */}
                             {view === 'browse' && (
-                                <div style={{background:'var(--bg-panel)', padding:20, borderRadius:4, border:'1px solid var(--border)', marginBottom:30}}>
-                                    <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(150px, 1fr))', gap:15, alignItems:'end'}}>
-                                        <div>
-                                            <label>I am looking for</label>
-                                            <select className="form-control" style={{marginBottom:0}}>
-                                                <option>Female</option>
-                                                <option>Male</option>
-                                                <option>Couple</option>
-                                            </select>
+                                <div className="grid">
+                                    {profiles.map(p => (
+                                        <div key={p.id} className="card" onClick={()=>{ setActiveChat(p); setView('messages'); }}>
+                                            <div className="card-img-container">
+                                                <img src={p.img || p.photos?.[0]} className="card-img" />
+                                                <div className="card-overlay">
+                                                    <div style={{color:'#fff', fontWeight:700, fontSize:16}}>{p.username}</div>
+                                                    <div style={{color:'#ccc', fontSize:12}}>{p.type} • {p.city}</div>
+                                                </div>
+                                                {p.online && <div style={{position:'absolute', top:10, right:10, background:'rgba(0,0,0,0.6)', padding:'2px 8px', borderRadius:10, fontSize:10, color:'#2ecc71'}}><div className="online-dot"></div> ONLINE</div>}
+                                            </div>
+                                            <div style={{display:'flex', borderTop:'1px solid #333'}}>
+                                                <button style={{flex:1, background:'none', color:'#ccc', padding:10}} onClick={(e)=>{ e.stopPropagation(); toggleFlirt(p); }}>
+                                                    <i className={`${flirts.find(f=>f.id===p.id)?'fas':'far'} fa-heart`} style={{color: flirts.find(f=>f.id===p.id)?'#e74c3c':'#ccc'}}></i>
+                                                </button>
+                                                <button style={{flex:1, background:'none', color:'#ccc', padding:10}}><i className="fas fa-comment"></i></button>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <label>Located In</label>
-                                            <select className="form-control" style={{marginBottom:0}}>
-                                                <option>Dallas, TX</option>
-                                                <option>Anywhere</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label>Within</label>
-                                            <select className="form-control" style={{marginBottom:0}}>
-                                                <option>50 Miles</option>
-                                                <option>100 Miles</option>
-                                            </select>
-                                        </div>
-                                        <button className="btn btn-primary" style={{height:45}}>Update Search</button>
-                                    </div>
+                                    ))}
                                 </div>
                             )}
 
-                            {/* PROFILE GRID */}
-                            <div className="profile-grid">
-                                {profiles.map(p => (
-                                    <div className="profile-card" key={p.id}>
-                                        <div className="card-img-wrap">
-                                            <img src={p.photos?.[0] || `https://ui-avatars.com/api/?name=${p.username}&background=222&color=fff`} className="card-img" />
-                                            <div className="online-badge">
-                                                <div className="online-dot"></div> Online
-                                            </div>
+                            {/* MESSAGES VIEW */}
+                            {view === 'messages' && (
+                                activeChat ? (
+                                    <div className="chat-layout" style={{height:'100%'}}>
+                                        <button onClick={()=>setActiveChat(null)} style={{background:'none', color:'#888', textAlign:'left', paddingBottom:10, display:'block'}}><i className="fas fa-arrow-left"></i> Back to Inbox</button>
+                                        <div className="msg-scroll">
+                                            <div style={{textAlign:'center', fontSize:10, color:'#444', marginBottom:20}}>ENCRYPTED CONVERSATION STARTED</div>
+                                            {(msgs[activeChat.id]||[]).map((m,i)=>(
+                                                <div key={i} className={`bubble ${m.me?'bubble-me':'bubble-them'}`}>
+                                                    {m.img && <img src={m.img} />}
+                                                    {m.txt}
+                                                </div>
+                                            ))}
                                         </div>
-                                        <div className="card-info">
-                                            <div className="card-name">
-                                                {p.username} 
-                                                <i className="fas fa-check-circle" style={{color:'var(--primary)', marginLeft:5, fontSize:12}}></i>
-                                            </div>
-                                            <div className="card-detail" style={{marginBottom:8}}>
-                                                {p.profile_type} • {p.city || 'Dallas'}
-                                            </div>
-                                            <div style={{display:'flex', gap:5}}>
-                                                <button style={{flex:1, background:'#333', border:'none', color:'#fff', padding:8, borderRadius:3, fontSize:12}}>
-                                                    <i className="fas fa-comment"></i>
-                                                </button>
-                                                <button style={{flex:1, background:'#333', border:'none', color:'#fff', padding:8, borderRadius:3, fontSize:12}}>
-                                                    <i className="fas fa-heart"></i>
-                                                </button>
-                                                <button style={{flex:1, background:'#333', border:'none', color:'#fff', padding:8, borderRadius:3, fontSize:12}}>
-                                                    <i className="fas fa-gift"></i>
-                                                </button>
-                                            </div>
+                                        <div className="chat-input-bar">
+                                            <button style={{background:'none', color:'var(--primary)', fontSize:20}} onClick={()=>setMaskerOpen(true)}><i className="fas fa-camera"></i></button>
+                                            <input className="input-box" placeholder="Type a message..." value={inputTxt} onChange={e=>setInputTxt(e.target.value)} />
+                                            <button style={{background:'none', color:'var(--primary)', fontSize:20}} onClick={()=>sendMsg(null)}><i className="fas fa-paper-plane"></i></button>
                                         </div>
                                     </div>
-                                ))}
-                                
-                                {/* FAKE DATA FOR DEMO IF DB EMPTY */}
-                                {profiles.length === 0 && [1,2,3,4,5,6,7,8].map(i => (
-                                    <div className="profile-card" key={i}>
-                                        <div className="card-img-wrap">
-                                            <img src={`https://source.unsplash.com/random/300x300?couple,portrait&sig=${i}`} className="card-img" />
-                                            <div className="online-badge"><div className="online-dot"></div> Online</div>
-                                        </div>
-                                        <div className="card-info">
-                                            <div className="card-name">DemoUser_{i}</div>
-                                            <div className="card-detail">Couple • Dallas, TX</div>
-                                            <div style={{display:'flex', gap:5, marginTop:10}}>
-                                                <button style={{flex:1, background:'#333', border:'none', color:'#fff', padding:8, borderRadius:3}}><i className="fas fa-comment"></i></button>
+                                ) : (
+                                    <div className="chat-list">
+                                        <div style={{paddingBottom:10, borderBottom:'1px solid #222', marginBottom:10, fontSize:12, color:'#666'}}>RECENT CONVERSATIONS</div>
+                                        {profiles.slice(0,4).map(p => (
+                                            <div key={p.id} className="chat-item" onClick={()=>setActiveChat(p)}>
+                                                <img src={p.img || p.photos?.[0]} className="chat-avatar" />
+                                                <div style={{flex:1}}>
+                                                    <div style={{display:'flex', justifyContent:'space-between'}}>
+                                                        <span style={{fontWeight:600, color:'#fff'}}>{p.username}</span>
+                                                        <span style={{fontSize:10, color:'#666'}}>2m ago</span>
+                                                    </div>
+                                                    <div style={{color:'#888', fontSize:12, marginTop:4}}>Sent a photo...</div>
+                                                </div>
                                             </div>
-                                        </div>
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
+                                )
+                            )}
+
+                            {/* FLIRTS VIEW */}
+                            {view === 'flirts' && (
+                                <div>
+                                    <h3 style={{marginBottom:20, fontSize:16}}>My Connections</h3>
+                                    {flirts.length === 0 ? <div style={{color:'#666', textAlign:'center', marginTop:50}}>No flirts yet. Go browse!</div> : 
+                                    <div className="grid">
+                                        {flirts.map(p => (
+                                            <div key={p.id} className="card" onClick={()=>{ setActiveChat(p); setView('messages'); }}>
+                                                <div className="card-img-container">
+                                                    <img src={p.img || p.photos?.[0]} className="card-img" />
+                                                    <div className="card-overlay"><div style={{color:'#fff'}}>{p.username}</div></div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>}
+                                </div>
+                            )}
+
+                            {/* PROFILE VIEW */}
+                            {view === 'profile' && (
+                                <div>
+                                    <div style={{textAlign:'center', marginBottom:30}}>
+                                        <div style={{width:100, height:100, background:'#222', borderRadius:'50%', margin:'0 auto 20px', display:'flex', alignItems:'center', justifyContent:'center', border:'2px solid var(--primary)'}}>
+                                            <i className="fas fa-user" style={{fontSize:40, color:'#555'}}></i>
+                                        </div>
+                                        <h2>{user.username}</h2>
+                                        <p style={{color:'var(--primary)'}}>Premium Member</p>
+                                    </div>
+                                    
+                                    <h4 style={{borderBottom:'1px solid #333', paddingBottom:10, marginBottom:15}}>Private Gallery</h4>
+                                    <div className="grid" style={{gridTemplateColumns:'repeat(3, 1fr)'}}>
+                                        <div style={{aspectRatio:'1', background:'#1f1f1f', display:'flex', alignItems:'center', justifyContent:'center', border:'1px dashed #444', cursor:'pointer'}} onClick={()=>setMaskerOpen(true)}>
+                                            <div style={{textAlign:'center', color:'var(--primary)'}}><i className="fas fa-plus"></i><div style={{fontSize:10, marginTop:5}}>ADD</div></div>
+                                        </div>
+                                        {/* Placeholder user photos */}
+                                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&q=80" style={{width:'100%', height:'100%', objectFit:'cover', borderRadius:4}} />
+                                        <img src="https://images.unsplash.com/photo-1520155701217-23b24c614587?w=300&q=80" style={{width:'100%', height:'100%', objectFit:'cover', borderRadius:4, filter:'blur(5px)'}} />
+                                    </div>
+                                    <button className="btn btn-dark" style={{width:'100%', marginTop:40}} onClick={()=>{ setUser(null); setView('splash'); }}>LOG OUT</button>
+                                </div>
+                            )}
 
                         </div>
                     </div>
+
+                    {/* BOTTOM NAV (Mobile Only) */}
+                    <div className="bottom-nav">
+                        <div className={`b-nav-item ${view==='browse'?'active':''}`} onClick={()=>setView('browse')}><i className="fas fa-th-large"></i><span>Home</span></div>
+                        <div className={`b-nav-item ${view==='messages'?'active':''}`} onClick={()=>setView('messages')}><i className="fas fa-comment-alt"></i><span>Chat</span></div>
+                        <div className={`b-nav-item ${view==='flirts'?'active':''}`} onClick={()=>setView('flirts')}><i className="fas fa-heart"></i><span>Likes</span></div>
+                        <div className={`b-nav-item ${view==='profile'?'active':''}`} onClick={()=>setView('profile')}><i className="fas fa-user"></i><span>Me</span></div>
+                    </div>
+
+                    {/* MODALS */}
+                    {maskerOpen && <Masker onCancel={()=>setMaskerOpen(false)} onSave={(img)=>{ 
+                        if(view==='messages'){ sendMsg(img); } 
+                        else { alert('Saved to gallery!'); setMaskerOpen(false); } 
+                    }} />}
+
                 </div>
             );
         }
