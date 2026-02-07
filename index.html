@@ -50,7 +50,7 @@
             TYPES: ["Married Male","Married Female","Attached Male","Attached Female","Single Male","Single Female"],
         };
 
-        // ─── NEW COMPONENT: PHOTO MASKER ───
+        // ─── PHOTO MASKER COMPONENT ───
         const PhotoMasker = ({ onSave, onCancel }) => {
             const [image, setImage] = useState(null);
             const [blur, setBlur] = useState(0);
@@ -71,23 +71,15 @@
                 const ctx = canvas.getContext("2d");
                 const img = new Image();
                 img.src = image;
-                
                 img.onload = () => {
-                    canvas.width = 400; 
-                    canvas.height = 400;
-                    
-                    // 1. Draw Blurred Image
+                    canvas.width = 400; canvas.height = 400;
                     ctx.filter = `blur(${blur}px)`;
                     ctx.drawImage(img, 0, 0, 400, 400);
                     ctx.filter = "none"; 
-
-                    // 2. Draw Mask (Black Bar)
                     if (mask) {
                         ctx.fillStyle = "black";
                         ctx.fillRect(50, 130, 300, 60); 
                     }
-
-                    // 3. Export
                     onSave(canvas.toDataURL("image/jpeg", 0.7));
                 };
             };
@@ -96,7 +88,6 @@
                 <div style={{position:"fixed", inset:0, background:"rgba(0,0,0,0.95)", zIndex:9999, display:"flex", alignItems:"center", justifyContent:"center"}}>
                     <div style={{background:C.sf2, padding:20, borderRadius:12, width:"90%", maxWidth:350, textAlign:"center", border:`1px solid ${C.bd}`}}>
                         <h3 style={{color:C.gold, marginTop:0, fontFamily:"serif"}}>Anonymize Identity</h3>
-                        
                         {!image ? (
                             <label style={{display:"block", border:`2px dashed ${C.bd}`, padding:40, borderRadius:8, marginBottom:20, cursor:"pointer"}}>
                                 <span style={{color:C.txM}}>Tap to Select Photo</span>
@@ -109,18 +100,15 @@
                                     <img src={image} style={{width:"100%", height:"100%", objectFit:"cover", filter:`blur(${blur}px)`}} />
                                     {mask && <div style={{position:"absolute", top:65, left:25, width:150, height:30, background:"black"}} />}
                                 </div>
-
                                 <div style={{marginBottom:15}}>
                                     <label style={{color:C.txD, fontSize:12, display:"block", marginBottom:5}}>Blur Intensity: {blur}</label>
                                     <input type="range" min="0" max="20" value={blur} onChange={e=>setBlur(e.target.value)} style={{width:"100%", accentColor:C.gold}} />
                                 </div>
-
                                 <button onClick={()=>setMask(!mask)} style={{background:"transparent", border:`1px solid ${C.gold}`, color:C.gold, padding:"8px 16px", borderRadius:20, marginBottom:20, cursor:"pointer", fontSize:12}}>
                                     {mask ? "Remove Eye Mask" : "Add Eye Mask"}
                                 </button>
                             </>
                         )}
-
                         <div style={{display:"flex", gap:10}}>
                             <button onClick={onCancel} style={{flex:1, padding:12, background:"transparent", color:C.txM, border:"none", cursor:"pointer"}}>Cancel</button>
                             {image && <button onClick={processImage} style={{flex:1, padding:12, background:C.gold, color:"#000", border:"none", borderRadius:8, fontWeight:"bold", cursor:"pointer"}}>Save Securely</button>}
@@ -137,24 +125,85 @@
             const [profiles, setProfiles] = useState([]);
             const [showMasker, setShowMasker] = useState(false);
             const [panic, setPanic] = useState(false);
+            const [client, setClient] = useState(null);
             
-            // Database
+            // Login/Reg State
+            const [login, setLogin] = useState({ u:"", p:"" });
+            const [reg, setReg] = useState({ u:"", p:"", type:"Married Male", city:"" });
+
+            // Helper: Hashing
+            const hashPw = (pw) => { let h=0; for(let i=0;i<pw.length;i++){h=((h<<5)-h)+pw.charCodeAt(i);h|=0;} return "h_"+Math.abs(h).toString(36); };
+
+            // Database Wrapper
             const db = {
                 get: (k) => { try { return JSON.parse(localStorage.getItem(APP_KEY+k)); } catch { return null; } },
                 set: (k,v) => { try { localStorage.setItem(APP_KEY+k, JSON.stringify(v)); } catch {} }
             };
 
-            // Init
+            // ─── INIT & SUPABASE ───
             useEffect(() => {
+                // 1. Setup Supabase
+                const supaUrl = "YOUR_SUPABASE_URL"; // <--- PASTE URL HERE
+                const supaKey = "YOUR_ANON_KEY";     // <--- PASTE KEY HERE
+
+                if (supaUrl.includes("http")) {
+                    const _client = createClient(supaUrl, supaKey);
+                    setClient(_client);
+                    _client.from('profiles').select('*').then(({ data }) => {
+                        if (data && data.length) setProfiles(prev => [...prev, ...data]);
+                    });
+                }
+
+                // 2. Check Local Login
                 const u = db.get("user");
                 if (u) { setUser(u); setView("home"); }
+                
+                // 3. Load Dummy Profiles for Demo
+                const seeds = db.get("profs") || [];
+                setProfiles(p => [...p, ...seeds]);
             }, []);
 
-            // Helper: Save User
+            // ─── ACTIONS ───
             const updateUser = (newData) => {
                 const updated = { ...user, ...newData };
-                setUser(updated);
-                db.set("user", updated);
+                setUser(updated); db.set("user", updated);
+            };
+
+            const handleRegister = async () => {
+                if(!reg.u || !reg.p) return alert("Username/Password required");
+                const newProfile = {
+                    id: Math.random().toString(36).substr(2, 9),
+                    username: reg.u,
+                    passwordHash: hashPw(reg.p),
+                    profileType: reg.type,
+                    city: reg.city,
+                    photos: [],
+                    online: true
+                };
+
+                // Save Locally
+                setUser(newProfile);
+                const newProfs = [...profiles, newProfile];
+                setProfiles(newProfs);
+                db.set("user", newProfile);
+                db.set("profs", newProfs);
+
+                // Save to Database (if connected)
+                if (client) {
+                    await client.from('profiles').insert([{
+                        username: reg.u, profile_type: reg.type, city: reg.city, is_discreet: true
+                    }]);
+                }
+                setView("home");
+            };
+
+            const handleLogin = () => {
+                const p = profiles.find(x => x.username.toLowerCase() === login.u.toLowerCase());
+                if (p && p.passwordHash === hashPw(login.p)) {
+                    setUser(p); db.set("user", p); setView("home");
+                } else {
+                    alert("User not found or password incorrect. (Try registering first)");
+                }
             };
 
             // PANIC SCREEN
@@ -175,21 +224,55 @@
                 }}>{children}</button>
             );
 
-            // VIEWS
+            // ─── VIEWS ───
+            
+            // 1. SPLASH
             if (view === "splash") return (
                 <div style={{minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", background:`radial-gradient(circle at center, #1a1520 0%, ${C.bg} 100%)`}}>
                     <h1 style={{fontFamily:"serif", fontSize:48, color:C.gold, letterSpacing:4, margin:0}}>VELVET</h1>
                     <p style={{color:C.txD, letterSpacing:2, fontSize:10, marginTop:10}}>DISCREET CONNECTIONS</p>
                     <div style={{display:"flex", gap:16, marginTop:40}}>
-                        <Btn onClick={() => {
-                            const newUser = { username:"Anonymous", photos:[] };
-                            updateUser(newUser);
-                            setView("home");
-                        }}>Enter Site</Btn>
+                        <Btn onClick={() => setView("register")}>Join Free</Btn>
+                        <Btn outline onClick={() => setView("login")}>Log In</Btn>
                     </div>
                 </div>
             );
 
+            // 2. LOGIN
+            if (view === "login") return (
+                <div style={{minHeight:"100vh", padding:30, display:"flex", alignItems:"center", justifyContent:"center"}}>
+                    <div style={{width:"100%", maxWidth:360}}>
+                        <h2 style={{color:C.gold, textAlign:"center", fontFamily:"serif", fontSize:32}}>Sign In</h2>
+                        <input style={{width:"100%", background:C.sf2, border:`1px solid ${C.bd}`, padding:14, borderRadius:8, color:C.tx, marginBottom:12}} placeholder="Username" value={login.u} onChange={e=>setLogin({...login, u:e.target.value})} />
+                        <input style={{width:"100%", background:C.sf2, border:`1px solid ${C.bd}`, padding:14, borderRadius:8, color:C.tx, marginBottom:20}} type="password" placeholder="Password" value={login.p} onChange={e=>setLogin({...login, p:e.target.value})} />
+                        <Btn full onClick={handleLogin}>Enter Site</Btn>
+                        <p style={{textAlign:"center", color:C.txM, fontSize:12, marginTop:24, cursor:"pointer"}} onClick={()=>setView("splash")}>Back</p>
+                    </div>
+                </div>
+            );
+
+            // 3. REGISTER
+            if (view === "register") return (
+                <div style={{minHeight:"100vh", padding:30, display:"flex", alignItems:"center", justifyContent:"center"}}>
+                    <div style={{width:"100%", maxWidth:360}}>
+                        <h2 style={{color:C.gold, textAlign:"center", fontFamily:"serif", fontSize:32}}>Join</h2>
+                        
+                        <label style={{color:C.txM, fontSize:11, display:"block", marginBottom:4}}>I AM A...</label>
+                        <select style={{width:"100%", background:C.sf2, color:C.tx, border:`1px solid ${C.bd}`, padding:12, borderRadius:8, marginBottom:16}} value={reg.type} onChange={e=>setReg({...reg, type:e.target.value})}>
+                            {DATA.TYPES.map(t => <option key={t}>{t}</option>)}
+                        </select>
+                        
+                        <input style={{width:"100%", background:C.sf2, border:`1px solid ${C.bd}`, padding:12, borderRadius:8, marginBottom:12, color:C.tx}} placeholder="Username (Anonymous)" value={reg.u} onChange={e=>setReg({...reg, u:e.target.value})} />
+                        <input style={{width:"100%", background:C.sf2, border:`1px solid ${C.bd}`, padding:12, borderRadius:8, marginBottom:12, color:C.tx}} type="password" placeholder="Password" value={reg.p} onChange={e=>setReg({...reg, p:e.target.value})} />
+                        <input style={{width:"100%", background:C.sf2, border:`1px solid ${C.bd}`, padding:12, borderRadius:8, marginBottom:20, color:C.tx}} placeholder="City" value={reg.city} onChange={e=>setReg({...reg, city:e.target.value})} />
+                        
+                        <Btn full onClick={handleRegister}>Create Account</Btn>
+                        <p style={{textAlign:"center", color:C.txM, fontSize:12, marginTop:24, cursor:"pointer"}} onClick={()=>setView("splash")}>Cancel</p>
+                    </div>
+                </div>
+            );
+
+            // 4. HOME (PROFILE)
             if (view === "home") return (
                 <div className="vc-anim-in" style={{padding:20}}>
                     <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:30}}>
@@ -205,7 +288,7 @@
                             }
                         </div>
                         <h3 style={{margin:0}}>{user.username}</h3>
-                        <p style={{color:C.txD, fontSize:12}}>Status: Hidden</p>
+                        <p style={{color:C.txD, fontSize:12}}>{user.profileType} • {user.city}</p>
                         
                         <div style={{marginTop:20}}>
                             <Btn full outline onClick={()=>setShowMasker(true)}>+ Add Secure Photo</Btn>
@@ -219,6 +302,10 @@
                                 <img key={i} src={p} style={{width:70, height:70, borderRadius:8, objectFit:"cover", border:`1px solid ${C.bd}`}} />
                             ))}
                         </div>
+                    </div>
+
+                    <div style={{textAlign:"center", marginTop:40}}>
+                        <Btn outline onClick={()=>{ setUser(null); setView("splash"); }}>Log Out</Btn>
                     </div>
 
                     {showMasker && (
