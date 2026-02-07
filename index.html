@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Weather - Dallas, TX</title> <link rel="preconnect" href="https://fonts.googleapis.com">
+    <title>Weather - Dallas, TX</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -27,6 +29,11 @@
         .vc-btn:active { transform: scale(0.96); }
         .vc-anim-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+        
+        /* Chat Bubbles */
+        .msg-bubble { max-width: 75%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.4; margin-bottom: 8px; }
+        .msg-me { align-self: flex-end; background: var(--gold); color: #000; border-bottom-right-radius: 4px; }
+        .msg-them { align-self: flex-start; background: var(--sf2); color: var(--tx); border: 1px solid var(--bd); border-bottom-left-radius: 4px; }
     </style>
 </head>
 <body>
@@ -37,7 +44,7 @@
         const { createClient } = supabase;
 
         // ─── CONFIG ───
-        const APP_KEY = "vc_v3_affair";
+        const APP_KEY = "vc_v4_chat";
         const C = {
             bg: "#0a0a0f", sf: "#12121a", sf2: "#1c1c28", bd: "#2a2a3a",
             gold: "#d4a843", goldDim: "#8a7535",
@@ -50,7 +57,7 @@
             TYPES: ["Married Male","Married Female","Attached Male","Attached Female","Single Male","Single Female"],
         };
 
-        // ─── PHOTO MASKER COMPONENT ───
+        // ─── PHOTO MASKER ───
         const PhotoMasker = ({ onSave, onCancel }) => {
             const [image, setImage] = useState(null);
             const [blur, setBlur] = useState(0);
@@ -87,10 +94,10 @@
             return (
                 <div style={{position:"fixed", inset:0, background:"rgba(0,0,0,0.95)", zIndex:9999, display:"flex", alignItems:"center", justifyContent:"center"}}>
                     <div style={{background:C.sf2, padding:20, borderRadius:12, width:"90%", maxWidth:350, textAlign:"center", border:`1px solid ${C.bd}`}}>
-                        <h3 style={{color:C.gold, marginTop:0, fontFamily:"serif"}}>Anonymize Identity</h3>
+                        <h3 style={{color:C.gold, marginTop:0, fontFamily:"serif"}}>Secure Photo</h3>
                         {!image ? (
                             <label style={{display:"block", border:`2px dashed ${C.bd}`, padding:40, borderRadius:8, marginBottom:20, cursor:"pointer"}}>
-                                <span style={{color:C.txM}}>Tap to Select Photo</span>
+                                <span style={{color:C.txM}}>Tap to Select</span>
                                 <input type="file" accept="image/*" onChange={handleFile} style={{display:"none"}} />
                             </label>
                         ) : (
@@ -101,17 +108,17 @@
                                     {mask && <div style={{position:"absolute", top:65, left:25, width:150, height:30, background:"black"}} />}
                                 </div>
                                 <div style={{marginBottom:15}}>
-                                    <label style={{color:C.txD, fontSize:12, display:"block", marginBottom:5}}>Blur Intensity: {blur}</label>
+                                    <label style={{color:C.txD, fontSize:12, display:"block", marginBottom:5}}>Blur: {blur}</label>
                                     <input type="range" min="0" max="20" value={blur} onChange={e=>setBlur(e.target.value)} style={{width:"100%", accentColor:C.gold}} />
                                 </div>
                                 <button onClick={()=>setMask(!mask)} style={{background:"transparent", border:`1px solid ${C.gold}`, color:C.gold, padding:"8px 16px", borderRadius:20, marginBottom:20, cursor:"pointer", fontSize:12}}>
-                                    {mask ? "Remove Eye Mask" : "Add Eye Mask"}
+                                    {mask ? "Remove Mask" : "Add Mask"}
                                 </button>
                             </>
                         )}
                         <div style={{display:"flex", gap:10}}>
                             <button onClick={onCancel} style={{flex:1, padding:12, background:"transparent", color:C.txM, border:"none", cursor:"pointer"}}>Cancel</button>
-                            {image && <button onClick={processImage} style={{flex:1, padding:12, background:C.gold, color:"#000", border:"none", borderRadius:8, fontWeight:"bold", cursor:"pointer"}}>Save Securely</button>}
+                            {image && <button onClick={processImage} style={{flex:1, padding:12, background:C.gold, color:"#000", border:"none", borderRadius:8, fontWeight:"bold", cursor:"pointer"}}>Send</button>}
                         </div>
                     </div>
                 </div>
@@ -123,28 +130,28 @@
             const [user, setUser] = useState(null);
             const [view, setView] = useState("splash");
             const [profiles, setProfiles] = useState([]);
+            const [messages, setMessages] = useState({});
+            const [activeChat, setActiveChat] = useState(null);
             const [showMasker, setShowMasker] = useState(false);
             const [panic, setPanic] = useState(false);
             const [client, setClient] = useState(null);
             
-            // Login/Reg State
+            // Login/Reg
             const [login, setLogin] = useState({ u:"", p:"" });
             const [reg, setReg] = useState({ u:"", p:"", type:"Married Male", city:"" });
+            const [msgInput, setMsgInput] = useState("");
+            const scrollRef = useRef(null);
 
-            // Helper: Hashing
             const hashPw = (pw) => { let h=0; for(let i=0;i<pw.length;i++){h=((h<<5)-h)+pw.charCodeAt(i);h|=0;} return "h_"+Math.abs(h).toString(36); };
-
-            // Database Wrapper
             const db = {
                 get: (k) => { try { return JSON.parse(localStorage.getItem(APP_KEY+k)); } catch { return null; } },
                 set: (k,v) => { try { localStorage.setItem(APP_KEY+k, JSON.stringify(v)); } catch {} }
             };
 
-            // ─── INIT & SUPABASE ───
+            // ─── INIT ───
             useEffect(() => {
-                // 1. Setup Supabase
-                const supaUrl = "YOUR_SUPABASE_URL"; // <--- PASTE URL HERE
-                const supaKey = "YOUR_ANON_KEY";     // <--- PASTE KEY HERE
+                const supaUrl = "YOUR_SUPABASE_URL"; // <--- KEY HERE
+                const supaKey = "YOUR_ANON_KEY";     // <--- KEY HERE
 
                 if (supaUrl.includes("http")) {
                     const _client = createClient(supaUrl, supaKey);
@@ -154,172 +161,121 @@
                     });
                 }
 
-                // 2. Check Local Login
                 const u = db.get("user");
+                const m = db.get("msgs") || {};
                 if (u) { setUser(u); setView("home"); }
+                setMessages(m);
                 
-                // 3. Load Dummy Profiles for Demo
+                // Demo Seeds
                 const seeds = db.get("profs") || [];
                 setProfiles(p => [...p, ...seeds]);
             }, []);
 
-            // ─── ACTIONS ───
-            const updateUser = (newData) => {
-                const updated = { ...user, ...newData };
-                setUser(updated); db.set("user", updated);
+            // ─── LOGIC ───
+            const sendMsg = (imgUrl = null) => {
+                if (!msgInput.trim() && !imgUrl) return;
+                const chatKey = [user.id, activeChat.id].sort().join("_");
+                const newMsg = { from: user.id, text: msgInput, img: imgUrl, ts: Date.now() };
+                
+                const updatedMsgs = { ...messages, [chatKey]: [...(messages[chatKey]||[]), newMsg] };
+                setMessages(updatedMsgs);
+                db.set("msgs", updatedMsgs);
+                setMsgInput("");
             };
 
             const handleRegister = async () => {
-                if(!reg.u || !reg.p) return alert("Username/Password required");
-                const newProfile = {
-                    id: Math.random().toString(36).substr(2, 9),
-                    username: reg.u,
-                    passwordHash: hashPw(reg.p),
-                    profileType: reg.type,
-                    city: reg.city,
-                    photos: [],
-                    online: true
-                };
-
-                // Save Locally
+                if(!reg.u || !reg.p) return alert("Required fields missing");
+                const newProfile = { id: Math.random().toString(36).substr(2,9), username: reg.u, passwordHash: hashPw(reg.p), profileType: reg.type, city: reg.city, photos: [], online: true };
                 setUser(newProfile);
-                const newProfs = [...profiles, newProfile];
-                setProfiles(newProfs);
+                setProfiles([...profiles, newProfile]);
                 db.set("user", newProfile);
-                db.set("profs", newProfs);
-
-                // Save to Database (if connected)
-                if (client) {
-                    await client.from('profiles').insert([{
-                        username: reg.u, profile_type: reg.type, city: reg.city, is_discreet: true
-                    }]);
-                }
+                db.set("profs", [...profiles, newProfile]);
+                if (client) await client.from('profiles').insert([{ username: reg.u, profile_type: reg.type, city: reg.city, is_discreet: true }]);
                 setView("home");
             };
 
             const handleLogin = () => {
                 const p = profiles.find(x => x.username.toLowerCase() === login.u.toLowerCase());
-                if (p && p.passwordHash === hashPw(login.p)) {
-                    setUser(p); db.set("user", p); setView("home");
-                } else {
-                    alert("User not found or password incorrect. (Try registering first)");
-                }
+                if (p && p.passwordHash === hashPw(login.p)) { setUser(p); db.set("user", p); setView("home"); } 
+                else alert("Invalid login");
             };
 
-            // PANIC SCREEN
-            if (panic) return (
-                <div style={{minHeight:"100vh", background:"#87CEEB", fontFamily:"Arial", color:"#fff", padding:20, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center"}}>
-                    <h1 style={{fontSize:80, margin:0}}>72°</h1>
-                    <h2 style={{fontSize:24}}>Dallas, TX</h2>
-                    <button onClick={() => setPanic(false)} style={{position:"absolute", bottom:10, right:10, width:40, height:40, opacity:0}}></button>
-                </div>
-            );
+            useEffect(() => { scrollRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, activeChat, view]);
 
             // COMPONENTS
             const Btn = ({ children, outline, onClick, full }) => (
-                <button onClick={onClick} style={{
-                    width: full?"100%":"auto", padding:"12px 24px", borderRadius:8, border: outline?`1px solid ${C.gold}`:"none",
-                    background: outline?"transparent":`linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-                    color: outline?C.gold:"#000", fontWeight:600, cursor:"pointer", textTransform:"uppercase", letterSpacing:1
-                }}>{children}</button>
+                <button onClick={onClick} style={{ width: full?"100%":"auto", padding:"12px 24px", borderRadius:8, border: outline?`1px solid ${C.gold}`:"none", background: outline?"transparent":`linear-gradient(135deg, ${C.gold}, ${C.goldDim})`, color: outline?C.gold:"#000", fontWeight:600, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}>{children}</button>
+            );
+
+            const Nav = () => (
+                <div style={{position:"fixed", bottom:0, left:0, right:0, height:65, background:"rgba(18,18,26,0.98)", borderTop:`1px solid ${C.bd}`, display:"flex", justifyContent:"space-around", alignItems:"center", zIndex:9000}}>
+                    <div onClick={()=>setView("home")} style={{fontSize:24, cursor:"pointer", color: view==="home"?C.gold:C.txM}}>🏠</div>
+                    <div onClick={()=>setView("chats")} style={{fontSize:24, cursor:"pointer", color: (view==="chats"||view==="chat")?C.gold:C.txM}}>💬</div>
+                    <div onClick={()=>setView("profile")} style={{fontSize:24, cursor:"pointer", color: view==="profile"?C.gold:C.txM}}>👤</div>
+                </div>
             );
 
             // ─── VIEWS ───
-            
-            // 1. SPLASH
+            if (panic) return <div style={{minHeight:"100vh", background:"#87CEEB", fontFamily:"Arial", color:"#fff", padding:20, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center"}}><h1 style={{fontSize:80, margin:0}}>72°</h1><h2 style={{fontSize:24}}>Dallas, TX</h2><button onClick={()=>setPanic(false)} style={{position:"absolute", bottom:10, right:10, width:40, height:40, opacity:0}}></button></div>;
+
             if (view === "splash") return (
                 <div style={{minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", background:`radial-gradient(circle at center, #1a1520 0%, ${C.bg} 100%)`}}>
                     <h1 style={{fontFamily:"serif", fontSize:48, color:C.gold, letterSpacing:4, margin:0}}>VELVET</h1>
-                    <p style={{color:C.txD, letterSpacing:2, fontSize:10, marginTop:10}}>DISCREET CONNECTIONS</p>
-                    <div style={{display:"flex", gap:16, marginTop:40}}>
-                        <Btn onClick={() => setView("register")}>Join Free</Btn>
-                        <Btn outline onClick={() => setView("login")}>Log In</Btn>
-                    </div>
+                    <div style={{display:"flex", gap:16, marginTop:40}}><Btn onClick={()=>setView("register")}>Join</Btn><Btn outline onClick={()=>setView("login")}>Log In</Btn></div>
                 </div>
             );
 
-            // 2. LOGIN
-            if (view === "login") return (
-                <div style={{minHeight:"100vh", padding:30, display:"flex", alignItems:"center", justifyContent:"center"}}>
-                    <div style={{width:"100%", maxWidth:360}}>
-                        <h2 style={{color:C.gold, textAlign:"center", fontFamily:"serif", fontSize:32}}>Sign In</h2>
-                        <input style={{width:"100%", background:C.sf2, border:`1px solid ${C.bd}`, padding:14, borderRadius:8, color:C.tx, marginBottom:12}} placeholder="Username" value={login.u} onChange={e=>setLogin({...login, u:e.target.value})} />
-                        <input style={{width:"100%", background:C.sf2, border:`1px solid ${C.bd}`, padding:14, borderRadius:8, color:C.tx, marginBottom:20}} type="password" placeholder="Password" value={login.p} onChange={e=>setLogin({...login, p:e.target.value})} />
-                        <Btn full onClick={handleLogin}>Enter Site</Btn>
-                        <p style={{textAlign:"center", color:C.txM, fontSize:12, marginTop:24, cursor:"pointer"}} onClick={()=>setView("splash")}>Back</p>
-                    </div>
-                </div>
-            );
+            if (view === "login") return <div style={{minHeight:"100vh", padding:30, display:"flex", alignItems:"center", justifyContent:"center"}}><div style={{width:"100%", maxWidth:360}}><h2 style={{color:C.gold, textAlign:"center"}}>Sign In</h2><input style={{width:"100%", background:C.sf2, border:`1px solid ${C.bd}`, padding:14, borderRadius:8, color:C.tx, marginBottom:12}} placeholder="Username" value={login.u} onChange={e=>setLogin({...login, u:e.target.value})} /><input style={{width:"100%", background:C.sf2, border:`1px solid ${C.bd}`, padding:14, borderRadius:8, color:C.tx, marginBottom:20}} type="password" placeholder="Password" value={login.p} onChange={e=>setLogin({...login, p:e.target.value})} /><Btn full onClick={handleLogin}>Enter Site</Btn><p style={{textAlign:"center", color:C.txM, marginTop:24}} onClick={()=>setView("splash")}>Back</p></div></div>;
 
-            // 3. REGISTER
-            if (view === "register") return (
-                <div style={{minHeight:"100vh", padding:30, display:"flex", alignItems:"center", justifyContent:"center"}}>
-                    <div style={{width:"100%", maxWidth:360}}>
-                        <h2 style={{color:C.gold, textAlign:"center", fontFamily:"serif", fontSize:32}}>Join</h2>
-                        
-                        <label style={{color:C.txM, fontSize:11, display:"block", marginBottom:4}}>I AM A...</label>
-                        <select style={{width:"100%", background:C.sf2, color:C.tx, border:`1px solid ${C.bd}`, padding:12, borderRadius:8, marginBottom:16}} value={reg.type} onChange={e=>setReg({...reg, type:e.target.value})}>
-                            {DATA.TYPES.map(t => <option key={t}>{t}</option>)}
-                        </select>
-                        
-                        <input style={{width:"100%", background:C.sf2, border:`1px solid ${C.bd}`, padding:12, borderRadius:8, marginBottom:12, color:C.tx}} placeholder="Username (Anonymous)" value={reg.u} onChange={e=>setReg({...reg, u:e.target.value})} />
-                        <input style={{width:"100%", background:C.sf2, border:`1px solid ${C.bd}`, padding:12, borderRadius:8, marginBottom:12, color:C.tx}} type="password" placeholder="Password" value={reg.p} onChange={e=>setReg({...reg, p:e.target.value})} />
-                        <input style={{width:"100%", background:C.sf2, border:`1px solid ${C.bd}`, padding:12, borderRadius:8, marginBottom:20, color:C.tx}} placeholder="City" value={reg.city} onChange={e=>setReg({...reg, city:e.target.value})} />
-                        
-                        <Btn full onClick={handleRegister}>Create Account</Btn>
-                        <p style={{textAlign:"center", color:C.txM, fontSize:12, marginTop:24, cursor:"pointer"}} onClick={()=>setView("splash")}>Cancel</p>
-                    </div>
-                </div>
-            );
+            if (view === "register") return <div style={{minHeight:"100vh", padding:30}}><h2 style={{color:C.gold}}>Join</h2><select style={{width:"100%", background:C.sf2, color:C.tx, border:`1px solid ${C.bd}`, padding:12, borderRadius:8, marginBottom:16}} value={reg.type} onChange={e=>setReg({...reg, type:e.target.value})}>{DATA.TYPES.map(t=><option key={t}>{t}</option>)}</select><input style={{width:"100%", background:C.sf2, border:`1px solid ${C.bd}`, padding:12, borderRadius:8, marginBottom:12, color:C.tx}} placeholder="Username" value={reg.u} onChange={e=>setReg({...reg, u:e.target.value})} /><input style={{width:"100%", background:C.sf2, border:`1px solid ${C.bd}`, padding:12, borderRadius:8, marginBottom:12, color:C.tx}} type="password" placeholder="Password" value={reg.p} onChange={e=>setReg({...reg, p:e.target.value})} /><input style={{width:"100%", background:C.sf2, border:`1px solid ${C.bd}`, padding:12, borderRadius:8, marginBottom:20, color:C.tx}} placeholder="City" value={reg.city} onChange={e=>setReg({...reg, city:e.target.value})} /><Btn full onClick={handleRegister}>Create Account</Btn></div>;
 
-            // 4. HOME (PROFILE)
             if (view === "home") return (
-                <div className="vc-anim-in" style={{padding:20}}>
-                    <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:30}}>
-                        <h2 style={{fontFamily:"serif", color:C.gold, margin:0}}>My Profile</h2>
-                        <button onClick={()=>setPanic(true)} style={{background:C.red, border:"none", borderRadius:"50%", width:30, height:30, color:"#fff"}}>⚡</button>
-                    </div>
-
-                    <div style={{textAlign:"center", background:C.sf, padding:20, borderRadius:12, border:`1px solid ${C.bd}`}}>
-                        <div style={{width:100, height:100, background:C.sf2, borderRadius:"50%", margin:"0 auto 15px", overflow:"hidden", border:`2px solid ${C.gold}`}}>
-                            {user.photos && user.photos.length > 0 ? 
-                                <img src={user.photos[0]} style={{width:"100%", height:"100%", objectFit:"cover"}} /> :
-                                <div style={{width:"100%", height:"100%", display:"flex", alignItems:"center", justifyContent:"center", color:C.txM, fontSize:30}}>?</div>
-                            }
+                <div className="vc-anim-in" style={{padding:"20px 16px 80px"}}>
+                    <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20}}><h2 style={{fontFamily:"serif", color:C.gold, margin:0}}>Near You</h2><button onClick={()=>setPanic(true)} style={{background:C.red, border:"none", borderRadius:"50%", width:30, height:30, color:"#fff"}}>⚡</button></div>
+                    {profiles.filter(p=>p.id!==user.id).map(p => (
+                        <div key={p.id} onClick={()=>{setActiveChat(p); setView("chat");}} style={{background:C.sf, padding:16, borderRadius:12, marginBottom:10, display:"flex", alignItems:"center", gap:12, border:`1px solid ${C.bd}`}}>
+                            <div style={{width:50, height:50, background:C.sf2, borderRadius:"50%", overflow:"hidden", border:`2px solid ${C.gold}`}}>{p.photos && p.photos[0] ? <img src={p.photos[0]} style={{width:"100%", height:"100%", objectFit:"cover"}}/> : null}</div>
+                            <div><div style={{fontWeight:600}}>{p.username}</div><div style={{fontSize:12, color:C.txD}}>{p.profileType}</div></div>
                         </div>
-                        <h3 style={{margin:0}}>{user.username}</h3>
-                        <p style={{color:C.txD, fontSize:12}}>{user.profileType} • {user.city}</p>
-                        
-                        <div style={{marginTop:20}}>
-                            <Btn full outline onClick={()=>setShowMasker(true)}>+ Add Secure Photo</Btn>
-                        </div>
-                    </div>
-
-                    <div style={{marginTop:30}}>
-                        <h4 style={{color:C.txM, fontSize:12}}>PRIVATE GALLERY</h4>
-                        <div style={{display:"flex", gap:10, overflowX:"auto"}}>
-                            {user.photos && user.photos.map((p,i) => (
-                                <img key={i} src={p} style={{width:70, height:70, borderRadius:8, objectFit:"cover", border:`1px solid ${C.bd}`}} />
-                            ))}
-                        </div>
-                    </div>
-
-                    <div style={{textAlign:"center", marginTop:40}}>
-                        <Btn outline onClick={()=>{ setUser(null); setView("splash"); }}>Log Out</Btn>
-                    </div>
-
-                    {showMasker && (
-                        <PhotoMasker 
-                            onCancel={()=>setShowMasker(false)}
-                            onSave={(img) => {
-                                const currentPhotos = user.photos || [];
-                                updateUser({ photos: [...currentPhotos, img] });
-                                setShowMasker(false);
-                            }}
-                        />
-                    )}
+                    ))}
+                    <Nav />
                 </div>
             );
+
+            if (view === "chats") {
+                const chats = Object.keys(messages).filter(k=>k.includes(user.id)).map(k=>{ const oid=k.split("_").find(id=>id!==user.id); return {id:oid, p:profiles.find(p=>p.id===oid), last:messages[k][messages[k].length-1]}; });
+                return <div className="vc-anim-in" style={{padding:"20px 16px 80px"}}><h2 style={{fontFamily:"serif", color:C.gold}}>Messages</h2>{chats.map(c=><div key={c.id} onClick={()=>{setActiveChat(c.p); setView("chat");}} style={{background:C.sf, padding:16, borderRadius:12, marginBottom:10, display:"flex", gap:12}}><div style={{fontWeight:600}}>{c.p?.username || "Unknown"}</div><div style={{color:C.txM}}>{c.last.text || "Photo"}</div></div>)}<Nav /></div>;
+            }
+
+            if (view === "chat" && activeChat) {
+                const chatKey = [user.id, activeChat.id].sort().join("_");
+                const msgs = messages[chatKey] || [];
+                return (
+                    <div className="vc-anim-in" style={{display:"flex", flexDirection:"column", height:"100vh"}}>
+                        <div style={{padding:16, background:C.sf, borderBottom:`1px solid ${C.bd}`, display:"flex", alignItems:"center", gap:10}}>
+                            <button onClick={()=>setView("chats")} style={{background:"none", border:"none", color:C.tx, fontSize:20}}>←</button>
+                            <div style={{fontWeight:600}}>{activeChat.username}</div>
+                        </div>
+                        <div style={{flex:1, overflowY:"auto", padding:16, display:"flex", flexDirection:"column"}}>
+                            {msgs.map((m,i)=>(
+                                <div key={i} className={`msg-bubble ${m.from===user.id?"msg-me":"msg-them"}`}>
+                                    {m.img && <img src={m.img} style={{maxWidth:"100%", borderRadius:8, marginBottom:4}} />}
+                                    {m.text}
+                                </div>
+                            ))}
+                            <div ref={scrollRef}></div>
+                        </div>
+                        <div style={{padding:12, background:C.sf, borderTop:`1px solid ${C.bd}`, display:"flex", gap:10}}>
+                            <button onClick={()=>setShowMasker(true)} style={{background:"none", border:"none", fontSize:20}}>📷</button>
+                            <input value={msgInput} onChange={e=>setMsgInput(e.target.value)} style={{flex:1, background:C.sf2, border:"none", borderRadius:20, padding:"10px 16px", color:C.tx}} placeholder="Message..." />
+                            <button onClick={()=>sendMsg()} style={{background:"none", border:"none", color:C.gold, fontWeight:"bold"}}>SEND</button>
+                        </div>
+                        {showMasker && <PhotoMasker onCancel={()=>setShowMasker(false)} onSave={(img)=>{ sendMsg(img); setShowMasker(false); }} />}
+                    </div>
+                );
+            }
+
+            if (view === "profile") return <div className="vc-anim-in" style={{padding:"20px 16px 80px"}}><div style={{textAlign:"center"}}><div style={{width:100, height:100, background:C.sf2, borderRadius:"50%", margin:"0 auto 15px", overflow:"hidden", border:`2px solid ${C.gold}`}}>{user.photos && user.photos[0] ? <img src={user.photos[0]} style={{width:"100%", height:"100%", objectFit:"cover"}} /> : null}</div><h3>{user.username}</h3><Btn outline onClick={()=>{setUser(null); setView("splash");}}>Log Out</Btn></div><Nav /></div>;
 
             return null;
         }
