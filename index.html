@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weather - Dallas, TX</title> <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --bg: #0a0a0f; --sf: #12121a; --sf2: #1c1c28; --bd: #2a2a3a;
+            --gold: #d4a843; --goldDim: #8a7535;
+            --sec: #9b59b6; --secDim: #6c3483;
+            --tx: #ede9e3; --txD: #918a9e; --txM: #5e5870;
+            --red: #ff4757; --green: #2ed573;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--bg); color: var(--tx); font-family: 'Raleway', sans-serif; overflow-x: hidden; }
+        input, textarea, select { font-family: 'Raleway', sans-serif; font-size: 16px; }
+        .vc-btn { transition: all 0.2s; user-select: none; touch-action: manipulation; cursor: pointer; }
+        .vc-btn:active { transform: scale(0.96); }
+        .vc-anim-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        const { createClient } = supabase;
+
+        // ─── CONFIG ───
+        const APP_KEY = "vc_v3_affair";
+        const C = {
+            bg: "#0a0a0f", sf: "#12121a", sf2: "#1c1c28", bd: "#2a2a3a",
+            gold: "#d4a843", goldDim: "#8a7535",
+            sec: "#9b59b6", secDim: "#6c3483",
+            tx: "#ede9e3", txD: "#918a9e", txM: "#5e5870",
+            red: "#ff4757", green: "#2ed573",
+        };
+
+        const DATA = {
+            TYPES: ["Married Male","Married Female","Attached Male","Attached Female","Single Male","Single Female"],
+        };
+
+        // ─── NEW COMPONENT: PHOTO MASKER ───
+        const PhotoMasker = ({ onSave, onCancel }) => {
+            const [image, setImage] = useState(null);
+            const [blur, setBlur] = useState(0);
+            const [mask, setMask] = useState(false);
+            const canvasRef = useRef(null);
+
+            const handleFile = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => setImage(ev.target.result);
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            const processImage = () => {
+                const canvas = canvasRef.current;
+                const ctx = canvas.getContext("2d");
+                const img = new Image();
+                img.src = image;
+                
+                img.onload = () => {
+                    canvas.width = 400; 
+                    canvas.height = 400;
+                    
+                    // 1. Draw Blurred Image
+                    ctx.filter = `blur(${blur}px)`;
+                    ctx.drawImage(img, 0, 0, 400, 400);
+                    ctx.filter = "none"; 
+
+                    // 2. Draw Mask (Black Bar)
+                    if (mask) {
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(50, 130, 300, 60); 
+                    }
+
+                    // 3. Export
+                    onSave(canvas.toDataURL("image/jpeg", 0.7));
+                };
+            };
+
+            return (
+                <div style={{position:"fixed", inset:0, background:"rgba(0,0,0,0.95)", zIndex:9999, display:"flex", alignItems:"center", justifyContent:"center"}}>
+                    <div style={{background:C.sf2, padding:20, borderRadius:12, width:"90%", maxWidth:350, textAlign:"center", border:`1px solid ${C.bd}`}}>
+                        <h3 style={{color:C.gold, marginTop:0, fontFamily:"serif"}}>Anonymize Identity</h3>
+                        
+                        {!image ? (
+                            <label style={{display:"block", border:`2px dashed ${C.bd}`, padding:40, borderRadius:8, marginBottom:20, cursor:"pointer"}}>
+                                <span style={{color:C.txM}}>Tap to Select Photo</span>
+                                <input type="file" accept="image/*" onChange={handleFile} style={{display:"none"}} />
+                            </label>
+                        ) : (
+                            <>
+                                <canvas ref={canvasRef} style={{display:"none"}} />
+                                <div style={{position:"relative", width:200, height:200, margin:"0 auto 20px", overflow:"hidden", borderRadius:8, border:`1px solid ${C.gold}`}}>
+                                    <img src={image} style={{width:"100%", height:"100%", objectFit:"cover", filter:`blur(${blur}px)`}} />
+                                    {mask && <div style={{position:"absolute", top:65, left:25, width:150, height:30, background:"black"}} />}
+                                </div>
+
+                                <div style={{marginBottom:15}}>
+                                    <label style={{color:C.txD, fontSize:12, display:"block", marginBottom:5}}>Blur Intensity: {blur}</label>
+                                    <input type="range" min="0" max="20" value={blur} onChange={e=>setBlur(e.target.value)} style={{width:"100%", accentColor:C.gold}} />
+                                </div>
+
+                                <button onClick={()=>setMask(!mask)} style={{background:"transparent", border:`1px solid ${C.gold}`, color:C.gold, padding:"8px 16px", borderRadius:20, marginBottom:20, cursor:"pointer", fontSize:12}}>
+                                    {mask ? "Remove Eye Mask" : "Add Eye Mask"}
+                                </button>
+                            </>
+                        )}
+
+                        <div style={{display:"flex", gap:10}}>
+                            <button onClick={onCancel} style={{flex:1, padding:12, background:"transparent", color:C.txM, border:"none", cursor:"pointer"}}>Cancel</button>
+                            {image && <button onClick={processImage} style={{flex:1, padding:12, background:C.gold, color:"#000", border:"none", borderRadius:8, fontWeight:"bold", cursor:"pointer"}}>Save Securely</button>}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // ─── MAIN APP ───
+        function App() {
+            const [user, setUser] = useState(null);
+            const [view, setView] = useState("splash");
+            const [profiles, setProfiles] = useState([]);
+            const [showMasker, setShowMasker] = useState(false);
+            const [panic, setPanic] = useState(false);
+            
+            // Database
+            const db = {
+                get: (k) => { try { return JSON.parse(localStorage.getItem(APP_KEY+k)); } catch { return null; } },
+                set: (k,v) => { try { localStorage.setItem(APP_KEY+k, JSON.stringify(v)); } catch {} }
+            };
+
+            // Init
+            useEffect(() => {
+                const u = db.get("user");
+                if (u) { setUser(u); setView("home"); }
+            }, []);
+
+            // Helper: Save User
+            const updateUser = (newData) => {
+                const updated = { ...user, ...newData };
+                setUser(updated);
+                db.set("user", updated);
+            };
+
+            // PANIC SCREEN
+            if (panic) return (
+                <div style={{minHeight:"100vh", background:"#87CEEB", fontFamily:"Arial", color:"#fff", padding:20, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center"}}>
+                    <h1 style={{fontSize:80, margin:0}}>72°</h1>
+                    <h2 style={{fontSize:24}}>Dallas, TX</h2>
+                    <button onClick={() => setPanic(false)} style={{position:"absolute", bottom:10, right:10, width:40, height:40, opacity:0}}></button>
+                </div>
+            );
+
+            // COMPONENTS
+            const Btn = ({ children, outline, onClick, full }) => (
+                <button onClick={onClick} style={{
+                    width: full?"100%":"auto", padding:"12px 24px", borderRadius:8, border: outline?`1px solid ${C.gold}`:"none",
+                    background: outline?"transparent":`linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
+                    color: outline?C.gold:"#000", fontWeight:600, cursor:"pointer", textTransform:"uppercase", letterSpacing:1
+                }}>{children}</button>
+            );
+
+            // VIEWS
+            if (view === "splash") return (
+                <div style={{minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", background:`radial-gradient(circle at center, #1a1520 0%, ${C.bg} 100%)`}}>
+                    <h1 style={{fontFamily:"serif", fontSize:48, color:C.gold, letterSpacing:4, margin:0}}>VELVET</h1>
+                    <p style={{color:C.txD, letterSpacing:2, fontSize:10, marginTop:10}}>DISCREET CONNECTIONS</p>
+                    <div style={{display:"flex", gap:16, marginTop:40}}>
+                        <Btn onClick={() => {
+                            const newUser = { username:"Anonymous", photos:[] };
+                            updateUser(newUser);
+                            setView("home");
+                        }}>Enter Site</Btn>
+                    </div>
+                </div>
+            );
+
+            if (view === "home") return (
+                <div className="vc-anim-in" style={{padding:20}}>
+                    <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:30}}>
+                        <h2 style={{fontFamily:"serif", color:C.gold, margin:0}}>My Profile</h2>
+                        <button onClick={()=>setPanic(true)} style={{background:C.red, border:"none", borderRadius:"50%", width:30, height:30, color:"#fff"}}>⚡</button>
+                    </div>
+
+                    <div style={{textAlign:"center", background:C.sf, padding:20, borderRadius:12, border:`1px solid ${C.bd}`}}>
+                        <div style={{width:100, height:100, background:C.sf2, borderRadius:"50%", margin:"0 auto 15px", overflow:"hidden", border:`2px solid ${C.gold}`}}>
+                            {user.photos && user.photos.length > 0 ? 
+                                <img src={user.photos[0]} style={{width:"100%", height:"100%", objectFit:"cover"}} /> :
+                                <div style={{width:"100%", height:"100%", display:"flex", alignItems:"center", justifyContent:"center", color:C.txM, fontSize:30}}>?</div>
+                            }
+                        </div>
+                        <h3 style={{margin:0}}>{user.username}</h3>
+                        <p style={{color:C.txD, fontSize:12}}>Status: Hidden</p>
+                        
+                        <div style={{marginTop:20}}>
+                            <Btn full outline onClick={()=>setShowMasker(true)}>+ Add Secure Photo</Btn>
+                        </div>
+                    </div>
+
+                    <div style={{marginTop:30}}>
+                        <h4 style={{color:C.txM, fontSize:12}}>PRIVATE GALLERY</h4>
+                        <div style={{display:"flex", gap:10, overflowX:"auto"}}>
+                            {user.photos && user.photos.map((p,i) => (
+                                <img key={i} src={p} style={{width:70, height:70, borderRadius:8, objectFit:"cover", border:`1px solid ${C.bd}`}} />
+                            ))}
+                        </div>
+                    </div>
+
+                    {showMasker && (
+                        <PhotoMasker 
+                            onCancel={()=>setShowMasker(false)}
+                            onSave={(img) => {
+                                const currentPhotos = user.photos || [];
+                                updateUser({ photos: [...currentPhotos, img] });
+                                setShowMasker(false);
+                            }}
+                        />
+                    )}
+                </div>
+            );
+
+            return null;
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
