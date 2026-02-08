@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#000000">
-    <title>VELVET | System v4.0</title>
+    <title>VELVET | System v5.0</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -46,8 +46,15 @@
         select { -webkit-appearance: none; appearance: none; }
         .input-std { width: 100%; background: #111; border: 1px solid #333; padding: 15px; color: white; border-radius: 4px; outline: none; font-family: 'Inter'; }
         .input-std:focus { border-color: #D4AF37; }
-        .tag-select { border: 1px solid #333; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 12px; transition: 0.2s; }
-        .tag-select.active { background: #D4AF37; color: black; border-color: #D4AF37; font-weight: bold; }
+        .btn-option { text-align: left; padding: 15px; border: 1px solid #333; width: 100%; transition: 0.2s; color: #aaa; font-size: 14px; }
+        .btn-option:hover, .btn-option.selected { border-color: #D4AF37; background: rgba(212,175,55,0.05); color: #fff; }
+        .progress-bar { height: 2px; background: #333; width: 100%; margin-bottom: 30px; }
+        .progress-fill { height: 100%; background: #D4AF37; transition: 0.3s; }
+        
+        /* Checkbox Custom */
+        .check-group { display: flex; align-items: start; gap: 12px; margin-bottom: 12px; cursor: pointer; }
+        .check-box { width: 20px; height: 20px; border: 1px solid #555; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 2px; transition: 0.2s; }
+        .check-box.checked { background: #D4AF37; border-color: #D4AF37; color: black; }
     </style>
 </head>
 <body>
@@ -56,9 +63,11 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // --- DATA CONSTANTS ---
+        // --- DATA OPTIONS ---
         const OPTIONS = {
             types: ['Couple (MF)', 'Couple (MM)', 'Couple (FF)', 'Single Female', 'Single Male'],
+            status: ['Married (Discreet)', 'Married (Open)', 'Attached', 'Single', 'Divorced'],
+            opsec: ['Public (Open to all)', 'Discreet (Face hidden)', 'Ghost (Zero digital footprint)'],
             roles: ['Dominant', 'Submissive', 'Switch', 'Voyeur', 'Exhibitionist', 'Vanilla'],
             experience: ['Curious', 'Exploring', 'Experienced', 'Veteran', 'Industry'],
             hosting: ['Cannot Host', 'Can Host (Private)', 'Can Host (Parties)'],
@@ -67,8 +76,8 @@
 
         // --- MOCK DATABASE ---
         const DB_MEMBERS = [
-            { id: 1, name: "DallasCouple", type: "Couple (MF)", role: "Switch", loc: "Dallas", img: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=800", bio: "Fun couple seeking friends.", tags: ["Soft Swap", "Parties"] },
-            { id: 2, name: "Mistress_K", type: "Single Female", role: "Dominant", loc: "NYC", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800", bio: "Experienced. Selective.", tags: ["BDSM", "Fetish"] },
+            { id: 1, name: "DallasCouple", type: "Couple (MF)", role: "Switch", loc: "Dallas", img: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=800", bio: "Fun couple seeking friends.", tags: ["Soft Swap", "Parties"], opsec: "Discreet" },
+            { id: 2, name: "Mistress_K", type: "Single Female", role: "Dominant", loc: "NYC", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800", bio: "Experienced. Selective.", tags: ["BDSM", "Fetish"], opsec: "Public" },
         ];
 
         // --- COMPONENTS ---
@@ -90,7 +99,7 @@
                     <div className="flex-1 p-6 overflow-y-auto">
                         <div className="grid grid-cols-2 gap-4 mb-6 text-sm text-gray-400">
                             <div className="bg-panel p-3 rounded border border-gray-800"><span className="block text-[10px] text-gold uppercase">Role</span>{member.role}</div>
-                            <div className="bg-panel p-3 rounded border border-gray-800"><span className="block text-[10px] text-gold uppercase">Status</span>Verified</div>
+                            <div className="bg-panel p-3 rounded border border-gray-800"><span className="block text-[10px] text-gold uppercase">OpSec</span>{member.opsec}</div>
                         </div>
                         <p className="text-gray-300 italic mb-6">"{member.bio}"</p>
                         <div className="flex flex-wrap gap-2 mb-8">
@@ -102,10 +111,10 @@
             );
         };
 
-        // 2. INTAKE FUNNEL (7 Stages)
+        // 2. DEEP INTAKE FUNNEL (9 Stages)
         const Funnel = ({ onComplete }) => {
             const [step, setStep] = useState(1);
-            const [data, setData] = useState({ interests: [], img: null });
+            const [data, setData] = useState({ interests: [], img: null, rules: { privacy: false, real: false, consent: false } });
 
             const next = () => setStep(s => s + 1);
             const update = (k, v) => setData({...data, [k]: v});
@@ -113,6 +122,11 @@
             const toggleInterest = (tag) => {
                 const newTags = data.interests.includes(tag) ? data.interests.filter(t => t !== tag) : [...data.interests, tag];
                 update('interests', newTags);
+            };
+
+            const toggleRule = (rule) => {
+                const newRules = { ...data.rules, [rule]: !data.rules[rule] };
+                update('rules', newRules);
             };
 
             const handlePhoto = (e) => {
@@ -126,20 +140,22 @@
 
             return (
                 <div className="h-screen bg-bg flex flex-col p-6">
-                    <div className="w-full h-1 bg-gray-900 mb-8"><div className="h-full bg-gold transition-all duration-300" style={{width: `${(step/7)*100}%`}}></div></div>
+                    <div className="w-full h-1 bg-gray-900 mb-8"><div className="h-full bg-gold transition-all duration-300" style={{width: `${(step/9)*100}%`}}></div></div>
                     
                     <div className="flex-1 max-w-md mx-auto w-full flex flex-col justify-center animate-in">
                         <span className="text-gold font-mono text-xs mb-2 block">PROTOCOL 0{step}</span>
                         
+                        {/* 1. IDENTITY */}
                         {step === 1 && (
                             <>
                                 <h2 className="text-3xl text-white font-head mb-6">Identity</h2>
                                 {OPTIONS.types.map(t => (
-                                    <button key={t} onClick={()=>{update('type', t); next()}} className="input-std text-left mb-3 hover:border-gold">{t}</button>
+                                    <button key={t} onClick={()=>{update('type', t); next()}} className="btn-option mb-3">{t}</button>
                                 ))}
                             </>
                         )}
 
+                        {/* 2. VITALS */}
                         {step === 2 && (
                             <>
                                 <h2 className="text-3xl text-white font-head mb-6">Vitals</h2>
@@ -150,7 +166,25 @@
                             </>
                         )}
 
+                        {/* 3. STATUS & OPSEC (NEW) */}
                         {step === 3 && (
+                            <>
+                                <h2 className="text-3xl text-white font-head mb-6">Status & OpSec</h2>
+                                <label className="text-gray-500 text-xs uppercase mb-2 block">Relationship Status</label>
+                                <select className="input-std mb-6" onChange={e=>update('status', e.target.value)}>
+                                    <option>Select...</option>{OPTIONS.status.map(s=><option key={s}>{s}</option>)}
+                                </select>
+                                <label className="text-gray-500 text-xs uppercase mb-2 block">Discretion Level</label>
+                                <select className="input-std mb-4" onChange={e=>update('opsec', e.target.value)}>
+                                    <option>Select...</option>{OPTIONS.opsec.map(o=><option key={o}>{o}</option>)}
+                                </select>
+                                <p className="text-xs text-gray-600 mt-2">"Ghost" hides your profile from public search.</p>
+                                <button onClick={next} className="bg-gold text-black font-bold py-4 w-full mt-4">CONTINUE</button>
+                            </>
+                        )}
+
+                        {/* 4. DYNAMICS */}
+                        {step === 4 && (
                             <>
                                 <h2 className="text-3xl text-white font-head mb-6">Dynamics</h2>
                                 <label className="text-gray-500 text-xs uppercase mb-2 block">Primary Role</label>
@@ -165,7 +199,8 @@
                             </>
                         )}
 
-                        {step === 4 && (
+                        {/* 5. LOGISTICS */}
+                        {step === 5 && (
                             <>
                                 <h2 className="text-3xl text-white font-head mb-6">Logistics</h2>
                                 <input className="input-std mb-4" placeholder="Primary City" onChange={e=>update('city', e.target.value)} />
@@ -177,19 +212,21 @@
                             </>
                         )}
 
-                        {step === 5 && (
+                        {/* 6. INTERESTS */}
+                        {step === 6 && (
                             <>
                                 <h2 className="text-3xl text-white font-head mb-6">Interests</h2>
                                 <div className="flex flex-wrap gap-3 mb-6">
                                     {OPTIONS.interests.map(i => (
-                                        <button key={i} onClick={()=>toggleInterest(i)} className={`tag-select ${data.interests.includes(i)?'active':''}`}>{i}</button>
+                                        <button key={i} onClick={()=>toggleInterest(i)} className={`border px-3 py-2 rounded text-xs ${data.interests.includes(i)?'bg-gold text-black border-gold':'border-gray-800 text-gray-500'}`}>{i}</button>
                                     ))}
                                 </div>
                                 <button onClick={next} className="bg-gold text-black font-bold py-4 w-full">CONTINUE</button>
                             </>
                         )}
 
-                        {step === 6 && (
+                        {/* 7. VERIFICATION */}
+                        {step === 7 && (
                             <>
                                 <h2 className="text-3xl text-white font-head mb-6">Verification</h2>
                                 <label className="block w-full h-64 border-2 border-dashed border-gray-700 relative flex items-center justify-center cursor-pointer hover:border-gold transition mb-6">
@@ -201,10 +238,34 @@
                             </>
                         )}
 
-                        {step === 7 && (
+                        {/* 8. THE PROTOCOL (NEW) */}
+                        {step === 8 && (
+                            <>
+                                <h2 className="text-3xl text-white font-head mb-6">The Protocol</h2>
+                                <p className="text-gray-400 text-sm mb-6">You must agree to our code of conduct to join. Violations result in an immediate ban.</p>
+                                
+                                <div className="check-group" onClick={()=>toggleRule('privacy')}>
+                                    <div className={`check-box ${data.rules.privacy?'checked':''}`}><i className="fas fa-check text-xs"></i></div>
+                                    <div><div className="text-white text-sm font-bold">Total Discretion</div><div className="text-gray-600 text-xs">I will not expose members outside this platform.</div></div>
+                                </div>
+                                <div className="check-group" onClick={()=>toggleRule('real')}>
+                                    <div className={`check-box ${data.rules.real?'checked':''}`}><i className="fas fa-check text-xs"></i></div>
+                                    <div><div className="text-white text-sm font-bold">Authenticity</div><div className="text-gray-600 text-xs">I am real. My photos are recent. I am not a catfish.</div></div>
+                                </div>
+                                <div className="check-group" onClick={()=>toggleRule('consent')}>
+                                    <div className={`check-box ${data.rules.consent?'checked':''}`}><i className="fas fa-check text-xs"></i></div>
+                                    <div><div className="text-white text-sm font-bold">Enthusiastic Consent</div><div className="text-gray-600 text-xs">No means no. Boundaries are absolute.</div></div>
+                                </div>
+
+                                <button onClick={next} disabled={!data.rules.privacy || !data.rules.real || !data.rules.consent} className="bg-gold text-black font-bold py-4 w-full mt-6 disabled:opacity-50">I AGREE</button>
+                            </>
+                        )}
+
+                        {/* 9. CREDENTIALS */}
+                        {step === 9 && (
                             <>
                                 <h2 className="text-3xl text-white font-head mb-6">Credentials</h2>
-                                <input className="input-std mb-4" placeholder="Username" onChange={e=>update('username', e.target.value)} />
+                                <input className="input-std mb-4" placeholder="Secure Username" onChange={e=>update('username', e.target.value)} />
                                 <input className="input-std mb-4" type="password" placeholder="Password" />
                                 <button onClick={()=>{ onComplete(data); }} className="bg-gold text-black font-bold py-4 w-full mt-4">INITIALIZE SYSTEM</button>
                             </>
@@ -261,6 +322,9 @@
                                         </div>
                                     </div>
                                     <div className="mt-6 border-t border-gray-800 pt-4">
+                                        <h4 className="text-xs text-gray-500 uppercase mb-2">OpSec Level</h4>
+                                        <div className="text-white text-sm mb-4">{user.opsec} • {user.status}</div>
+
                                         <h4 className="text-xs text-gray-500 uppercase mb-2">Vitals</h4>
                                         <div className="text-sm text-gray-300 grid grid-cols-2 gap-2">
                                             <div>Age: {user.age}</div>
@@ -294,17 +358,17 @@
             const [user, setUser] = useState(null);
 
             useEffect(() => {
-                const saved = localStorage.getItem('vc_user_v4');
+                const saved = localStorage.getItem('vc_user_v5');
                 if(saved) { setUser(JSON.parse(saved)); setMode('dash'); }
             }, []);
 
             const completeFunnel = (data) => {
-                localStorage.setItem('vc_user_v4', JSON.stringify(data));
+                localStorage.setItem('vc_user_v5', JSON.stringify(data));
                 setUser(data);
                 setMode('dash');
             };
 
-            return mode === 'funnel' ? <Funnel onComplete={completeFunnel} /> : <Dashboard user={user} logout={()=>{localStorage.removeItem('vc_user_v4'); setMode('funnel');}} />;
+            return mode === 'funnel' ? <Funnel onComplete={completeFunnel} /> : <Dashboard user={user} logout={()=>{localStorage.removeItem('vc_user_v5'); setMode('funnel');}} />;
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
