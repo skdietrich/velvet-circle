@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#000000">
-    <title>VELVET | Members Only</title>
+    <title>VELVET | Deep Vetting</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -20,14 +20,13 @@
                 extend: {
                     colors: {
                         gold: '#D4AF37',
-                        'gold-light': '#F3E5AB',
-                        'gold-dark': '#8A701E',
+                        'gold-dim': '#8A701E',
                         bg: '#050505',
                         panel: '#101010'
                     },
                     fontFamily: {
                         head: ['Playfair Display', 'serif'],
-                        body: ['Lato', 'sans-serif']
+                        body: ['Inter', 'sans-serif']
                     }
                 }
             }
@@ -35,11 +34,14 @@
     </script>
 
     <style>
-        body { background-color: #050505; color: #e0e0e0; -webkit-tap-highlight-color: transparent; }
-        .gold-gradient { background: linear-gradient(135deg, #D4AF37, #8A701E); }
-        .glass { background: rgba(16, 16, 16, 0.95); backdrop-filter: blur(10px); }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        body { background-color: #050505; color: #e0e0e0; }
+        .gold-border { border: 1px solid #D4AF37; }
+        .input-dark { background: #080808; border: 1px solid #333; color: white; padding: 15px; width: 100%; outline: none; transition: 0.2s; }
+        .input-dark:focus { border-color: #D4AF37; }
+        .btn-option { text-align: left; padding: 15px; border: 1px solid #333; width: 100%; transition: 0.2s; color: #aaa; }
+        .btn-option:hover, .btn-option.selected { border-color: #D4AF37; background: rgba(212,175,55,0.05); color: #fff; }
+        .progress-bar { height: 2px; background: #333; width: 100%; margin-bottom: 30px; }
+        .progress-fill { height: 100%; background: #D4AF37; transition: 0.3s; }
     </style>
 </head>
 <body>
@@ -48,275 +50,245 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
+        // --- DEEP DATA OPTIONS ---
+        const ROLES = ["Dominant", "Submissive", "Switch", "Voyeur", "Exhibitionist", "Vanilla"];
+        const EXP_LEVELS = ["Curious (New)", "Exploring", "Experienced", "Veteran", "Industry"];
+        const HOSTING = ["Cannot Host", "Can Host (Private)", "Can Host (Party)"];
+        const INTERESTS = ["Soft Swap", "Full Swap", "MFM", "FMF", "Orgy", "BDSM", "Hotwife", "Cuckold"];
+        
         // --- MOCK DATABASE ---
-        const DB_USERS = [
-            { id: 1, name: "TheVespers", type: "Couple (MF)", age: "32/29", city: "Dallas", img: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=800", verified: true, premium: true, privateCount: 42 },
-            { id: 2, name: "Mistress_K", type: "Female", age: "28", city: "New York", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800", verified: true, premium: true, privateCount: 118 },
-            { id: 3, name: "FitBull_TX", type: "Male", age: "35", city: "Houston", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=800", verified: false, premium: false, privateCount: 5 },
-            { id: 4, name: "VelvetCrush", type: "Female", age: "24", city: "Miami", img: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=800", verified: true, premium: true, privateCount: 60 },
-            { id: 5, name: "NightOwls", type: "Couple (FF)", age: "26/28", city: "LA", img: "https://images.unsplash.com/photo-1518556865737-124b89182352?q=80&w=800", verified: true, premium: false, privateCount: 12 },
+        const DB_MEMBERS = [
+            { id: 1, name: "DallasCouple", type: "Couple (MF)", role: "Switch", exp: "Veteran", city: "Dallas", img: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=800", verified: true },
+            { id: 2, name: "Mistress_K", type: "Female", role: "Dominant", exp: "Industry", city: "NYC", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800", verified: true },
         ];
 
-        const INTERESTS = ["Couples", "Singles", "Groups", "Photography", "Travel", "Nightlife", "Private Parties", "Verified Only"];
-
-        // --- COMPONENTS ---
-
-        // PAYWALL MODAL
-        const Paywall = ({ onClose }) => (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm animate-[fadeIn_0.2s]">
-                <div className="bg-panel border border-gold w-full max-w-sm rounded-lg overflow-hidden shadow-2xl relative">
-                    <button onClick={onClose} className="absolute top-3 right-3 text-gray-500 hover:text-white"><i className="fas fa-times"></i></button>
-                    <div className="h-32 bg-cover bg-center" style={{backgroundImage: "url('https://images.unsplash.com/photo-1550524514-41da92652495?q=80&w=800')"}}>
-                        <div className="w-full h-full bg-black/60 flex items-center justify-center">
-                            <h2 className="font-head text-2xl text-gold">Velvet Premium</h2>
-                        </div>
-                    </div>
-                    <div className="p-6 text-center">
-                        <p className="text-gray-300 mb-6 text-sm">Upgrade to unlock <strong>Private Galleries</strong> and <strong>Unlimited Messaging</strong>.</p>
-                        <div className="space-y-3">
-                            <button className="w-full gold-gradient text-black font-bold py-3 rounded uppercase text-sm tracking-widest hover:brightness-110 transition">Get Access - $29/mo</button>
-                            <button className="w-full border border-gray-700 text-gray-400 font-bold py-3 rounded uppercase text-sm tracking-widest hover:border-gold hover:text-gold transition">3-Day Trial - $9.99</button>
-                        </div>
-                        <p className="text-xs text-gray-600 mt-4">Discreet billing. Cancel anytime.</p>
-                    </div>
-                </div>
-            </div>
-        );
-
-        // APP SHELL
         function App() {
             const [user, setUser] = useState(null);
-            const [step, setStep] = useState(0); 
-            const [view, setView] = useState('home');
-            const [showPaywall, setShowPaywall] = useState(false);
-            const [formData, setFormData] = useState({ username: '', type: 'Couple (MF)', interests: [], img: null });
-            const [photoPreview, setPhotoPreview] = useState(null);
+            const [step, setStep] = useState(0); // 0=Splash, 1-7=Funnel, 8=App
+            const [formData, setFormData] = useState({
+                type: '', 
+                height: '', bodyType: '', ethnicity: '',
+                role: '', experience: '',
+                hosting: '', city: '', radius: '',
+                interests: [],
+                img: null, username: ''
+            });
 
-            // Init
+            // INIT
             useEffect(() => {
-                const saved = localStorage.getItem('vc_adult_user');
+                const saved = localStorage.getItem('vc_deep_user');
                 if(saved) {
                     setUser(JSON.parse(saved));
-                    setStep(5);
+                    setStep(8);
                 }
             }, []);
 
-            // Handle Photo File
-            const handlePhotoUpload = (e) => {
+            // ACTIONS
+            const update = (field, val) => setFormData({...formData, [field]: val});
+            
+            const toggleInterest = (tag) => {
+                const newTags = formData.interests.includes(tag) 
+                    ? formData.interests.filter(t => t !== tag) 
+                    : [...formData.interests, tag];
+                update('interests', newTags);
+            };
+
+            const handlePhoto = (e) => {
                 const file = e.target.files[0];
-                if (file) {
+                if(file) {
                     const reader = new FileReader();
-                    reader.onloadend = () => {
-                        setPhotoPreview(reader.result);
-                        setFormData({...formData, img: reader.result});
-                    };
+                    reader.onloadend = () => update('img', reader.result);
                     reader.readAsDataURL(file);
                 }
             };
 
-            const saveUser = () => {
-                const newUser = { ...formData, id: Date.now(), isPremium: false };
-                localStorage.setItem('vc_adult_user', JSON.stringify(newUser));
+            const finish = () => {
+                const newUser = { ...formData, id: Date.now() };
+                localStorage.setItem('vc_deep_user', JSON.stringify(newUser));
                 setUser(newUser);
-                setStep(5);
+                setStep(8);
             };
 
-            const toggleInterest = (tag) => {
-                const newInterests = formData.interests.includes(tag) 
-                    ? formData.interests.filter(i => i !== tag)
-                    : [...formData.interests, tag];
-                setFormData({...formData, interests: newInterests});
-            };
+            // --- RENDERERS ---
 
-            // --- SPLASH ---
-            if (step === 0) return (
-                <div className="h-screen w-full relative flex flex-col justify-end pb-20 px-6">
-                    <div className="absolute inset-0 bg-cover bg-center z-0" style={{backgroundImage: "url('https://cdni.pornpics.com/1280/1/86/13388789/13388789_001_c465.jpg')"}}></div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10"></div>
-                    <div className="relative z-20 text-center">
-                        <h1 className="font-head text-5xl text-gold mb-2">VELVET</h1>
-                        <p className="text-gray-300 text-sm tracking-[0.2em] mb-8 uppercase">The Inner Circle</p>
-                        <button onClick={() => setStep(1)} className="w-full max-w-xs mx-auto gold-gradient text-black font-bold py-4 rounded uppercase tracking-widest text-sm shadow-lg shadow-gold/20">Apply for Access</button>
+            // SPLASH
+            if(step === 0) return (
+                <div className="h-screen w-full flex flex-col justify-center items-center p-6 bg-black relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-40 bg-[url('https://cdni.pornpics.com/1280/1/86/13388789/13388789_001_c465.jpg')] bg-cover bg-center"></div>
+                    <div className="z-10 text-center">
+                        <h1 className="font-head text-6xl text-gold mb-4">VELVET</h1>
+                        <p className="text-gray-400 tracking-[0.3em] text-xs uppercase mb-12">Private Application Portal</p>
+                        <button onClick={()=>setStep(1)} className="border border-gold text-gold px-12 py-4 font-bold uppercase tracking-widest hover:bg-gold hover:text-black transition">
+                            Begin Vetting
+                        </button>
                     </div>
                 </div>
             );
 
-            // --- ONBOARDING ---
-            if (step > 0 && step < 5) return (
-                <div className="h-screen bg-bg flex items-center justify-center p-6">
-                    <div className="w-full max-w-md">
-                        <div className="flex justify-between items-center mb-8">
-                            <span className="text-gold font-head text-xl">VELVET</span>
-                            <span className="text-gray-600 font-body text-xs">STEP {step} / 4</span>
+            // FUNNEL CONTAINER
+            if(step > 0 && step < 8) return (
+                <div className="h-screen bg-bg flex items-center justify-center p-4">
+                    <div className="w-full max-w-lg">
+                        <div className="progress-bar"><div className="progress-fill" style={{width: `${(step/7)*100}%`}}></div></div>
+                        
+                        <div className="mb-8">
+                            <span className="text-gold text-xs font-bold uppercase tracking-wider">Protocol {step} / 07</span>
+                            <h2 className="font-head text-3xl text-white mt-2">
+                                {step===1 && "Identity"}
+                                {step===2 && "Vitals"}
+                                {step===3 && "Dynamics"}
+                                {step===4 && "Logistics"}
+                                {step===5 && "Interests"}
+                                {step===6 && "Verification"}
+                                {step===7 && "Credentials"}
+                            </h2>
                         </div>
 
+                        {/* STEP 1: IDENTITY */}
                         {step === 1 && (
-                            <div className="space-y-6">
-                                <h2 className="font-head text-3xl text-white">Who are you?</h2>
-                                <div className="space-y-3">
-                                    {['Couple (MF)', 'Couple (MM)', 'Couple (FF)', 'Single Female', 'Single Male'].map(opt => (
-                                        <button key={opt} onClick={() => { setFormData({...formData, type: opt}); setStep(2); }}
-                                            className="w-full text-left p-4 border border-gray-800 rounded hover:border-gold hover:bg-gold/10 hover:text-gold transition text-gray-300">
-                                            {opt}
-                                        </button>
-                                    ))}
-                                </div>
+                            <div className="space-y-3">
+                                {['Couple (MF)', 'Couple (MM)', 'Couple (FF)', 'Single Female', 'Single Male'].map(opt => (
+                                    <button key={opt} onClick={()=>{update('type', opt); setStep(2)}} 
+                                        className={`btn-option ${formData.type===opt?'selected':''}`}>{opt}</button>
+                                ))}
                             </div>
                         )}
 
+                        {/* STEP 2: VITALS */}
                         {step === 2 && (
-                            <div className="space-y-6">
-                                <h2 className="font-head text-3xl text-white">Your Interests</h2>
-                                <div className="flex flex-wrap gap-3">
-                                    {INTERESTS.map(tag => (
-                                        <button key={tag} onClick={() => toggleInterest(tag)}
-                                            className={`px-4 py-2 rounded-full text-xs font-bold border transition ${formData.interests.includes(tag) ? 'bg-gold text-black border-gold' : 'border-gray-700 text-gray-400'}`}>
-                                            {tag}
-                                        </button>
-                                    ))}
-                                </div>
-                                <button onClick={() => setStep(3)} className="w-full gold-gradient text-black font-bold py-4 rounded mt-8">CONTINUE</button>
+                            <div className="space-y-4">
+                                <div><label className="text-xs text-gray-500 uppercase">Height</label><input className="input-dark" placeholder="e.g. 5'10 / 178cm" onChange={e=>update('height', e.target.value)} /></div>
+                                <div><label className="text-xs text-gray-500 uppercase">Body Type</label><input className="input-dark" placeholder="e.g. Athletic, Curvy, Slim" onChange={e=>update('bodyType', e.target.value)} /></div>
+                                <div><label className="text-xs text-gray-500 uppercase">Ethnicity</label><input className="input-dark" placeholder="Optional" onChange={e=>update('ethnicity', e.target.value)} /></div>
+                                <button onClick={()=>setStep(3)} className="w-full bg-gold text-black font-bold py-4 mt-4">NEXT</button>
                             </div>
                         )}
 
-                        {/* STEP 3: PHOTO UPLOAD (FIXED) */}
+                        {/* STEP 3: DYNAMICS */}
                         {step === 3 && (
                             <div className="space-y-6">
-                                <h2 className="font-head text-3xl text-white">Verification</h2>
-                                
-                                <label className="block cursor-pointer group">
-                                    <input type="file" className="hidden" accept="image/*" onChange={handlePhotoUpload} />
-                                    <div className={`border-2 border-dashed border-gray-700 rounded-lg p-10 text-center transition group-hover:border-gold ${photoPreview ? 'p-0 overflow-hidden border-solid border-gold' : ''}`}>
-                                        {photoPreview ? (
-                                            <img src={photoPreview} className="w-full h-64 object-cover" />
-                                        ) : (
-                                            <>
-                                                <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4 text-gold group-hover:bg-gray-700 transition">
-                                                    <i className="fas fa-camera text-2xl"></i>
-                                                </div>
-                                                <p className="text-gray-400 text-sm group-hover:text-white">Tap to Upload Profile Photo</p>
-                                                <p className="text-gray-600 text-xs mt-2">Nudity allowed in private gallery only.</p>
-                                            </>
-                                        )}
+                                <div>
+                                    <label className="text-xs text-gold uppercase mb-2 block">Primary Role</label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {ROLES.map(r => <button key={r} onClick={()=>update('role', r)} className={`btn-option text-center ${formData.role===r?'selected':''}`}>{r}</button>)}
                                     </div>
-                                </label>
-
-                                <button onClick={() => setStep(4)} className={`w-full font-bold py-4 rounded uppercase tracking-widest text-sm transition ${photoPreview ? 'gold-gradient text-black shadow-lg' : 'border border-gold text-gold'}`}>
-                                    {photoPreview ? 'Confirm & Continue' : 'Skip for Now'}
-                                </button>
+                                </div>
+                                <div>
+                                    <label className="text-xs text-gold uppercase mb-2 block">Experience Level</label>
+                                    <select className="input-dark" onChange={e=>update('experience', e.target.value)}>
+                                        <option>Select Level...</option>
+                                        {EXP_LEVELS.map(e=><option key={e}>{e}</option>)}
+                                    </select>
+                                </div>
+                                <button onClick={()=>setStep(4)} className="w-full bg-gold text-black font-bold py-4 mt-4">NEXT</button>
                             </div>
                         )}
 
+                        {/* STEP 4: LOGISTICS */}
                         {step === 4 && (
-                            <div className="space-y-6">
-                                <h2 className="font-head text-3xl text-white">Secure Account</h2>
-                                <div className="space-y-4">
-                                    <div><label className="text-xs text-gold uppercase tracking-wider block mb-2">Username</label>
-                                    <input type="text" className="w-full bg-panel border border-gray-700 rounded p-3 text-white focus:border-gold outline-none" onChange={e => setFormData({...formData, username: e.target.value})} /></div>
-                                    <div><label className="text-xs text-gold uppercase tracking-wider block mb-2">Password</label>
-                                    <input type="password" class="w-full bg-panel border border-gray-700 rounded p-3 text-white focus:border-gold outline-none" /></div>
+                            <div className="space-y-4">
+                                <div><label className="text-xs text-gray-500 uppercase">Home City</label><input className="input-dark" placeholder="City, State" onChange={e=>update('city', e.target.value)} /></div>
+                                <div>
+                                    <label className="text-xs text-gray-500 uppercase">Hosting Capability</label>
+                                    <div className="space-y-2 mt-2">
+                                        {HOSTING.map(h => <button key={h} onClick={()=>update('hosting', h)} className={`btn-option ${formData.hosting===h?'selected':''}`}>{h}</button>)}
+                                    </div>
                                 </div>
-                                <button onClick={saveUser} className="w-full gold-gradient text-black font-bold py-4 rounded mt-4">FINISH SETUP</button>
+                                <button onClick={()=>setStep(5)} className="w-full bg-gold text-black font-bold py-4 mt-4">NEXT</button>
+                            </div>
+                        )}
+
+                        {/* STEP 5: INTERESTS */}
+                        {step === 5 && (
+                            <div>
+                                <div className="grid grid-cols-2 gap-3 mb-8">
+                                    {INTERESTS.map(tag => (
+                                        <button key={tag} onClick={()=>toggleInterest(tag)} 
+                                            className={`btn-option text-center ${formData.interests.includes(tag)?'selected':''}`}>{tag}</button>
+                                    ))}
+                                </div>
+                                <button onClick={()=>setStep(6)} className="w-full bg-gold text-black font-bold py-4">NEXT</button>
+                            </div>
+                        )}
+
+                        {/* STEP 6: PHOTO (FIXED CLICK) */}
+                        {step === 6 && (
+                            <div>
+                                <label className="block w-full h-64 border-2 border-dashed border-gray-700 hover:border-gold cursor-pointer flex items-center justify-center relative bg-panel transition">
+                                    <input type="file" className="hidden" accept="image/*" onChange={handlePhoto} />
+                                    {formData.img ? (
+                                        <img src={formData.img} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="text-center text-gray-500">
+                                            <i className="fas fa-camera text-4xl mb-2"></i>
+                                            <p className="text-xs uppercase tracking-widest">Upload Verification Photo</p>
+                                        </div>
+                                    )}
+                                </label>
+                                <p className="text-xs text-gray-600 mt-4 text-center">Photo required for verification. Will be kept private by default.</p>
+                                <button onClick={()=>setStep(7)} disabled={!formData.img} className="w-full bg-gold text-black font-bold py-4 mt-6 disabled:opacity-50">CONFIRM UPLOAD</button>
+                            </div>
+                        )}
+
+                        {/* STEP 7: CREDENTIALS */}
+                        {step === 7 && (
+                            <div className="space-y-4">
+                                <div><label className="text-xs text-gray-500 uppercase">Secure Username</label><input className="input-dark" onChange={e=>update('username', e.target.value)} /></div>
+                                <div><label className="text-xs text-gray-500 uppercase">Password</label><input type="password" class="input-dark" /></div>
+                                <button onClick={finish} className="w-full bg-gold text-black font-bold py-4 mt-6">INITIALIZE PROFILE</button>
                             </div>
                         )}
                     </div>
                 </div>
             );
 
-            // --- MAIN APP ---
-            return (
-                <div className="h-screen flex flex-col md:flex-row bg-bg">
-                    {showPaywall && <Paywall onClose={() => setShowPaywall(false)} />}
-
-                    {/* SIDEBAR */}
-                    <div className="hidden md:flex w-64 bg-black border-r border-gray-800 flex-col p-6">
-                        <h1 className="font-head text-2xl text-gold mb-10">VELVET</h1>
-                        <nav className="space-y-2 flex-1">
-                            {['Home', 'Search', 'Messages', 'Profile'].map(item => (
-                                <div key={item} onClick={() => setView(item.toLowerCase())} className={`p-3 rounded cursor-pointer flex items-center gap-4 transition ${view === item.toLowerCase() ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gold'}`}>
-                                    <i className={`fas fa-${item === 'Home' ? 'home' : item === 'Search' ? 'search' : item === 'Messages' ? 'comment-alt' : 'user'}`}></i>
-                                    <span className="font-body font-bold text-sm uppercase tracking-wide">{item}</span>
-                                </div>
-                            ))}
-                        </nav>
-                        <button onClick={() => setShowPaywall(true)} className="w-full border border-gold text-gold text-xs py-2 rounded hover:bg-gold hover:text-black transition">UPGRADE</button>
+            // APP DASHBOARD (DEEP DATA DISPLAY)
+            if(step === 8) return (
+                <div className="h-screen bg-bg flex flex-col">
+                    <div className="h-16 border-b border-gray-800 flex items-center justify-between px-6 bg-panel">
+                        <span className="font-head text-xl text-gold">VELVET</span>
+                        <div className="flex items-center gap-4">
+                            <span className="text-xs text-gray-500 uppercase tracking-widest">ID: {user.username}</span>
+                            <img src={user.img} className="w-8 h-8 rounded-full border border-gold object-cover" />
+                        </div>
                     </div>
 
-                    {/* CONTENT */}
-                    <div className="flex-1 overflow-y-auto relative">
-                        <div className="md:hidden h-16 bg-black/90 backdrop-blur border-b border-gray-800 flex items-center justify-between px-4 sticky top-0 z-40">
-                            <span className="font-head text-xl text-gold">VELVET</span>
-                            <div className="w-8 h-8 rounded-full bg-gray-800 border border-gold overflow-hidden">
-                                {user?.img && <img src={user.img} className="w-full h-full object-cover" />}
-                            </div>
-                        </div>
-
-                        <div className="p-4 md:p-8 pb-24 max-w-6xl mx-auto">
-                            {view === 'home' && (
-                                <div className="space-y-8">
-                                    <div className="bg-panel border border-gray-800 rounded-lg p-6 relative overflow-hidden">
-                                        <h3 className="font-head text-xl text-white mb-2">Travel Plans</h3>
-                                        <p className="text-gray-500 text-sm mb-4">Post your trip. Find matches in your destination.</p>
-                                        <button onClick={() => setShowPaywall(true)} className="text-gold text-xs font-bold uppercase tracking-wider flex items-center gap-2">Add Trip <i className="fas fa-plus"></i></button>
+                    <div className="flex-1 overflow-y-auto p-6">
+                        <div className="max-w-4xl mx-auto">
+                            {/* MY DOSSIER */}
+                            <div className="bg-panel border border-gray-800 p-6 mb-8 flex gap-6 items-start">
+                                <img src={user.img} className="w-32 h-32 object-cover border border-gray-700" />
+                                <div className="flex-1">
+                                    <h2 className="text-2xl text-white font-head mb-2">{user.username} <span className="text-xs text-gold border border-gold px-2 py-0.5 rounded ml-2">VERIFIED</span></h2>
+                                    <div className="grid grid-cols-2 gap-4 text-sm text-gray-400 mt-4">
+                                        <div><span className="text-gray-600 uppercase text-[10px] block">Role</span>{user.role}</div>
+                                        <div><span className="text-gray-600 uppercase text-[10px] block">Experience</span>{user.experience}</div>
+                                        <div><span className="text-gray-600 uppercase text-[10px] block">Location</span>{user.city}</div>
+                                        <div><span className="text-gray-600 uppercase text-[10px] block">Hosting</span>{user.hosting}</div>
                                     </div>
-                                    <div>
-                                        <h3 className="font-head text-2xl text-white mb-4">Featured Members</h3>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                            {DB_USERS.map(u => (
-                                                <div key={u.id} className="bg-panel border border-gray-800 rounded-lg overflow-hidden cursor-pointer hover:border-gold transition">
-                                                    <div className="relative h-64">
-                                                        <img src={u.img} className="w-full h-full object-cover" />
-                                                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90"></div>
-                                                        <div className="absolute bottom-4 left-4">
-                                                            <div className="flex items-center gap-2">
-                                                                <h4 className="text-white font-bold text-lg">{u.name}</h4>
-                                                                {u.verified && <i className="fas fa-check-circle text-blue-400"></i>}
-                                                            </div>
-                                                            <p className="text-gray-400 text-xs">{u.type} • {u.city}</p>
-                                                        </div>
-                                                        <div className="absolute top-3 right-3 bg-black/60 backdrop-blur px-2 py-1 rounded text-xs text-white border border-gray-700">
-                                                            <i className="fas fa-lock text-gold mr-1"></i> {u.privateCount}
-                                                        </div>
-                                                    </div>
-                                                    <div className="p-3 flex justify-between border-t border-gray-800">
-                                                        <button className="text-gray-400 hover:text-white"><i className="far fa-heart"></i></button>
-                                                        <button onClick={() => setShowPaywall(true)} className="text-gray-400 hover:text-gold"><i className="far fa-comment-alt"></i></button>
-                                                        <button onClick={() => setShowPaywall(true)} className="text-gray-400 hover:text-blue-400"><i className="fas fa-gift"></i></button>
-                                                    </div>
-                                                </div>
-                                            ))}
+                                </div>
+                            </div>
+
+                            <h3 className="text-gold text-sm uppercase tracking-widest mb-4 border-b border-gray-800 pb-2">Member Directory</h3>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {DB_MEMBERS.map(m => (
+                                    <div key={m.id} className="bg-panel border border-gray-800 p-4 flex gap-4 cursor-pointer hover:border-gold transition">
+                                        <img src={m.img} className="w-20 h-20 object-cover" />
+                                        <div>
+                                            <div className="text-white font-bold">{m.name}</div>
+                                            <div className="text-xs text-gray-500 mt-1">{m.type} • {m.city}</div>
+                                            <div className="flex gap-2 mt-3">
+                                                <span className="text-[10px] border border-gray-700 px-2 py-0.5 text-gray-400">{m.role}</span>
+                                                <span className="text-[10px] border border-gray-700 px-2 py-0.5 text-gray-400">{m.exp}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
-
-                            {view === 'messages' && (
-                                <div className="text-center py-20">
-                                    <i className="fas fa-lock text-2xl text-gold mb-4"></i>
-                                    <h3 className="text-xl text-white font-head mb-2">Messages are Locked</h3>
-                                    <p className="text-gray-500 mb-6">Upgrade to initiate conversations.</p>
-                                    <button onClick={() => setShowPaywall(true)} className="gold-gradient text-black font-bold py-3 px-8 rounded uppercase text-sm">Unlock Inbox</button>
-                                </div>
-                            )}
-
-                            {view === 'profile' && (
-                                <div className="text-center pt-10">
-                                    <div className="w-24 h-24 rounded-full bg-gray-800 border-2 border-gold mx-auto overflow-hidden mb-4">
-                                        {user?.img ? <img src={user.img} className="w-full h-full object-cover" /> : <i className="fas fa-user text-4xl text-gray-600 mt-6"></i>}
-                                    </div>
-                                    <h2 className="text-2xl text-white font-head">{user?.username}</h2>
-                                    <button className="text-red-500 mt-8 text-sm" onClick={() => { localStorage.removeItem('vc_adult_user'); setStep(0); }}>Log Out</button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-black border-t border-gray-800 h-16 flex justify-around items-center px-2 z-50">
-                         {['Home', 'Search', 'Messages', 'Profile'].map(item => (
-                            <div key={item} onClick={() => setView(item.toLowerCase())} className={`flex flex-col items-center gap-1 w-16 ${view === item.toLowerCase() ? 'text-gold' : 'text-gray-600'}`}>
-                                <i className={`text-xl fas fa-${item === 'Home' ? 'home' : item === 'Search' ? 'search' : item === 'Messages' ? 'comment-alt' : 'user'}`}></i>
+                                ))}
                             </div>
-                        ))}
+
+                             <button onClick={()=>{localStorage.removeItem('vc_deep_user'); setStep(0);}} className="mt-12 text-red-500 text-xs uppercase tracking-widest hover:text-white">Log Out</button>
+                        </div>
                     </div>
                 </div>
             );
