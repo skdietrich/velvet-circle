@@ -1,324 +1,382 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="dark light" />
-  <title>Velvet Circle Society — Members Only</title>
-  
-  <style>
-    :root{
-      --gold: #D4AF37;
-      --bg: #07070a;
-      --text: #ffffff;
-      --muted: rgba(255,255,255,0.7);
-      --border: rgba(255,255,255,0.2);
-      --font: system-ui, -apple-system, sans-serif;
-      --serif: Georgia, serif;
-    }
-
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <title>VELVET | Secure Enclave</title>
     
-    body {
-      margin: 0;
-      font-family: var(--font);
-      color: var(--text);
-      /* YOUR PHOTO - NO BLUR */
-      background: url('https://cdni.pornpics.com/1280/1/86/13388789/13388789_001_c465.jpg') no-repeat center center fixed;
-      background-size: cover;
-      overflow-x: hidden;
-    }
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    /* Layout */
-    .wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 20px;
-      position: relative;
-      z-index: 2; /* Sit above the dark overlay */
-    }
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    /* Clear Header */
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 0;
-      background: rgba(0,0,0,0.8); /* readable header */
-      padding: 15px 25px;
-      border-radius: 12px;
-      margin-bottom: 40px;
-      border: 1px solid var(--border);
-    }
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --gold-dim: #7a631f;
+            --alert: #c0392b;
+            --success: #27ae60;
+            --bg: #030303;
+            --panel: #0a0a0a;
+            --border: #222;
+            --font-ui: 'Inter', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
 
-    .brand h1 {
-      margin: 0;
-      font-size: 14px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--gold);
-    }
+        /* ─── MILITARY GRADE RESET ─── */
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { 
+            margin: 0; background: var(--bg); color: #fff;
+            font-family: var(--font-ui); height: 100vh; overflow: hidden;
+        }
+        h1, h2, h3 { font-family: 'Cinzel', serif; color: var(--gold); }
+        
+        /* ─── UTILS ─── */
+        .flex { display: flex; align-items: center; }
+        .flex-col { display: flex; flex-direction: column; }
+        .justify-between { justify-content: space-between; }
+        .center { display: flex; align-items: center; justify-content: center; }
+        .w-full { width: 100%; }
+        .text-gold { color: var(--gold); }
+        .text-mono { font-family: var(--font-code); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+        
+        /* ─── UI KIT ─── */
+        .btn-gold {
+            background: linear-gradient(180deg, var(--gold), var(--gold-dim));
+            color: #000; font-weight: 800; text-transform: uppercase; padding: 14px;
+            border: 1px solid var(--gold); cursor: pointer; font-size: 12px; letter-spacing: 2px;
+            transition: all 0.2s; width: 100%;
+        }
+        .btn-gold:active { transform: scale(0.98); filter: brightness(0.8); }
+        .btn-outline {
+            background: transparent; border: 1px solid #333; color: #666;
+            padding: 12px; text-transform: uppercase; font-family: var(--font-code);
+            font-size: 10px; cursor: pointer; transition: 0.2s;
+        }
+        .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
 
-    /* Hero Section */
-    .hero {
-      background: rgba(0, 0, 0, 0.85); /* Dark card so text pops */
-      border: 1px solid var(--gold);
-      border-radius: 4px;
-      padding: 40px;
-      max-width: 600px;
-      margin-top: 40px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-    }
+        .input-group { margin-bottom: 20px; }
+        .input-label { 
+            display: block; color: var(--gold); font-family: var(--font-code); 
+            font-size: 10px; margin-bottom: 8px;
+        }
+        .input-field {
+            background: #050505; border: 1px solid #333; color: #fff; width: 100%;
+            padding: 16px; font-family: var(--font-ui); font-size: 16px; border-radius: 2px;
+        }
+        .input-field:focus { border-color: var(--gold); }
 
-    .hero h2 {
-      margin: 0 0 20px;
-      font-family: var(--serif);
-      font-size: 38px;
-      color: #fff;
-    }
+        /* ─── SECURE BOOT ─── */
+        .boot-screen {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            font-family: var(--font-code); padding: 40px; color: var(--gold);
+            display: flex; flex-direction: column; justify-content: flex-end;
+        }
+        .log-line { margin-bottom: 5px; opacity: 0; animation: typeOn 0.1s forwards; font-size: 12px; }
+        @keyframes typeOn { to { opacity: 1; } }
 
-    .hero p {
-      line-height: 1.6;
-      color: #ccc;
-      margin-bottom: 30px;
-    }
+        /* ─── APP LAYOUT ─── */
+        .app-shell { display: flex; height: 100vh; }
+        .sidebar {
+            width: 280px; background: #080808; border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; z-index: 20;
+        }
+        .main-area { 
+            flex: 1; display: flex; flex-direction: column; position: relative; 
+            background: url('https://cdni.pornpics.com/1280/1/86/13388789/13388789_001_c465.jpg') center/cover; 
+        }
+        .main-overlay { position: absolute; inset: 0; background: rgba(5,5,5,0.85); z-index: 0; backdrop-filter: blur(10px); }
+        .content { position: relative; z-index: 1; flex: 1; overflow-y: auto; padding: 20px; }
 
-    /* Buttons */
-    .btn {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.3);
-      color: #fff;
-      padding: 12px 20px;
-      text-transform: uppercase;
-      font-size: 12px;
-      letter-spacing: 1px;
-      cursor: pointer;
-      font-weight: 700;
-    }
-    .btn-primary {
-      background: var(--gold);
-      color: #000;
-      border-color: var(--gold);
-    }
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+        /* ─── CARDS ─── */
+        .card {
+            background: rgba(20,20,20,0.8); border: 1px solid #333; padding: 20px;
+            margin-bottom: 15px; border-left: 2px solid var(--gold);
+        }
+        .card h4 { margin: 0 0 5px 0; color: #fff; font-size: 14px; }
+        .card p { margin: 0; color: #888; font-size: 12px; font-family: var(--font-code); }
 
-    /* Modals */
-    .backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.9); /* Dark background for modals */
-      backdrop-filter: blur(5px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-    .backdrop[data-open="true"] { display: flex; }
-
-    .modal {
-      background: #111;
-      border: 1px solid var(--gold);
-      width: 100%;
-      max-width: 450px;
-      padding: 30px;
-      border-radius: 4px;
-    }
-
-    .modal h3 { margin-top: 0; color: var(--gold); text-transform: uppercase; font-size: 14px; }
-    
-    .inline {
-      display: flex;
-      gap: 15px;
-      align-items: flex-start;
-      margin: 20px 0;
-      padding: 15px;
-      background: #222;
-      border: 1px solid #333;
-    }
-    
-    .actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--gold);
-      color: #000;
-      padding: 12px 24px;
-      font-weight: bold;
-      display: none;
-      z-index: 10000;
-    }
-    .toast[data-open="true"] { display: block; }
-    
-    input {
-        width: 100%;
-        padding: 12px;
-        background: #000;
-        border: 1px solid #444;
-        color: #fff;
-        margin-bottom: 15px;
-    }
-    label {
-        text-transform: uppercase;
-        font-size: 10px;
-        color: var(--gold);
-        display: block;
-        margin-bottom: 5px;
-    }
-
-  </style>
+        /* ─── CHAT ─── */
+        .msg { padding: 10px 15px; background: #222; border: 1px solid #333; margin-bottom: 10px; max-width: 80%; }
+        .msg.me { align-self: flex-end; border-color: var(--gold); background: rgba(212,175,55,0.1); }
+        
+        /* ─── MOBILE ─── */
+        .mobile-nav { display: none; }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .mobile-nav {
+                display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 70px;
+                background: #000; border-top: 1px solid var(--border); z-index: 100;
+                justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom);
+            }
+            .nav-icon { color: #555; font-size: 20px; }
+            .nav-icon.active { color: var(--gold); }
+        }
+    </style>
 </head>
-
 <body>
+    <div id="root"></div>
 
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <h1>Velvet Circle Society</h1>
-      </div>
-      <nav>
-        <button class="btn" id="btnOpenLogin">Sign In</button>
-        <button class="btn btn-primary" id="btnOpenJoin">Apply</button>
-      </nav>
-    </header>
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
 
-    <main>
-      <div class="hero">
-        <h2>Discretion by design.<br/>Connection by intent.</h2>
-        <p>
-          A private, members-only community for adults who value boundaries,
-          privacy, and meaningful connections.
-        </p>
-        <div style="display: flex; gap: 10px;">
-            <button class="btn btn-primary" id="btnHeroJoin">Request Access</button>
-            <button class="btn">View Gallery</button>
-        </div>
-      </div>
-    </main>
-  </div>
+        // --- MOCK DATABASE ---
+        const DB_MEMBERS = [
+            { id: 1, name: "Vesper_Couple", type: "Couple (MF)", loc: "Dallas, TX", status: "Online", verified: true },
+            { id: 2, name: "Midnight_Rose", type: "Female", loc: "New York, NY", status: "Traveling", verified: true },
+            { id: 3, name: "Alpha_One", type: "Male", loc: "London, UK", status: "Offline", verified: false },
+        ];
 
-  <div class="backdrop" id="modalAge" data-open="true">
-    <div class="modal">
-      <header>
-        <h3>Age Verification</h3>
-      </header>
-      <div>
-        <p style="color:#ccc; line-height:1.5;">
-          You must be <strong>18+</strong> to enter. This community contains adult themes.
-        </p>
-        <div class="inline">
-          <input type="checkbox" id="chk18" style="width: auto; margin-bottom:0;" />
-          <div style="font-size: 13px; color: #fff;">
-            <strong>I confirm I am 18+</strong>
-          </div>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="btn" id="btnLeave">Exit</button>
-        <button class="btn btn-primary" id="btnContinue" disabled>Enter Site</button>
-      </div>
-    </div>
-  </div>
+        // --- COMPONENT: SECURE BOOT ---
+        const BootSequence = ({ onComplete }) => {
+            const [lines, setLines] = useState([]);
+            const logs = [
+                "INITIALIZING SECURE ENCLAVE...",
+                "VERIFYING INTEGRITY...",
+                "ESTABLISHING ENCRYPTED TUNNEL...",
+                "HANDSHAKE SUCCESSFUL...",
+                "LOADING CORE MODULES...",
+                "ACCESS GRANTED."
+            ];
 
-  <div class="backdrop" id="modalLogin" data-open="false">
-    <div class="modal">
-      <h3>Member Login</h3>
-      <label>Email / Username</label>
-      <input type="text" placeholder="Enter ID" />
-      <label>Password</label>
-      <input type="password" placeholder="••••••••" />
-      <div class="actions">
-        <button class="btn" data-action="closeLogin">Cancel</button>
-        <button class="btn btn-primary" onclick="alert('Demo Login Successful')">Login</button>
-      </div>
-    </div>
-  </div>
-  
-    <div class="backdrop" id="modalJoin" data-open="false">
-    <div class="modal">
-      <h3>Request Membership</h3>
-      <label>Email Address</label>
-      <input type="email" placeholder="you@email.com" />
-      <label>Desired Handle</label>
-      <input type="text" placeholder="Username" />
-      <div class="actions">
-        <button class="btn" data-action="closeJoin">Cancel</button>
-        <button class="btn btn-primary" onclick="alert('Application Sent for Review')">Submit</button>
-      </div>
-    </div>
-  </div>
+            useEffect(() => {
+                let delay = 0;
+                logs.forEach((log, i) => {
+                    delay += 400;
+                    setTimeout(() => {
+                        setLines(p => [...p, log]);
+                        if(i === logs.length -1) setTimeout(onComplete, 1000);
+                    }, delay);
+                });
+            }, []);
 
-  <div class="toast" id="toast"></div>
+            return (
+                <div className="boot-screen">
+                    {lines.map((l, i) => <div key={i} className="log-line">> {l}</div>)}
+                    <div className="log-line" style={{animationDelay: '2s'}}>_</div>
+                </div>
+            );
+        };
 
-  <script>
-    (function(){
-      // DOM Helpers
-      const $ = (id) => document.getElementById(id);
-      const modalAge = $("modalAge");
-      const modalLogin = $("modalLogin");
-      const modalJoin = $("modalJoin");
-      const toast = $("toast");
-      
-      const chk18 = $("chk18");
-      const btnContinue = $("btnContinue");
-      
-      // Toast Logic
-      function showToast(msg) {
-          toast.textContent = msg;
-          toast.dataset.open = "true";
-          setTimeout(() => { toast.dataset.open = "false" }, 3000);
-      }
+        // --- COMPONENT: DEEP FUNNEL ---
+        const Funnel = ({ onComplete }) => {
+            const [step, setStep] = useState(1);
+            const [data, setData] = useState({});
 
-      // Modal Logic
-      function openModal(el) { el.dataset.open = "true"; }
-      function closeModal(el) { el.dataset.open = "false"; }
+            const next = () => setStep(s => s + 1);
+            const update = (field, val) => setData({...data, [field]: val});
 
-      // --- AGE GATE FIX ---
-      chk18.addEventListener("change", () => {
-        btnContinue.disabled = !chk18.checked;
-      });
+            // Step 1: Clearance
+            if(step === 1) return (
+                <div className="center" style={{height:'100vh', background:'#000'}}>
+                    <div style={{width:300}}>
+                        <div className="text-mono text-gold mb-4">STEP 01: CLEARANCE</div>
+                        <h2 style={{color:'#fff', marginBottom:30}}>Identity Protocol</h2>
+                        
+                        <div className="input-group">
+                            <label className="input-label">I am a</label>
+                            <select className="input-field" onChange={e=>update('type', e.target.value)}>
+                                <option>Select...</option>
+                                <option>Gentleman</option>
+                                <option>Lady</option>
+                                <option>Couple</option>
+                            </select>
+                        </div>
+                        
+                        <div className="input-group">
+                            <label className="input-label">Date of Birth</label>
+                            <div className="flex gap-2">
+                                <input className="input-field" placeholder="DD" />
+                                <input className="input-field" placeholder="MM" />
+                                <input className="input-field" placeholder="YYYY" />
+                            </div>
+                        </div>
 
-      // FIXED: Added 'async' keyword (even though we don't need await here anymore, it's safer practice)
-      // and simplified the logic to ensure it ALWAYS closes.
-      btnContinue.addEventListener("click", async () => {
-        localStorage.setItem("vcs_age_ok", "true");
-        closeModal(modalAge);
-        showToast("Welcome to Velvet Circle.");
-      });
+                        <button className="btn-gold" onClick={next}>INITIATE</button>
+                    </div>
+                </div>
+            );
 
-      $("btnLeave").addEventListener("click", () => {
-          window.location.href = "https://google.com";
-      });
-      
-      // --- HEADER BUTTONS ---
-      $("btnOpenLogin").onclick = () => openModal(modalLogin);
-      $("btnOpenJoin").onclick = () => openModal(modalJoin);
-      $("btnHeroJoin").onclick = () => openModal(modalJoin);
+            // Step 2: Vitals
+            if(step === 2) return (
+                <div className="center" style={{height:'100vh', background:'#000'}}>
+                    <div style={{width:300}}>
+                        <div className="text-mono text-gold mb-4">STEP 02: VITALS</div>
+                        <h2 style={{color:'#fff', marginBottom:30}}>Physical Stats</h2>
+                        
+                        <div className="input-group">
+                            <label className="input-label">Height / Body Type</label>
+                            <input className="input-field" placeholder="e.g. 5'10, Athletic" onChange={e=>update('body', e.target.value)} />
+                        </div>
+                        <div className="input-group">
+                            <label className="input-label">Ethnicity</label>
+                            <select className="input-field">
+                                <option>Select...</option>
+                                <option>Caucasian</option><option>Black</option><option>Latin</option><option>Asian</option>
+                            </select>
+                        </div>
 
-      // --- CLOSE HANDLERS ---
-      document.querySelectorAll('[data-action^="close"]').forEach(btn => {
-          btn.onclick = (e) => {
-              e.target.closest('.backdrop').dataset.open = "false";
-          }
-      });
+                        <button className="btn-gold" onClick={next}>PROCEED</button>
+                    </div>
+                </div>
+            );
 
-      // --- CHECK PREVIOUS SESSION ---
-      if(localStorage.getItem("vcs_age_ok") === "true") {
-          closeModal(modalAge);
-      }
+            // Step 3: Credentials
+            if(step === 3) return (
+                <div className="center" style={{height:'100vh', background:'#000'}}>
+                    <div style={{width:300}}>
+                        <div className="text-mono text-gold mb-4">STEP 03: CREDENTIALS</div>
+                        <h2 style={{color:'#fff', marginBottom:30}}>Secure Access</h2>
+                        
+                        <div className="input-group">
+                            <label className="input-label">Codename (Username)</label>
+                            <input className="input-field" onChange={e=>update('username', e.target.value)} />
+                        </div>
+                        <div className="input-group">
+                            <label className="input-label">Passkey</label>
+                            <input type="password" class="input-field" />
+                        </div>
 
-    })();
-  </script>
+                        <button className="btn-gold" onClick={() => {
+                            localStorage.setItem('vc_user', JSON.stringify(data));
+                            onComplete();
+                        }}>ESTABLISH LINK</button>
+                    </div>
+                </div>
+            );
+            return null;
+        };
+
+        // --- MAIN APP ---
+        function App() {
+            const [mode, setMode] = useState('boot'); // boot, funnel, app
+            const [view, setView] = useState('net'); // net, comms, ops
+            const [user, setUser] = useState(null);
+
+            useEffect(() => {
+                const saved = localStorage.getItem('vc_user');
+                if(saved) {
+                    setUser(JSON.parse(saved));
+                    setMode('boot'); // Always show boot for effect
+                } else {
+                    setMode('boot');
+                }
+            }, []);
+
+            const handleBootDone = () => {
+                if(user) setMode('app');
+                else setMode('funnel');
+            };
+
+            if(mode === 'boot') return <BootSequence onComplete={handleBootDone} />;
+            if(mode === 'funnel') return <Funnel onComplete={() => { setUser(JSON.parse(localStorage.getItem('vc_user'))); setMode('app'); }} />;
+
+            return (
+                <div className="app-shell">
+                    {/* DESKTOP SIDEBAR */}
+                    <div className="sidebar">
+                        <div style={{padding:30, borderBottom:'1px solid #222'}}>
+                            <h2 style={{fontSize:24, letterSpacing:4}}>VELVET</h2>
+                            <div className="text-mono text-gold">SECURE ENCLAVE</div>
+                        </div>
+                        <div style={{padding:20}}>
+                            <div onClick={()=>setView('net')} style={{marginBottom:15, cursor:'pointer', color:view==='net'?'#fff':'#666'}}>
+                                <div className="text-mono">01 // THE NETWORK</div>
+                            </div>
+                            <div onClick={()=>setView('comms')} style={{marginBottom:15, cursor:'pointer', color:view==='comms'?'#fff':'#666'}}>
+                                <div className="text-mono">02 // ENCRYPTED COMMS</div>
+                            </div>
+                            <div onClick={()=>setView('ops')} style={{marginBottom:15, cursor:'pointer', color:view==='ops'?'#fff':'#666'}}>
+                                <div className="text-mono">03 // OPS MAP (TRAVEL)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* MAIN CONTENT */}
+                    <div className="main-area">
+                        <div className="main-overlay"></div>
+                        <div className="content">
+                            
+                            {/* TOP BAR */}
+                            <div className="flex justify-between" style={{marginBottom:30, borderBottom:'1px solid #333', paddingBottom:15}}>
+                                <div className="text-mono text-gold">STATUS: CONNECTED</div>
+                                <div className="text-mono">{user?.username || 'UNKNOWN'}</div>
+                            </div>
+
+                            {/* VIEW: NETWORK */}
+                            {view === 'net' && (
+                                <div>
+                                    <h3 style={{marginBottom:20}}>ACTIVE ASSETS</h3>
+                                    {DB_MEMBERS.map(m => (
+                                        <div key={m.id} className="card flex justify-between">
+                                            <div>
+                                                <h4>{m.name}</h4>
+                                                <p>{m.type} | {m.loc}</p>
+                                            </div>
+                                            <div className="text-mono" style={{color: m.status==='Online'?'var(--success)':'#666'}}>
+                                                {m.status}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* VIEW: COMMS */}
+                            {view === 'comms' && (
+                                <div style={{height:'100%', display:'flex', flexDirection:'column'}}>
+                                    <div style={{flex:1}}>
+                                        <div className="text-center text-mono text-gold" style={{marginBottom:20}}>--- BEGIN ENCRYPTED TRANSMISSION ---</div>
+                                        <div className="flex flex-col gap-2">
+                                            <div className="msg">Welcome to the inner circle.</div>
+                                            <div className="msg me">Identity confirmed. Standing by.</div>
+                                        </div>
+                                    </div>
+                                    <div style={{marginTop:20, display:'flex', gap:10}}>
+                                        <input className="input-field" placeholder="Enter command..." />
+                                        <button className="btn-gold" style={{width:'auto'}}>SEND</button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* VIEW: OPS (TRAVEL) */}
+                            {view === 'ops' && (
+                                <div>
+                                    <h3 style={{marginBottom:20}}>OPERATIONAL MOVEMENTS</h3>
+                                    <div className="card">
+                                        <h4 style={{color:'var(--gold)'}}>DECLARE MOVEMENT</h4>
+                                        <div className="flex gap-2" style={{marginTop:10}}>
+                                            <input className="input-field" placeholder="Target City" />
+                                            <input className="input-field" placeholder="Timeline" />
+                                        </div>
+                                        <button className="btn-outline" style={{marginTop:10, width:'100%'}}>BROADCAST</button>
+                                    </div>
+                                    <div className="text-mono text-gold" style={{marginTop:30, marginBottom:10}}>INCOMING TRAFFIC</div>
+                                    <div className="card">
+                                        <h4>Midnight_Rose</h4>
+                                        <p>Inbound: NYC -> DAL // Oct 15-18</p>
+                                    </div>
+                                </div>
+                            )}
+
+                        </div>
+                    </div>
+
+                    {/* MOBILE NAV */}
+                    <div className="mobile-nav">
+                        <i className={`fas fa-globe nav-icon ${view==='net'?'active':''}`} onClick={()=>setView('net')}></i>
+                        <i className={`fas fa-comment-alt nav-icon ${view==='comms'?'active':''}`} onClick={()=>setView('comms')}></i>
+                        <i className={`fas fa-plane nav-icon ${view==='ops'?'active':''}`} onClick={()=>setView('ops')}></i>
+                        <i className="fas fa-user nav-icon" onClick={()=>{localStorage.removeItem('vc_user'); location.reload();}}></i>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
