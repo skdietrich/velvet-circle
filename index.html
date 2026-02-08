@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#000000">
-    <title>VELVET | System v3</title>
+    <title>VELVET | System v3.1</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -44,36 +44,32 @@
         .btn-nav span { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         
         .story-ring { padding: 2px; border-radius: 50%; border: 2px solid #D4AF37; }
-        
-        /* Smooth Fade In */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+        const { useState, useEffect } = React;
 
-        // --- MOCK DATABASE EXPANDED ---
+        // --- MOCK DATABASE ---
         const DB_MEMBERS = [
-            { id: 1, name: "DallasCouple", type: "Couple (MF)", age: "32/29", role: "Switch", exp: "Veteran", city: "Dallas", img: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=800", verified: true, bio: "Fun, fit couple looking for like-minded friends for drinks and potential play. Hosting in Uptown.", lastActive: "2m ago", kinks: ["Soft Swap", "Groups", "Cocktails"] },
-            { id: 2, name: "Mistress_K", type: "Female", age: "28", role: "Dominant", exp: "Industry", city: "NYC", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800", verified: true, bio: "Experienced and selective. Do not message me without a face pic.", lastActive: "1h ago", kinks: ["BDSM", "Control", "Parties"] },
-            { id: 3, name: "Mr_Grey", type: "Male", age: "38", role: "Dominant", exp: "Experienced", city: "London", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=800", verified: true, bio: "Travel often for business. Looking for discreet encounters.", lastActive: "Online", kinks: ["Discreet", "Business", "Dinner"] },
-            { id: 4, name: "VelvetTwins", type: "Couple (FF)", age: "24/25", role: "Submissive", exp: "Curious", city: "Miami", img: "https://images.unsplash.com/photo-1518556865737-124b89182352?q=80&w=800", verified: false, bio: "New to the lifestyle. Exploring our curiosity together.", lastActive: "5m ago", kinks: ["Bi-Curious", "Dancing", "Clubbing"] },
+            { id: 1, name: "DallasCouple", type: "Couple (MF)", age: "32/29", role: "Switch", exp: "Veteran", city: "Dallas", img: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=800", verified: true, bio: "Fun, fit couple looking for like-minded friends.", lastActive: "2m ago", kinks: ["Soft Swap", "Groups"] },
+            { id: 2, name: "Mistress_K", type: "Female", age: "28", role: "Dominant", exp: "Industry", city: "NYC", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800", verified: true, bio: "Experienced and selective.", lastActive: "1h ago", kinks: ["BDSM", "Control"] },
+            { id: 3, name: "Mr_Grey", type: "Male", age: "38", role: "Dominant", exp: "Experienced", city: "London", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=800", verified: true, bio: "Travel often for business.", lastActive: "Online", kinks: ["Discreet", "Business"] },
+            { id: 4, name: "VelvetTwins", type: "Couple (FF)", age: "24/25", role: "Submissive", exp: "Curious", city: "Miami", img: "https://images.unsplash.com/photo-1518556865737-124b89182352?q=80&w=800", verified: false, bio: "New to the lifestyle.", lastActive: "5m ago", kinks: ["Bi-Curious", "Dancing"] },
         ];
 
         const FEED_ITEMS = [
             { type: 'view', text: "3 members viewed your profile", time: "10m ago" },
             { type: 'photo', user: "DallasCouple", text: "added 3 new private photos", time: "30m ago" },
-            { type: 'event', text: "New Secret Party announced in Dallas", time: "1h ago" },
             { type: 'join', user: "Mistress_K", text: "just joined VELVET", time: "2h ago" },
         ];
 
         // --- COMPONENTS ---
 
-        // 1. MEMBER DOSSIER (MODAL)
         const MemberDossier = ({ member, onClose }) => {
             if (!member) return null;
             return (
@@ -89,47 +85,36 @@
                     </div>
                     <div className="flex-1 p-6 overflow-y-auto bg-bg">
                         <div className="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
-                            <div className="text-center w-1/3 border-r border-gray-800">
-                                <div className="text-xs text-gray-500 uppercase">Role</div>
-                                <div className="text-white">{member.role}</div>
-                            </div>
-                            <div className="text-center w-1/3 border-r border-gray-800">
-                                <div className="text-xs text-gray-500 uppercase">Age</div>
-                                <div className="text-white">{member.age}</div>
-                            </div>
-                            <div className="text-center w-1/3">
-                                <div className="text-xs text-gray-500 uppercase">Exp</div>
-                                <div className="text-white">{member.exp}</div>
-                            </div>
+                            <div className="text-center w-1/3 border-r border-gray-800"><div className="text-xs text-gray-500 uppercase">Role</div><div className="text-white">{member.role}</div></div>
+                            <div className="text-center w-1/3 border-r border-gray-800"><div className="text-xs text-gray-500 uppercase">Age</div><div className="text-white">{member.age}</div></div>
+                            <div className="text-center w-1/3"><div className="text-xs text-gray-500 uppercase">Exp</div><div className="text-white">{member.exp}</div></div>
                         </div>
-                        
-                        <div className="mb-6">
-                            <h4 className="text-gold text-xs font-bold uppercase mb-2">Manifesto</h4>
-                            <p className="text-gray-400 text-sm leading-relaxed">"{member.bio}"</p>
-                        </div>
-
-                        <div className="mb-8">
-                            <h4 className="text-gold text-xs font-bold uppercase mb-2">Interests</h4>
-                            <div className="flex flex-wrap gap-2">
-                                {member.kinks.map(k => <span key={k} className="bg-panel border border-gray-700 px-3 py-1 rounded text-xs text-gray-300">{k}</span>)}
-                            </div>
-                        </div>
-
-                        <button className="w-full bg-gold text-black font-bold py-4 uppercase tracking-widest hover:bg-white transition" onClick={() => alert('Start Chat Clicked')}>
-                            Message {member.name}
-                        </button>
+                        <div className="mb-6"><h4 className="text-gold text-xs font-bold uppercase mb-2">Manifesto</h4><p className="text-gray-400 text-sm leading-relaxed">"{member.bio}"</p></div>
+                        <div className="mb-8"><h4 className="text-gold text-xs font-bold uppercase mb-2">Interests</h4><div className="flex flex-wrap gap-2">{member.kinks.map(k => <span key={k} className="bg-panel border border-gray-700 px-3 py-1 rounded text-xs text-gray-300">{k}</span>)}</div></div>
+                        <button className="w-full bg-gold text-black font-bold py-4 uppercase tracking-widest hover:bg-white transition" onClick={() => alert('Start Chat Clicked')}>Message {member.name}</button>
                     </div>
                 </div>
             );
         };
 
-        // 2. FUNNEL (Simplified for Density Demo)
         const Funnel = ({ onComplete }) => {
             const [step, setStep] = useState(1);
-            const [data, setData] = useState({ interests: [] });
+            const [data, setData] = useState({ interests: [], img: null });
             
             const next = () => setStep(s => s + 1);
             const update = (k,v) => setData({...data, [k]:v});
+
+            // FIXED: Image Handling Logic
+            const handleImageUpload = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        update('img', reader.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
 
             return (
                 <div className="h-screen bg-bg flex flex-col justify-center p-6">
@@ -170,14 +155,21 @@
                         {step === 4 && (
                             <div className="animate-in mt-4">
                                 <h2 className="text-3xl text-white font-head mb-6">Verification</h2>
-                                <div className="border-2 border-dashed border-gray-800 h-40 flex items-center justify-center text-gray-600 mb-6 cursor-pointer hover:border-gold hover:text-gold transition">
-                                    <div className="text-center">
-                                        <i className="fas fa-camera text-2xl mb-2"></i>
-                                        <p className="text-xs uppercase">Upload Photo</p>
-                                    </div>
-                                    <input type="file" className="opacity-0 absolute inset-0 cursor-pointer" />
+                                
+                                {/* FIXED UPLOAD BOX */}
+                                <div className="relative border-2 border-dashed border-gray-800 h-64 flex items-center justify-center text-gray-600 mb-6 cursor-pointer hover:border-gold hover:text-gold transition bg-panel overflow-hidden">
+                                    {data.img ? (
+                                        <img src={data.img} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="text-center pointer-events-none">
+                                            <i className="fas fa-camera text-3xl mb-3"></i>
+                                            <p className="text-xs uppercase font-bold tracking-wider">Tap to Upload Photo</p>
+                                        </div>
+                                    )}
+                                    <input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                                 </div>
-                                <button onClick={()=>{ localStorage.setItem('vc_user_v3', JSON.stringify(data)); onComplete(data); }} className="w-full bg-gold text-black font-bold py-4">INITIALIZE</button>
+
+                                <button onClick={()=>{ localStorage.setItem('vc_user_v3.1', JSON.stringify(data)); onComplete(data); }} className="w-full bg-gold text-black font-bold py-4">INITIALIZE</button>
                             </div>
                         )}
                     </div>
@@ -185,58 +177,37 @@
             );
         };
 
-        // --- DASHBOARD (THE MEAT) ---
         const Dashboard = ({ user, logout }) => {
-            const [view, setView] = useState('home'); // home, browse, chat, me
+            const [view, setView] = useState('home');
             const [selectedMember, setSelectedMember] = useState(null);
             
             return (
                 <div className="flex flex-col h-screen bg-bg">
-                    {/* DETAILS MODAL */}
                     {selectedMember && <MemberDossier member={selectedMember} onClose={()=>setSelectedMember(null)} />}
 
-                    {/* TOP HEADER */}
                     <div className="h-16 border-b border-gray-900 flex items-center justify-between px-6 bg-panel/50 backdrop-blur z-20">
                         <span className="font-head text-xl text-gold">VELVET</span>
-                        <div className="flex gap-4 text-gray-500">
-                            <i className="fas fa-bell hover:text-white transition cursor-pointer"></i>
-                            <i className="fas fa-cog hover:text-white transition cursor-pointer"></i>
-                        </div>
+                        <i className="fas fa-cog text-gray-500 hover:text-white transition cursor-pointer"></i>
                     </div>
 
-                    {/* MAIN CONTENT AREA */}
                     <div className="flex-1 overflow-y-auto pb-20 bg-bg">
-                        
-                        {/* VIEW: HOME (THE PULSE) */}
                         {view === 'home' && (
                             <div className="p-6 animate-in">
-                                <div className="flex items-center justify-between mb-6">
-                                    <h3 className="text-white font-bold text-lg">The Pulse</h3>
-                                    <span className="text-xs text-gold uppercase cursor-pointer">View All</span>
-                                </div>
-                                
-                                {/* STORIES / ONLINE */}
+                                <div className="flex items-center justify-between mb-6"><h3 className="text-white font-bold text-lg">The Pulse</h3><span className="text-xs text-gold uppercase cursor-pointer">View All</span></div>
                                 <div className="flex gap-4 overflow-x-auto pb-4 hide-scroll mb-8">
                                     {DB_MEMBERS.map(m => (
                                         <div key={m.id} className="flex-shrink-0 flex flex-col items-center gap-2 cursor-pointer" onClick={()=>setSelectedMember(m)}>
-                                            <div className="story-ring">
-                                                <img src={m.img} className="w-16 h-16 rounded-full object-cover border-2 border-black" />
-                                            </div>
+                                            <div className="story-ring"><img src={m.img} className="w-16 h-16 rounded-full object-cover border-2 border-black" /></div>
                                             <span className="text-xs text-gray-400 w-16 truncate text-center">{m.name}</span>
                                         </div>
                                     ))}
                                 </div>
-
-                                {/* ACTIVITY FEED */}
                                 <div className="space-y-4">
                                     {FEED_ITEMS.map((item, i) => (
                                         <div key={i} className="bg-panel p-4 rounded border border-gray-900 flex gap-4 items-start">
                                             <div className="w-2 h-2 rounded-full bg-gold mt-2 flex-shrink-0"></div>
                                             <div>
-                                                <p className="text-gray-300 text-sm">
-                                                    {item.user && <span className="font-bold text-white mr-1">{item.user}</span>}
-                                                    {item.text}
-                                                </p>
+                                                <p className="text-gray-300 text-sm">{item.user && <span className="font-bold text-white mr-1">{item.user}</span>}{item.text}</p>
                                                 <span className="text-xs text-gray-600 uppercase">{item.time}</span>
                                             </div>
                                         </div>
@@ -245,7 +216,6 @@
                             </div>
                         )}
 
-                        {/* VIEW: BROWSE (GRID) */}
                         {view === 'browse' && (
                             <div className="p-4 animate-in">
                                 <div className="grid grid-cols-2 gap-3">
@@ -256,118 +226,48 @@
                                                 <div className="font-bold text-white">{m.name}</div>
                                                 <div className="text-xs text-gold">{m.type}</div>
                                             </div>
-                                            <div className="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded text-[10px] text-white border border-gray-700">
-                                                {m.lastActive}
-                                            </div>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                         )}
 
-                        {/* VIEW: MESSAGES (FUNCTIONAL) */}
-                        {view === 'chat' && (
-                            <div className="flex flex-col h-full animate-in">
-                                <div className="flex-1 p-4 space-y-2 overflow-y-auto">
-                                    {DB_MEMBERS.slice(0,3).map((m, i) => (
-                                        <div key={m.id} className="flex items-center gap-4 p-4 bg-panel border border-gray-900 rounded cursor-pointer hover:border-gray-700 transition">
-                                            <img src={m.img} className="w-12 h-12 rounded-full object-cover" />
-                                            <div className="flex-1">
-                                                <div className="flex justify-between">
-                                                    <h4 className="text-white font-bold text-sm">{m.name}</h4>
-                                                    <span className="text-[10px] text-gray-600">Now</span>
-                                                </div>
-                                                <p className="text-xs text-gray-500 truncate">Hey, saw you viewed our profile...</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* VIEW: PROFILE */}
                         {view === 'me' && (
                             <div className="p-6 text-center animate-in pt-12">
-                                <div className="w-24 h-24 rounded-full bg-gray-800 border-2 border-gold mx-auto flex items-center justify-center text-gray-500 mb-4 overflow-hidden">
-                                    {user.img ? <img src={user.img} className="w-full h-full object-cover" /> : <i className="fas fa-user text-3xl"></i>}
+                                <div className="w-32 h-32 rounded-full bg-gray-800 border-2 border-gold mx-auto flex items-center justify-center text-gray-500 mb-4 overflow-hidden relative">
+                                    {user.img ? <img src={user.img} className="w-full h-full object-cover" /> : <i className="fas fa-user text-4xl"></i>}
                                 </div>
                                 <h2 className="text-2xl text-white font-head">{user.name || 'Member'}</h2>
                                 <p className="text-gold text-xs uppercase tracking-widest mb-8">Standard Membership</p>
-                                
-                                <div className="grid grid-cols-2 gap-4 mb-8">
-                                    <div className="bg-panel p-4 rounded border border-gray-800">
-                                        <div className="text-2xl text-white font-head">0</div>
-                                        <div className="text-xs text-gray-600 uppercase">Views</div>
-                                    </div>
-                                    <div className="bg-panel p-4 rounded border border-gray-800">
-                                        <div className="text-2xl text-white font-head">0</div>
-                                        <div className="text-xs text-gray-600 uppercase">Matches</div>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2 text-left">
-                                    <button className="w-full p-4 bg-panel border border-gray-800 text-gray-400 hover:text-white flex justify-between rounded">
-                                        Edit Profile <i className="fas fa-chevron-right"></i>
-                                    </button>
-                                    <button className="w-full p-4 bg-panel border border-gray-800 text-gray-400 hover:text-white flex justify-between rounded">
-                                        Privacy Settings <i className="fas fa-chevron-right"></i>
-                                    </button>
-                                    <button onClick={logout} className="w-full p-4 bg-panel border border-gray-800 text-red-500 hover:text-red-400 flex justify-between rounded">
-                                        Log Out <i className="fas fa-sign-out-alt"></i>
-                                    </button>
-                                </div>
+                                <button onClick={logout} className="w-full p-4 bg-panel border border-gray-800 text-red-500 hover:text-red-400 rounded">Log Out</button>
                             </div>
                         )}
-
                     </div>
 
-                    {/* BOTTOM NAV (APP STYLE) */}
                     <div className="fixed bottom-0 left-0 right-0 h-16 bg-black border-t border-gray-900 flex justify-around items-center px-2 z-50">
-                        <div onClick={()=>setView('home')} className={`btn-nav ${view==='home'?'active':''}`}>
-                            <i className="fas fa-bolt"></i><span>Pulse</span>
-                        </div>
-                        <div onClick={()=>setView('browse')} className={`btn-nav ${view==='browse'?'active':''}`}>
-                            <i className="fas fa-th-large"></i><span>Browse</span>
-                        </div>
-                        <div onClick={()=>setView('chat')} className={`btn-nav ${view==='chat'?'active':''}`}>
-                            <i className="fas fa-comments"></i><span>Chat</span>
-                        </div>
-                        <div onClick={()=>setView('me')} className={`btn-nav ${view==='me'?'active':''}`}>
-                            <i className="fas fa-user-circle"></i><span>Me</span>
-                        </div>
+                        <div onClick={()=>setView('home')} className={`btn-nav ${view==='home'?'active':''}`}><i className="fas fa-bolt"></i><span>Pulse</span></div>
+                        <div onClick={()=>setView('browse')} className={`btn-nav ${view==='browse'?'active':''}`}><i className="fas fa-th-large"></i><span>Browse</span></div>
+                        <div onClick={()=>setView('me')} className={`btn-nav ${view==='me'?'active':''}`}><i className="fas fa-user-circle"></i><span>Me</span></div>
                     </div>
                 </div>
             );
         };
 
-        // --- ROOT ---
         function App() {
             const [mode, setMode] = useState('loading');
             const [user, setUser] = useState(null);
 
             useEffect(() => {
-                // Simulate app boot
                 setTimeout(() => {
-                    const saved = localStorage.getItem('vc_user_v3');
-                    if(saved) {
-                        setUser(JSON.parse(saved));
-                        setMode('dash');
-                    } else {
-                        setMode('funnel');
-                    }
+                    const saved = localStorage.getItem('vc_user_v3.1');
+                    if(saved) { setUser(JSON.parse(saved)); setMode('dash'); } 
+                    else { setMode('funnel'); }
                 }, 1000);
             }, []);
 
-            if (mode === 'loading') return (
-                <div className="h-screen bg-black flex items-center justify-center flex-col">
-                    <h1 className="font-head text-4xl text-gold animate-pulse mb-4">VELVET</h1>
-                    <div className="text-gray-600 text-xs uppercase tracking-widest">System Initializing...</div>
-                </div>
-            );
-
+            if (mode === 'loading') return <div className="h-screen bg-black flex items-center justify-center flex-col"><h1 className="font-head text-4xl text-gold animate-pulse mb-4">VELVET</h1><div className="text-gray-600 text-xs uppercase tracking-widest">System Initializing...</div></div>;
             if (mode === 'funnel') return <Funnel onComplete={(u) => { setUser(u); setMode('dash'); }} />;
-
-            return <Dashboard user={user} logout={() => { localStorage.removeItem('vc_user_v3'); setMode('funnel'); }} />;
+            return <Dashboard user={user} logout={() => { localStorage.removeItem('vc_user_v3.1'); setMode('funnel'); }} />;
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
