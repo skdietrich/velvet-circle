@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#000000">
-    <title>VELVET | System v3.1</title>
+    <title>VELVET | System v4.0</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -23,11 +23,11 @@
                         'gold-dim': '#8A701E',
                         bg: '#050505',
                         panel: '#101010',
-                        'panel-light': '#1a1a1a'
                     },
                     fontFamily: {
                         head: ['Playfair Display', 'serif'],
-                        body: ['Inter', 'sans-serif']
+                        body: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
                     }
                 }
             }
@@ -37,15 +37,17 @@
     <style>
         body { background-color: #050505; color: #e0e0e0; overflow: hidden; }
         .gold-border { border: 1px solid #D4AF37; }
-        .hide-scroll::-webkit-scrollbar { display: none; }
         .btn-nav { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #666; transition: 0.2s; }
         .btn-nav.active { color: #D4AF37; }
-        .btn-nav i { font-size: 20px; margin-bottom: 4px; }
-        .btn-nav span { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .story-ring { padding: 2px; border-radius: 50%; border: 2px solid #D4AF37; }
         .animate-in { animation: fadeIn 0.3s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Form Elements */
+        select { -webkit-appearance: none; appearance: none; }
+        .input-std { width: 100%; background: #111; border: 1px solid #333; padding: 15px; color: white; border-radius: 4px; outline: none; font-family: 'Inter'; }
+        .input-std:focus { border-color: #D4AF37; }
+        .tag-select { border: 1px solid #333; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 12px; transition: 0.2s; }
+        .tag-select.active { background: #D4AF37; color: black; border-color: #D4AF37; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -54,176 +56,188 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
+        // --- DATA CONSTANTS ---
+        const OPTIONS = {
+            types: ['Couple (MF)', 'Couple (MM)', 'Couple (FF)', 'Single Female', 'Single Male'],
+            roles: ['Dominant', 'Submissive', 'Switch', 'Voyeur', 'Exhibitionist', 'Vanilla'],
+            experience: ['Curious', 'Exploring', 'Experienced', 'Veteran', 'Industry'],
+            hosting: ['Cannot Host', 'Can Host (Private)', 'Can Host (Parties)'],
+            interests: ['Soft Swap', 'Full Swap', 'Threesomes', 'Group Play', 'BDSM', 'Fetish', 'Parties', 'Travel']
+        };
+
         // --- MOCK DATABASE ---
         const DB_MEMBERS = [
-            { id: 1, name: "DallasCouple", type: "Couple (MF)", age: "32/29", role: "Switch", exp: "Veteran", city: "Dallas", img: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=800", verified: true, bio: "Fun, fit couple looking for like-minded friends.", lastActive: "2m ago", kinks: ["Soft Swap", "Groups"] },
-            { id: 2, name: "Mistress_K", type: "Female", age: "28", role: "Dominant", exp: "Industry", city: "NYC", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800", verified: true, bio: "Experienced and selective.", lastActive: "1h ago", kinks: ["BDSM", "Control"] },
-            { id: 3, name: "Mr_Grey", type: "Male", age: "38", role: "Dominant", exp: "Experienced", city: "London", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=800", verified: true, bio: "Travel often for business.", lastActive: "Online", kinks: ["Discreet", "Business"] },
-            { id: 4, name: "VelvetTwins", type: "Couple (FF)", age: "24/25", role: "Submissive", exp: "Curious", city: "Miami", img: "https://images.unsplash.com/photo-1518556865737-124b89182352?q=80&w=800", verified: false, bio: "New to the lifestyle.", lastActive: "5m ago", kinks: ["Bi-Curious", "Dancing"] },
-        ];
-
-        const FEED_ITEMS = [
-            { type: 'view', text: "3 members viewed your profile", time: "10m ago" },
-            { type: 'photo', user: "DallasCouple", text: "added 3 new private photos", time: "30m ago" },
-            { type: 'join', user: "Mistress_K", text: "just joined VELVET", time: "2h ago" },
+            { id: 1, name: "DallasCouple", type: "Couple (MF)", role: "Switch", loc: "Dallas", img: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=800", bio: "Fun couple seeking friends.", tags: ["Soft Swap", "Parties"] },
+            { id: 2, name: "Mistress_K", type: "Single Female", role: "Dominant", loc: "NYC", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800", bio: "Experienced. Selective.", tags: ["BDSM", "Fetish"] },
         ];
 
         // --- COMPONENTS ---
 
+        // 1. MEMBER DOSSIER (Modal)
         const MemberDossier = ({ member, onClose }) => {
             if (!member) return null;
             return (
                 <div className="fixed inset-0 z-50 bg-black/95 flex flex-col animate-in">
-                    <div className="relative h-2/5">
+                    <div className="h-2/5 relative">
                         <img src={member.img} className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-gradient-to-t from-bg to-transparent"></div>
-                        <button onClick={onClose} className="absolute top-4 right-4 bg-black/50 p-2 rounded-full text-white"><i className="fas fa-times"></i></button>
+                        <button onClick={onClose} className="absolute top-6 right-6 text-white text-2xl"><i className="fas fa-times"></i></button>
                         <div className="absolute bottom-4 left-6">
-                            <h2 className="text-3xl text-white font-head">{member.name} {member.verified && <i className="fas fa-check-circle text-blue-500 text-sm"></i>}</h2>
-                            <p className="text-gold text-sm uppercase tracking-widest">{member.type} • {member.city}</p>
+                            <h2 className="text-3xl font-head text-white">{member.name}</h2>
+                            <p className="text-gold text-xs uppercase tracking-widest">{member.type} • {member.loc}</p>
                         </div>
                     </div>
-                    <div className="flex-1 p-6 overflow-y-auto bg-bg">
-                        <div className="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
-                            <div className="text-center w-1/3 border-r border-gray-800"><div className="text-xs text-gray-500 uppercase">Role</div><div className="text-white">{member.role}</div></div>
-                            <div className="text-center w-1/3 border-r border-gray-800"><div className="text-xs text-gray-500 uppercase">Age</div><div className="text-white">{member.age}</div></div>
-                            <div className="text-center w-1/3"><div className="text-xs text-gray-500 uppercase">Exp</div><div className="text-white">{member.exp}</div></div>
+                    <div className="flex-1 p-6 overflow-y-auto">
+                        <div className="grid grid-cols-2 gap-4 mb-6 text-sm text-gray-400">
+                            <div className="bg-panel p-3 rounded border border-gray-800"><span className="block text-[10px] text-gold uppercase">Role</span>{member.role}</div>
+                            <div className="bg-panel p-3 rounded border border-gray-800"><span className="block text-[10px] text-gold uppercase">Status</span>Verified</div>
                         </div>
-                        <div className="mb-6"><h4 className="text-gold text-xs font-bold uppercase mb-2">Manifesto</h4><p className="text-gray-400 text-sm leading-relaxed">"{member.bio}"</p></div>
-                        <div className="mb-8"><h4 className="text-gold text-xs font-bold uppercase mb-2">Interests</h4><div className="flex flex-wrap gap-2">{member.kinks.map(k => <span key={k} className="bg-panel border border-gray-700 px-3 py-1 rounded text-xs text-gray-300">{k}</span>)}</div></div>
-                        <button className="w-full bg-gold text-black font-bold py-4 uppercase tracking-widest hover:bg-white transition" onClick={() => alert('Start Chat Clicked')}>Message {member.name}</button>
+                        <p className="text-gray-300 italic mb-6">"{member.bio}"</p>
+                        <div className="flex flex-wrap gap-2 mb-8">
+                            {member.tags.map(t => <span key={t} className="px-3 py-1 bg-gray-800 rounded-full text-xs text-white border border-gray-700">{t}</span>)}
+                        </div>
+                        <button className="w-full bg-gold text-black font-bold py-4 uppercase tracking-widest">Connect</button>
                     </div>
                 </div>
             );
         };
 
+        // 2. INTAKE FUNNEL (7 Stages)
         const Funnel = ({ onComplete }) => {
             const [step, setStep] = useState(1);
             const [data, setData] = useState({ interests: [], img: null });
-            
-            const next = () => setStep(s => s + 1);
-            const update = (k,v) => setData({...data, [k]:v});
 
-            // FIXED: Image Handling Logic
-            const handleImageUpload = (e) => {
+            const next = () => setStep(s => s + 1);
+            const update = (k, v) => setData({...data, [k]: v});
+            
+            const toggleInterest = (tag) => {
+                const newTags = data.interests.includes(tag) ? data.interests.filter(t => t !== tag) : [...data.interests, tag];
+                update('interests', newTags);
+            };
+
+            const handlePhoto = (e) => {
                 const file = e.target.files[0];
-                if (file) {
+                if(file) {
                     const reader = new FileReader();
-                    reader.onloadend = () => {
-                        update('img', reader.result);
-                    };
+                    reader.onloadend = () => update('img', reader.result);
                     reader.readAsDataURL(file);
                 }
             };
 
             return (
-                <div className="h-screen bg-bg flex flex-col justify-center p-6">
-                    <div className="w-full max-w-md mx-auto">
-                        <div className="mb-2 bg-gray-800 h-1 w-full"><div className="bg-gold h-full transition-all duration-500" style={{width: `${(step/4)*100}%`}}></div></div>
-                        <span className="text-gold text-xs uppercase tracking-widest">Protocol Stage 0{step}</span>
+                <div className="h-screen bg-bg flex flex-col p-6">
+                    <div className="w-full h-1 bg-gray-900 mb-8"><div className="h-full bg-gold transition-all duration-300" style={{width: `${(step/7)*100}%`}}></div></div>
+                    
+                    <div className="flex-1 max-w-md mx-auto w-full flex flex-col justify-center animate-in">
+                        <span className="text-gold font-mono text-xs mb-2 block">PROTOCOL 0{step}</span>
                         
                         {step === 1 && (
-                            <div className="animate-in mt-4">
+                            <>
                                 <h2 className="text-3xl text-white font-head mb-6">Identity</h2>
-                                {['Couple (MF)', 'Couple (MM)', 'Couple (FF)', 'Single Female', 'Single Male'].map(opt => (
-                                    <button key={opt} onClick={()=>{update('type', opt); next()}} className="w-full text-left p-4 mb-3 border border-gray-800 text-gray-400 hover:border-gold hover:text-white transition bg-panel">{opt}</button>
+                                {OPTIONS.types.map(t => (
+                                    <button key={t} onClick={()=>{update('type', t); next()}} className="input-std text-left mb-3 hover:border-gold">{t}</button>
                                 ))}
-                            </div>
+                            </>
                         )}
 
                         {step === 2 && (
-                            <div className="animate-in mt-4">
+                            <>
                                 <h2 className="text-3xl text-white font-head mb-6">Vitals</h2>
-                                <input className="w-full bg-panel border border-gray-800 p-4 text-white mb-4 outline-none focus:border-gold" placeholder="Username" onChange={e=>update('name', e.target.value)} />
-                                <input className="w-full bg-panel border border-gray-800 p-4 text-white mb-4 outline-none focus:border-gold" placeholder="City" onChange={e=>update('city', e.target.value)} />
-                                <button onClick={next} className="w-full bg-gold text-black font-bold py-4 mt-4">CONTINUE</button>
-                            </div>
+                                <input className="input-std mb-4" placeholder="Age(s)" onChange={e=>update('age', e.target.value)} />
+                                <input className="input-std mb-4" placeholder="Height / Body Type" onChange={e=>update('build', e.target.value)} />
+                                <input className="input-std mb-4" placeholder="Ethnicity (Optional)" onChange={e=>update('ethnicity', e.target.value)} />
+                                <button onClick={next} className="bg-gold text-black font-bold py-4 w-full mt-4">CONTINUE</button>
+                            </>
                         )}
 
-                         {step === 3 && (
-                            <div className="animate-in mt-4">
+                        {step === 3 && (
+                            <>
                                 <h2 className="text-3xl text-white font-head mb-6">Dynamics</h2>
-                                <div className="grid grid-cols-2 gap-3 mb-4">
-                                    {['Dominant', 'Submissive', 'Switch', 'Voyeur'].map(r => (
-                                        <button key={r} onClick={()=>update('role', r)} className={`p-4 border ${data.role===r?'border-gold text-white':'border-gray-800 text-gray-500'} bg-panel`}>{r}</button>
-                                    ))}
-                                </div>
-                                <button onClick={next} className="w-full bg-gold text-black font-bold py-4 mt-4">NEXT</button>
-                            </div>
+                                <label className="text-gray-500 text-xs uppercase mb-2 block">Primary Role</label>
+                                <select className="input-std mb-4" onChange={e=>update('role', e.target.value)}>
+                                    <option>Select...</option>{OPTIONS.roles.map(r=><option key={r}>{r}</option>)}
+                                </select>
+                                <label className="text-gray-500 text-xs uppercase mb-2 block">Experience</label>
+                                <select className="input-std mb-4" onChange={e=>update('exp', e.target.value)}>
+                                    <option>Select...</option>{OPTIONS.experience.map(e=><option key={e}>{e}</option>)}
+                                </select>
+                                <button onClick={next} className="bg-gold text-black font-bold py-4 w-full mt-4">CONTINUE</button>
+                            </>
                         )}
 
                         {step === 4 && (
-                            <div className="animate-in mt-4">
-                                <h2 className="text-3xl text-white font-head mb-6">Verification</h2>
-                                
-                                {/* FIXED UPLOAD BOX */}
-                                <div className="relative border-2 border-dashed border-gray-800 h-64 flex items-center justify-center text-gray-600 mb-6 cursor-pointer hover:border-gold hover:text-gold transition bg-panel overflow-hidden">
-                                    {data.img ? (
-                                        <img src={data.img} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="text-center pointer-events-none">
-                                            <i className="fas fa-camera text-3xl mb-3"></i>
-                                            <p className="text-xs uppercase font-bold tracking-wider">Tap to Upload Photo</p>
-                                        </div>
-                                    )}
-                                    <input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                                </div>
+                            <>
+                                <h2 className="text-3xl text-white font-head mb-6">Logistics</h2>
+                                <input className="input-std mb-4" placeholder="Primary City" onChange={e=>update('city', e.target.value)} />
+                                <label className="text-gray-500 text-xs uppercase mb-2 block">Hosting</label>
+                                <select className="input-std mb-4" onChange={e=>update('hosting', e.target.value)}>
+                                    <option>Select...</option>{OPTIONS.hosting.map(h=><option key={h}>{h}</option>)}
+                                </select>
+                                <button onClick={next} className="bg-gold text-black font-bold py-4 w-full mt-4">CONTINUE</button>
+                            </>
+                        )}
 
-                                <button onClick={()=>{ localStorage.setItem('vc_user_v3.1', JSON.stringify(data)); onComplete(data); }} className="w-full bg-gold text-black font-bold py-4">INITIALIZE</button>
-                            </div>
+                        {step === 5 && (
+                            <>
+                                <h2 className="text-3xl text-white font-head mb-6">Interests</h2>
+                                <div className="flex flex-wrap gap-3 mb-6">
+                                    {OPTIONS.interests.map(i => (
+                                        <button key={i} onClick={()=>toggleInterest(i)} className={`tag-select ${data.interests.includes(i)?'active':''}`}>{i}</button>
+                                    ))}
+                                </div>
+                                <button onClick={next} className="bg-gold text-black font-bold py-4 w-full">CONTINUE</button>
+                            </>
+                        )}
+
+                        {step === 6 && (
+                            <>
+                                <h2 className="text-3xl text-white font-head mb-6">Verification</h2>
+                                <label className="block w-full h-64 border-2 border-dashed border-gray-700 relative flex items-center justify-center cursor-pointer hover:border-gold transition mb-6">
+                                    <input type="file" className="hidden" accept="image/*" onChange={handlePhoto} />
+                                    {data.img ? <img src={data.img} className="w-full h-full object-cover" /> : <div className="text-center text-gray-500"><i className="fas fa-camera text-3xl mb-2"></i><p className="text-xs uppercase">Tap to Upload</p></div>}
+                                </label>
+                                <textarea className="input-std h-24 mb-4" placeholder="Manifesto (Bio) - Tell us what you seek." onChange={e=>update('bio', e.target.value)}></textarea>
+                                <button onClick={next} disabled={!data.img} className="bg-gold text-black font-bold py-4 w-full disabled:opacity-50">CONFIRM</button>
+                            </>
+                        )}
+
+                        {step === 7 && (
+                            <>
+                                <h2 className="text-3xl text-white font-head mb-6">Credentials</h2>
+                                <input className="input-std mb-4" placeholder="Username" onChange={e=>update('username', e.target.value)} />
+                                <input className="input-std mb-4" type="password" placeholder="Password" />
+                                <button onClick={()=>{ onComplete(data); }} className="bg-gold text-black font-bold py-4 w-full mt-4">INITIALIZE SYSTEM</button>
+                            </>
                         )}
                     </div>
                 </div>
             );
         };
 
+        // 3. DASHBOARD (Real App State)
         const Dashboard = ({ user, logout }) => {
-            const [view, setView] = useState('home');
+            const [view, setView] = useState('browse');
             const [selectedMember, setSelectedMember] = useState(null);
-            
+
             return (
                 <div className="flex flex-col h-screen bg-bg">
                     {selectedMember && <MemberDossier member={selectedMember} onClose={()=>setSelectedMember(null)} />}
 
-                    <div className="h-16 border-b border-gray-900 flex items-center justify-between px-6 bg-panel/50 backdrop-blur z-20">
+                    <div className="h-16 border-b border-gray-900 flex items-center justify-between px-6 bg-panel/80 backdrop-blur z-20">
                         <span className="font-head text-xl text-gold">VELVET</span>
-                        <i className="fas fa-cog text-gray-500 hover:text-white transition cursor-pointer"></i>
+                        <div className="w-8 h-8 rounded-full bg-gray-800 border border-gold overflow-hidden"><img src={user.img} className="w-full h-full object-cover" /></div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto pb-20 bg-bg">
-                        {view === 'home' && (
-                            <div className="p-6 animate-in">
-                                <div className="flex items-center justify-between mb-6"><h3 className="text-white font-bold text-lg">The Pulse</h3><span className="text-xs text-gold uppercase cursor-pointer">View All</span></div>
-                                <div className="flex gap-4 overflow-x-auto pb-4 hide-scroll mb-8">
-                                    {DB_MEMBERS.map(m => (
-                                        <div key={m.id} className="flex-shrink-0 flex flex-col items-center gap-2 cursor-pointer" onClick={()=>setSelectedMember(m)}>
-                                            <div className="story-ring"><img src={m.img} className="w-16 h-16 rounded-full object-cover border-2 border-black" /></div>
-                                            <span className="text-xs text-gray-400 w-16 truncate text-center">{m.name}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="space-y-4">
-                                    {FEED_ITEMS.map((item, i) => (
-                                        <div key={i} className="bg-panel p-4 rounded border border-gray-900 flex gap-4 items-start">
-                                            <div className="w-2 h-2 rounded-full bg-gold mt-2 flex-shrink-0"></div>
-                                            <div>
-                                                <p className="text-gray-300 text-sm">{item.user && <span className="font-bold text-white mr-1">{item.user}</span>}{item.text}</p>
-                                                <span className="text-xs text-gray-600 uppercase">{item.time}</span>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
+                    <div className="flex-1 overflow-y-auto pb-20 p-4">
                         {view === 'browse' && (
-                            <div className="p-4 animate-in">
+                            <div className="animate-in">
+                                <h3 className="text-white font-bold mb-4 uppercase text-sm tracking-widest">Network</h3>
                                 <div className="grid grid-cols-2 gap-3">
                                     {DB_MEMBERS.map(m => (
-                                        <div key={m.id} className="bg-panel rounded overflow-hidden cursor-pointer group relative" onClick={()=>setSelectedMember(m)}>
+                                        <div key={m.id} className="bg-panel rounded overflow-hidden cursor-pointer relative group border border-gray-800" onClick={()=>setSelectedMember(m)}>
                                             <img src={m.img} className="w-full h-48 object-cover opacity-80 group-hover:opacity-100 transition" />
-                                            <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black to-transparent">
-                                                <div className="font-bold text-white">{m.name}</div>
+                                            <div className="absolute bottom-0 w-full p-3 bg-gradient-to-t from-black to-transparent">
+                                                <div className="text-white font-bold">{m.name}</div>
                                                 <div className="text-xs text-gold">{m.type}</div>
                                             </div>
                                         </div>
@@ -233,41 +247,64 @@
                         )}
 
                         {view === 'me' && (
-                            <div className="p-6 text-center animate-in pt-12">
-                                <div className="w-32 h-32 rounded-full bg-gray-800 border-2 border-gold mx-auto flex items-center justify-center text-gray-500 mb-4 overflow-hidden relative">
-                                    {user.img ? <img src={user.img} className="w-full h-full object-cover" /> : <i className="fas fa-user text-4xl"></i>}
+                            <div className="animate-in pt-6">
+                                <div className="bg-panel border border-gray-800 p-6 rounded-lg mb-6">
+                                    <div className="flex gap-4 items-start">
+                                        <img src={user.img} className="w-24 h-24 rounded object-cover border border-gray-700" />
+                                        <div>
+                                            <h2 className="text-2xl text-white font-head">{user.username}</h2>
+                                            <p className="text-gold text-xs uppercase tracking-widest mt-1">Premium Member</p>
+                                            <div className="flex gap-2 mt-3">
+                                                <span className="text-[10px] bg-gray-800 px-2 py-1 rounded text-gray-400">{user.type}</span>
+                                                <span className="text-[10px] bg-gray-800 px-2 py-1 rounded text-gray-400">{user.role}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-6 border-t border-gray-800 pt-4">
+                                        <h4 className="text-xs text-gray-500 uppercase mb-2">Vitals</h4>
+                                        <div className="text-sm text-gray-300 grid grid-cols-2 gap-2">
+                                            <div>Age: {user.age}</div>
+                                            <div>Loc: {user.city}</div>
+                                            <div>Build: {user.build}</div>
+                                            <div>Host: {user.hosting}</div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-6 border-t border-gray-800 pt-4">
+                                        <h4 className="text-xs text-gray-500 uppercase mb-2">Manifesto</h4>
+                                        <p className="text-sm text-gray-400 italic">"{user.bio}"</p>
+                                    </div>
                                 </div>
-                                <h2 className="text-2xl text-white font-head">{user.name || 'Member'}</h2>
-                                <p className="text-gold text-xs uppercase tracking-widest mb-8">Standard Membership</p>
-                                <button onClick={logout} className="w-full p-4 bg-panel border border-gray-800 text-red-500 hover:text-red-400 rounded">Log Out</button>
+                                <button onClick={logout} className="w-full border border-red-900 text-red-500 py-3 text-xs uppercase tracking-widest hover:bg-red-900/10">Terminate Session</button>
                             </div>
                         )}
                     </div>
 
                     <div className="fixed bottom-0 left-0 right-0 h-16 bg-black border-t border-gray-900 flex justify-around items-center px-2 z-50">
-                        <div onClick={()=>setView('home')} className={`btn-nav ${view==='home'?'active':''}`}><i className="fas fa-bolt"></i><span>Pulse</span></div>
-                        <div onClick={()=>setView('browse')} className={`btn-nav ${view==='browse'?'active':''}`}><i className="fas fa-th-large"></i><span>Browse</span></div>
-                        <div onClick={()=>setView('me')} className={`btn-nav ${view==='me'?'active':''}`}><i className="fas fa-user-circle"></i><span>Me</span></div>
+                        <div onClick={()=>setView('browse')} className={`btn-nav ${view==='browse'?'active':''}`}><i className="fas fa-th-large"></i><span>Grid</span></div>
+                        <div onClick={()=>setView('chat')} className={`btn-nav ${view==='chat'?'active':''}`}><i className="fas fa-comment-alt"></i><span>Comms</span></div>
+                        <div onClick={()=>setView('me')} className={`btn-nav ${view==='me'?'active':''}`}><i className="fas fa-user-circle"></i><span>Dossier</span></div>
                     </div>
                 </div>
             );
         };
 
+        // --- ROOT ---
         function App() {
-            const [mode, setMode] = useState('loading');
+            const [mode, setMode] = useState('funnel');
             const [user, setUser] = useState(null);
 
             useEffect(() => {
-                setTimeout(() => {
-                    const saved = localStorage.getItem('vc_user_v3.1');
-                    if(saved) { setUser(JSON.parse(saved)); setMode('dash'); } 
-                    else { setMode('funnel'); }
-                }, 1000);
+                const saved = localStorage.getItem('vc_user_v4');
+                if(saved) { setUser(JSON.parse(saved)); setMode('dash'); }
             }, []);
 
-            if (mode === 'loading') return <div className="h-screen bg-black flex items-center justify-center flex-col"><h1 className="font-head text-4xl text-gold animate-pulse mb-4">VELVET</h1><div className="text-gray-600 text-xs uppercase tracking-widest">System Initializing...</div></div>;
-            if (mode === 'funnel') return <Funnel onComplete={(u) => { setUser(u); setMode('dash'); }} />;
-            return <Dashboard user={user} logout={() => { localStorage.removeItem('vc_user_v3.1'); setMode('funnel'); }} />;
+            const completeFunnel = (data) => {
+                localStorage.setItem('vc_user_v4', JSON.stringify(data));
+                setUser(data);
+                setMode('dash');
+            };
+
+            return mode === 'funnel' ? <Funnel onComplete={completeFunnel} /> : <Dashboard user={user} logout={()=>{localStorage.removeItem('vc_user_v4'); setMode('funnel');}} />;
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
