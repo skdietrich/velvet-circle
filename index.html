@@ -1,378 +1,439 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#000000">
-    <title>VELVET | System v5.0</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <title>VELVET | System v5.1 (Demo)</title>
 
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        gold: '#D4AF37',
-                        'gold-dim': '#8A701E',
-                        bg: '#050505',
-                        panel: '#101010',
-                    },
-                    fontFamily: {
-                        head: ['Playfair Display', 'serif'],
-                        body: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace']
-                    }
-                }
-            }
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { gold:'#D4AF37', 'gold-dim':'#8A701E', bg:'#050505', panel:'#101010' },
+          fontFamily: { head:['Playfair Display','serif'], body:['Inter','sans-serif'], mono:['JetBrains Mono','monospace'] }
         }
-    </script>
+      }
+    }
+  </script>
 
-    <style>
-        body { background-color: #050505; color: #e0e0e0; overflow: hidden; }
-        .gold-border { border: 1px solid #D4AF37; }
-        .btn-nav { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #666; transition: 0.2s; }
-        .btn-nav.active { color: #D4AF37; }
-        .animate-in { animation: fadeIn 0.3s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Form Elements */
-        select { -webkit-appearance: none; appearance: none; }
-        .input-std { width: 100%; background: #111; border: 1px solid #333; padding: 15px; color: white; border-radius: 4px; outline: none; font-family: 'Inter'; }
-        .input-std:focus { border-color: #D4AF37; }
-        .btn-option { text-align: left; padding: 15px; border: 1px solid #333; width: 100%; transition: 0.2s; color: #aaa; font-size: 14px; }
-        .btn-option:hover, .btn-option.selected { border-color: #D4AF37; background: rgba(212,175,55,0.05); color: #fff; }
-        .progress-bar { height: 2px; background: #333; width: 100%; margin-bottom: 30px; }
-        .progress-fill { height: 100%; background: #D4AF37; transition: 0.3s; }
-        
-        /* Checkbox Custom */
-        .check-group { display: flex; align-items: start; gap: 12px; margin-bottom: 12px; cursor: pointer; }
-        .check-box { width: 20px; height: 20px; border: 1px solid #555; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 2px; transition: 0.2s; }
-        .check-box.checked { background: #D4AF37; border-color: #D4AF37; color: black; }
-    </style>
+  <style>
+    html, body { height: 100%; background:#050505; color:#e0e0e0; }
+    body { margin:0; }
+    .btn-nav { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:#666; transition:0.2s; font-size:12px; }
+    .btn-nav i { font-size:18px; margin-bottom:4px; }
+    .btn-nav.active { color:#D4AF37; }
+    .animate-in { animation: fadeIn 0.25s ease-out forwards; }
+    @keyframes fadeIn { from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+    select { -webkit-appearance:none; appearance:none; }
+    .input-std { width:100%; background:#111; border:1px solid #333; padding:14px; color:#fff; border-radius:6px; outline:none; font-family:'Inter'; }
+    .input-std:focus { border-color:#D4AF37; }
+    .btn-option { text-align:left; padding:14px; border:1px solid #333; width:100%; transition:0.2s; color:#aaa; font-size:14px; border-radius:8px; }
+    .btn-option:hover, .btn-option.selected { border-color:#D4AF37; background:rgba(212,175,55,0.06); color:#fff; }
+    .check-group { display:flex; align-items:flex-start; gap:12px; margin-bottom:14px; cursor:pointer; }
+    .check-box { width:20px; height:20px; border:1px solid #555; flex-shrink:0; display:flex; align-items:center; justify-content:center; margin-top:2px; transition:0.2s; border-radius:4px; }
+    .check-box.checked { background:#D4AF37; border-color:#D4AF37; color:#000; }
+  </style>
 </head>
 <body>
-    <div id="root"></div>
+  <div id="root"></div>
 
-    <script type="text/babel">
-        const { useState, useEffect } = React;
+  <script type="text/babel">
+    const { useState, useMemo } = React;
 
-        // --- DATA OPTIONS ---
-        const OPTIONS = {
-            types: ['Couple (MF)', 'Couple (MM)', 'Couple (FF)', 'Single Female', 'Single Male'],
-            status: ['Married (Discreet)', 'Married (Open)', 'Attached', 'Single', 'Divorced'],
-            opsec: ['Public (Open to all)', 'Discreet (Face hidden)', 'Ghost (Zero digital footprint)'],
-            roles: ['Dominant', 'Submissive', 'Switch', 'Voyeur', 'Exhibitionist', 'Vanilla'],
-            experience: ['Curious', 'Exploring', 'Experienced', 'Veteran', 'Industry'],
-            hosting: ['Cannot Host', 'Can Host (Private)', 'Can Host (Parties)'],
-            interests: ['Soft Swap', 'Full Swap', 'Threesomes', 'Group Play', 'BDSM', 'Fetish', 'Parties', 'Travel']
-        };
+    const OPTIONS = {
+      types: ['Couple (MF)', 'Couple (MM)', 'Couple (FF)', 'Single Female', 'Single Male'],
+      status: ['Married (Discreet)', 'Married (Open)', 'Attached', 'Single', 'Divorced'],
+      opsec: ['Public (Open to all)', 'Discreet (Face hidden)', 'Ghost (Zero digital footprint)'],
+      roles: ['Dominant', 'Submissive', 'Switch', 'Voyeur', 'Exhibitionist', 'Vanilla'],
+      experience: ['Curious', 'Exploring', 'Experienced', 'Veteran', 'Industry'],
+      hosting: ['Cannot Host', 'Can Host (Private)', 'Can Host (Parties)'],
+      interests: ['Soft Swap', 'Full Swap', 'Threesomes', 'Group Play', 'BDSM', 'Fetish', 'Parties', 'Travel']
+    };
 
-        // --- MOCK DATABASE ---
-        const DB_MEMBERS = [
-            { id: 1, name: "DallasCouple", type: "Couple (MF)", role: "Switch", loc: "Dallas", img: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=800", bio: "Fun couple seeking friends.", tags: ["Soft Swap", "Parties"], opsec: "Discreet" },
-            { id: 2, name: "Mistress_K", type: "Single Female", role: "Dominant", loc: "NYC", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800", bio: "Experienced. Selective.", tags: ["BDSM", "Fetish"], opsec: "Public" },
-        ];
+    const DB_MEMBERS = [
+      { id: 1, name: "DallasCouple", type: "Couple (MF)", role: "Switch", loc: "Dallas", img: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=800", bio: "Fun couple seeking friends.", tags: ["Soft Swap", "Parties"], opsec: "Discreet" },
+      { id: 2, name: "Mistress_K", type: "Single Female", role: "Dominant", loc: "NYC", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800", bio: "Experienced. Selective.", tags: ["BDSM", "Fetish"], opsec: "Public" },
+    ];
 
-        // --- COMPONENTS ---
+    const MemberDossier = ({ member, onClose }) => {
+      if (!member) return null;
+      return (
+        <div className="fixed inset-0 z-50 bg-black/95 flex flex-col animate-in">
+          <div className="h-2/5 relative">
+            <img src={member.img} className="w-full h-full object-cover" alt="" />
+            <div className="absolute inset-0 bg-gradient-to-t from-bg to-transparent"></div>
+            <button onClick={onClose} className="absolute top-6 right-6 text-white text-2xl" aria-label="Close">
+              <i className="fas fa-times"></i>
+            </button>
+            <div className="absolute bottom-4 left-6">
+              <h2 className="text-3xl font-head text-white">{member.name}</h2>
+              <p className="text-gold text-xs uppercase tracking-widest">{member.type} • {member.loc}</p>
+            </div>
+          </div>
+          <div className="flex-1 p-6 overflow-y-auto">
+            <div className="grid grid-cols-2 gap-4 mb-6 text-sm text-gray-400">
+              <div className="bg-panel p-3 rounded border border-gray-800"><span className="block text-[10px] text-gold uppercase">Role</span>{member.role}</div>
+              <div className="bg-panel p-3 rounded border border-gray-800"><span className="block text-[10px] text-gold uppercase">OpSec</span>{member.opsec}</div>
+            </div>
+            <p className="text-gray-300 italic mb-6">"{member.bio}"</p>
+            <div className="flex flex-wrap gap-2 mb-8">
+              {member.tags.map(t => <span key={t} className="px-3 py-1 bg-gray-800 rounded-full text-xs text-white border border-gray-700">{t}</span>)}
+            </div>
+            <button className="w-full bg-gold text-black font-bold py-4 uppercase tracking-widest">Connect</button>
+          </div>
+        </div>
+      );
+    };
 
-        // 1. MEMBER DOSSIER (Modal)
-        const MemberDossier = ({ member, onClose }) => {
-            if (!member) return null;
-            return (
-                <div className="fixed inset-0 z-50 bg-black/95 flex flex-col animate-in">
-                    <div className="h-2/5 relative">
-                        <img src={member.img} className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-bg to-transparent"></div>
-                        <button onClick={onClose} className="absolute top-6 right-6 text-white text-2xl"><i className="fas fa-times"></i></button>
-                        <div className="absolute bottom-4 left-6">
-                            <h2 className="text-3xl font-head text-white">{member.name}</h2>
-                            <p className="text-gold text-xs uppercase tracking-widest">{member.type} • {member.loc}</p>
-                        </div>
-                    </div>
-                    <div className="flex-1 p-6 overflow-y-auto">
-                        <div className="grid grid-cols-2 gap-4 mb-6 text-sm text-gray-400">
-                            <div className="bg-panel p-3 rounded border border-gray-800"><span className="block text-[10px] text-gold uppercase">Role</span>{member.role}</div>
-                            <div className="bg-panel p-3 rounded border border-gray-800"><span className="block text-[10px] text-gold uppercase">OpSec</span>{member.opsec}</div>
-                        </div>
-                        <p className="text-gray-300 italic mb-6">"{member.bio}"</p>
-                        <div className="flex flex-wrap gap-2 mb-8">
-                            {member.tags.map(t => <span key={t} className="px-3 py-1 bg-gray-800 rounded-full text-xs text-white border border-gray-700">{t}</span>)}
-                        </div>
-                        <button className="w-full bg-gold text-black font-bold py-4 uppercase tracking-widest">Connect</button>
-                    </div>
+    const Funnel = ({ onComplete }) => {
+      const [step, setStep] = useState(1);
+      const [data, setData] = useState({
+        type: null, age: "", build: "", ethnicity: "",
+        status: "", opsec: "",
+        role: "", exp: "",
+        city: "", hosting: "",
+        interests: [],
+        img: null,
+        bio: "",
+        rules: { privacy:false, real:false, consent:false },
+        username: ""
+      });
+
+      const update = (k, v) => setData(prev => ({ ...prev, [k]: v }));
+      const next = () => setStep(s => Math.min(9, s + 1));
+      const back = () => setStep(s => Math.max(1, s - 1));
+
+      const toggleInterest = (tag) => {
+        setData(prev => {
+          const exists = prev.interests.includes(tag);
+          return { ...prev, interests: exists ? prev.interests.filter(t => t !== tag) : [...prev.interests, tag] };
+        });
+      };
+
+      const toggleRule = (rule) => setData(prev => ({ ...prev, rules: { ...prev.rules, [rule]: !prev.rules[rule] } }));
+
+      const handlePhoto = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onloadend = () => update('img', reader.result);
+        reader.readAsDataURL(file);
+      };
+
+      const canContinueStep2 = data.age.trim().length > 0 && data.build.trim().length > 0;
+      const canContinueStep3 = data.status && data.opsec;
+      const canContinueStep4 = data.role && data.exp;
+      const canContinueStep5 = data.city.trim().length > 0 && data.hosting;
+      const canContinueStep7 = !!data.img && data.bio.trim().length >= 10;
+      const canContinueStep8 = data.rules.privacy && data.rules.real && data.rules.consent;
+      const canFinishStep9 = data.username.trim().length >= 3;
+
+      return (
+        <div className="h-screen bg-bg flex flex-col p-6">
+          <div className="w-full h-1 bg-gray-900 mb-8">
+            <div className="h-full bg-gold transition-all duration-300" style={{ width: `${(step/9)*100}%` }}></div>
+          </div>
+
+          <div className="flex-1 max-w-md mx-auto w-full flex flex-col justify-center animate-in">
+            <span className="text-gold font-mono text-xs mb-2 block">PROTOCOL 0{step}</span>
+
+            {step === 1 && (
+              <>
+                <h2 className="text-3xl text-white font-head mb-6">Identity</h2>
+                {OPTIONS.types.map(t => (
+                  <button key={t} onClick={() => { update('type', t); next(); }} className="btn-option mb-3">
+                    {t}
+                  </button>
+                ))}
+              </>
+            )}
+
+            {step === 2 && (
+              <>
+                <h2 className="text-3xl text-white font-head mb-6">Vitals</h2>
+                <input className="input-std mb-4" placeholder="Age(s)" value={data.age} onChange={e=>update('age', e.target.value)} />
+                <input className="input-std mb-4" placeholder="Height / Body Type" value={data.build} onChange={e=>update('build', e.target.value)} />
+                <input className="input-std mb-4" placeholder="Ethnicity (Optional)" value={data.ethnicity} onChange={e=>update('ethnicity', e.target.value)} />
+                <div className="flex gap-3 mt-4">
+                  <button onClick={back} className="w-1/3 border border-gray-800 text-gray-300 py-4 rounded">BACK</button>
+                  <button onClick={next} disabled={!canContinueStep2} className="w-2/3 bg-gold text-black font-bold py-4 rounded disabled:opacity-50">CONTINUE</button>
                 </div>
-            );
-        };
+              </>
+            )}
 
-        // 2. DEEP INTAKE FUNNEL (9 Stages)
-        const Funnel = ({ onComplete }) => {
-            const [step, setStep] = useState(1);
-            const [data, setData] = useState({ interests: [], img: null, rules: { privacy: false, real: false, consent: false } });
+            {step === 3 && (
+              <>
+                <h2 className="text-3xl text-white font-head mb-6">Status & OpSec</h2>
+                <label className="text-gray-500 text-xs uppercase mb-2 block">Relationship Status</label>
+                <select className="input-std mb-6" value={data.status} onChange={e=>update('status', e.target.value)}>
+                  <option value="">Select...</option>
+                  {OPTIONS.status.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
 
-            const next = () => setStep(s => s + 1);
-            const update = (k, v) => setData({...data, [k]: v});
-            
-            const toggleInterest = (tag) => {
-                const newTags = data.interests.includes(tag) ? data.interests.filter(t => t !== tag) : [...data.interests, tag];
-                update('interests', newTags);
-            };
+                <label className="text-gray-500 text-xs uppercase mb-2 block">Discretion Level</label>
+                <select className="input-std mb-2" value={data.opsec} onChange={e=>update('opsec', e.target.value)}>
+                  <option value="">Select...</option>
+                  {OPTIONS.opsec.map(o => <option key={o} value={o}>{o}</option>)}
+                </select>
+                <p className="text-xs text-gray-600 mt-2">"Ghost" hides you from broad discovery (demo only).</p>
 
-            const toggleRule = (rule) => {
-                const newRules = { ...data.rules, [rule]: !data.rules[rule] };
-                update('rules', newRules);
-            };
-
-            const handlePhoto = (e) => {
-                const file = e.target.files[0];
-                if(file) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => update('img', reader.result);
-                    reader.readAsDataURL(file);
-                }
-            };
-
-            return (
-                <div className="h-screen bg-bg flex flex-col p-6">
-                    <div className="w-full h-1 bg-gray-900 mb-8"><div className="h-full bg-gold transition-all duration-300" style={{width: `${(step/9)*100}%`}}></div></div>
-                    
-                    <div className="flex-1 max-w-md mx-auto w-full flex flex-col justify-center animate-in">
-                        <span className="text-gold font-mono text-xs mb-2 block">PROTOCOL 0{step}</span>
-                        
-                        {/* 1. IDENTITY */}
-                        {step === 1 && (
-                            <>
-                                <h2 className="text-3xl text-white font-head mb-6">Identity</h2>
-                                {OPTIONS.types.map(t => (
-                                    <button key={t} onClick={()=>{update('type', t); next()}} className="btn-option mb-3">{t}</button>
-                                ))}
-                            </>
-                        )}
-
-                        {/* 2. VITALS */}
-                        {step === 2 && (
-                            <>
-                                <h2 className="text-3xl text-white font-head mb-6">Vitals</h2>
-                                <input className="input-std mb-4" placeholder="Age(s)" onChange={e=>update('age', e.target.value)} />
-                                <input className="input-std mb-4" placeholder="Height / Body Type" onChange={e=>update('build', e.target.value)} />
-                                <input className="input-std mb-4" placeholder="Ethnicity (Optional)" onChange={e=>update('ethnicity', e.target.value)} />
-                                <button onClick={next} className="bg-gold text-black font-bold py-4 w-full mt-4">CONTINUE</button>
-                            </>
-                        )}
-
-                        {/* 3. STATUS & OPSEC (NEW) */}
-                        {step === 3 && (
-                            <>
-                                <h2 className="text-3xl text-white font-head mb-6">Status & OpSec</h2>
-                                <label className="text-gray-500 text-xs uppercase mb-2 block">Relationship Status</label>
-                                <select className="input-std mb-6" onChange={e=>update('status', e.target.value)}>
-                                    <option>Select...</option>{OPTIONS.status.map(s=><option key={s}>{s}</option>)}
-                                </select>
-                                <label className="text-gray-500 text-xs uppercase mb-2 block">Discretion Level</label>
-                                <select className="input-std mb-4" onChange={e=>update('opsec', e.target.value)}>
-                                    <option>Select...</option>{OPTIONS.opsec.map(o=><option key={o}>{o}</option>)}
-                                </select>
-                                <p className="text-xs text-gray-600 mt-2">"Ghost" hides your profile from public search.</p>
-                                <button onClick={next} className="bg-gold text-black font-bold py-4 w-full mt-4">CONTINUE</button>
-                            </>
-                        )}
-
-                        {/* 4. DYNAMICS */}
-                        {step === 4 && (
-                            <>
-                                <h2 className="text-3xl text-white font-head mb-6">Dynamics</h2>
-                                <label className="text-gray-500 text-xs uppercase mb-2 block">Primary Role</label>
-                                <select className="input-std mb-4" onChange={e=>update('role', e.target.value)}>
-                                    <option>Select...</option>{OPTIONS.roles.map(r=><option key={r}>{r}</option>)}
-                                </select>
-                                <label className="text-gray-500 text-xs uppercase mb-2 block">Experience</label>
-                                <select className="input-std mb-4" onChange={e=>update('exp', e.target.value)}>
-                                    <option>Select...</option>{OPTIONS.experience.map(e=><option key={e}>{e}</option>)}
-                                </select>
-                                <button onClick={next} className="bg-gold text-black font-bold py-4 w-full mt-4">CONTINUE</button>
-                            </>
-                        )}
-
-                        {/* 5. LOGISTICS */}
-                        {step === 5 && (
-                            <>
-                                <h2 className="text-3xl text-white font-head mb-6">Logistics</h2>
-                                <input className="input-std mb-4" placeholder="Primary City" onChange={e=>update('city', e.target.value)} />
-                                <label className="text-gray-500 text-xs uppercase mb-2 block">Hosting</label>
-                                <select className="input-std mb-4" onChange={e=>update('hosting', e.target.value)}>
-                                    <option>Select...</option>{OPTIONS.hosting.map(h=><option key={h}>{h}</option>)}
-                                </select>
-                                <button onClick={next} className="bg-gold text-black font-bold py-4 w-full mt-4">CONTINUE</button>
-                            </>
-                        )}
-
-                        {/* 6. INTERESTS */}
-                        {step === 6 && (
-                            <>
-                                <h2 className="text-3xl text-white font-head mb-6">Interests</h2>
-                                <div className="flex flex-wrap gap-3 mb-6">
-                                    {OPTIONS.interests.map(i => (
-                                        <button key={i} onClick={()=>toggleInterest(i)} className={`border px-3 py-2 rounded text-xs ${data.interests.includes(i)?'bg-gold text-black border-gold':'border-gray-800 text-gray-500'}`}>{i}</button>
-                                    ))}
-                                </div>
-                                <button onClick={next} className="bg-gold text-black font-bold py-4 w-full">CONTINUE</button>
-                            </>
-                        )}
-
-                        {/* 7. VERIFICATION */}
-                        {step === 7 && (
-                            <>
-                                <h2 className="text-3xl text-white font-head mb-6">Verification</h2>
-                                <label className="block w-full h-64 border-2 border-dashed border-gray-700 relative flex items-center justify-center cursor-pointer hover:border-gold transition mb-6">
-                                    <input type="file" className="hidden" accept="image/*" onChange={handlePhoto} />
-                                    {data.img ? <img src={data.img} className="w-full h-full object-cover" /> : <div className="text-center text-gray-500"><i className="fas fa-camera text-3xl mb-2"></i><p className="text-xs uppercase">Tap to Upload</p></div>}
-                                </label>
-                                <textarea className="input-std h-24 mb-4" placeholder="Manifesto (Bio) - Tell us what you seek." onChange={e=>update('bio', e.target.value)}></textarea>
-                                <button onClick={next} disabled={!data.img} className="bg-gold text-black font-bold py-4 w-full disabled:opacity-50">CONFIRM</button>
-                            </>
-                        )}
-
-                        {/* 8. THE PROTOCOL (NEW) */}
-                        {step === 8 && (
-                            <>
-                                <h2 className="text-3xl text-white font-head mb-6">The Protocol</h2>
-                                <p className="text-gray-400 text-sm mb-6">You must agree to our code of conduct to join. Violations result in an immediate ban.</p>
-                                
-                                <div className="check-group" onClick={()=>toggleRule('privacy')}>
-                                    <div className={`check-box ${data.rules.privacy?'checked':''}`}><i className="fas fa-check text-xs"></i></div>
-                                    <div><div className="text-white text-sm font-bold">Total Discretion</div><div className="text-gray-600 text-xs">I will not expose members outside this platform.</div></div>
-                                </div>
-                                <div className="check-group" onClick={()=>toggleRule('real')}>
-                                    <div className={`check-box ${data.rules.real?'checked':''}`}><i className="fas fa-check text-xs"></i></div>
-                                    <div><div className="text-white text-sm font-bold">Authenticity</div><div className="text-gray-600 text-xs">I am real. My photos are recent. I am not a catfish.</div></div>
-                                </div>
-                                <div className="check-group" onClick={()=>toggleRule('consent')}>
-                                    <div className={`check-box ${data.rules.consent?'checked':''}`}><i className="fas fa-check text-xs"></i></div>
-                                    <div><div className="text-white text-sm font-bold">Enthusiastic Consent</div><div className="text-gray-600 text-xs">No means no. Boundaries are absolute.</div></div>
-                                </div>
-
-                                <button onClick={next} disabled={!data.rules.privacy || !data.rules.real || !data.rules.consent} className="bg-gold text-black font-bold py-4 w-full mt-6 disabled:opacity-50">I AGREE</button>
-                            </>
-                        )}
-
-                        {/* 9. CREDENTIALS */}
-                        {step === 9 && (
-                            <>
-                                <h2 className="text-3xl text-white font-head mb-6">Credentials</h2>
-                                <input className="input-std mb-4" placeholder="Secure Username" onChange={e=>update('username', e.target.value)} />
-                                <input className="input-std mb-4" type="password" placeholder="Password" />
-                                <button onClick={()=>{ onComplete(data); }} className="bg-gold text-black font-bold py-4 w-full mt-4">INITIALIZE SYSTEM</button>
-                            </>
-                        )}
-                    </div>
+                <div className="flex gap-3 mt-6">
+                  <button onClick={back} className="w-1/3 border border-gray-800 text-gray-300 py-4 rounded">BACK</button>
+                  <button onClick={next} disabled={!canContinueStep3} className="w-2/3 bg-gold text-black font-bold py-4 rounded disabled:opacity-50">CONTINUE</button>
                 </div>
-            );
-        };
+              </>
+            )}
 
-        // 3. DASHBOARD (Real App State)
-        const Dashboard = ({ user, logout }) => {
-            const [view, setView] = useState('browse');
-            const [selectedMember, setSelectedMember] = useState(null);
+            {step === 4 && (
+              <>
+                <h2 className="text-3xl text-white font-head mb-6">Dynamics</h2>
+                <label className="text-gray-500 text-xs uppercase mb-2 block">Primary Role</label>
+                <select className="input-std mb-4" value={data.role} onChange={e=>update('role', e.target.value)}>
+                  <option value="">Select...</option>
+                  {OPTIONS.roles.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
 
-            return (
-                <div className="flex flex-col h-screen bg-bg">
-                    {selectedMember && <MemberDossier member={selectedMember} onClose={()=>setSelectedMember(null)} />}
+                <label className="text-gray-500 text-xs uppercase mb-2 block">Experience</label>
+                <select className="input-std mb-4" value={data.exp} onChange={e=>update('exp', e.target.value)}>
+                  <option value="">Select...</option>
+                  {OPTIONS.experience.map(x => <option key={x} value={x}>{x}</option>)}
+                </select>
 
-                    <div className="h-16 border-b border-gray-900 flex items-center justify-between px-6 bg-panel/80 backdrop-blur z-20">
-                        <span className="font-head text-xl text-gold">VELVET</span>
-                        <div className="w-8 h-8 rounded-full bg-gray-800 border border-gold overflow-hidden"><img src={user.img} className="w-full h-full object-cover" /></div>
-                    </div>
-
-                    <div className="flex-1 overflow-y-auto pb-20 p-4">
-                        {view === 'browse' && (
-                            <div className="animate-in">
-                                <h3 className="text-white font-bold mb-4 uppercase text-sm tracking-widest">Network</h3>
-                                <div className="grid grid-cols-2 gap-3">
-                                    {DB_MEMBERS.map(m => (
-                                        <div key={m.id} className="bg-panel rounded overflow-hidden cursor-pointer relative group border border-gray-800" onClick={()=>setSelectedMember(m)}>
-                                            <img src={m.img} className="w-full h-48 object-cover opacity-80 group-hover:opacity-100 transition" />
-                                            <div className="absolute bottom-0 w-full p-3 bg-gradient-to-t from-black to-transparent">
-                                                <div className="text-white font-bold">{m.name}</div>
-                                                <div className="text-xs text-gold">{m.type}</div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {view === 'me' && (
-                            <div className="animate-in pt-6">
-                                <div className="bg-panel border border-gray-800 p-6 rounded-lg mb-6">
-                                    <div className="flex gap-4 items-start">
-                                        <img src={user.img} className="w-24 h-24 rounded object-cover border border-gray-700" />
-                                        <div>
-                                            <h2 className="text-2xl text-white font-head">{user.username}</h2>
-                                            <p className="text-gold text-xs uppercase tracking-widest mt-1">Premium Member</p>
-                                            <div className="flex gap-2 mt-3">
-                                                <span className="text-[10px] bg-gray-800 px-2 py-1 rounded text-gray-400">{user.type}</span>
-                                                <span className="text-[10px] bg-gray-800 px-2 py-1 rounded text-gray-400">{user.role}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="mt-6 border-t border-gray-800 pt-4">
-                                        <h4 className="text-xs text-gray-500 uppercase mb-2">OpSec Level</h4>
-                                        <div className="text-white text-sm mb-4">{user.opsec} • {user.status}</div>
-
-                                        <h4 className="text-xs text-gray-500 uppercase mb-2">Vitals</h4>
-                                        <div className="text-sm text-gray-300 grid grid-cols-2 gap-2">
-                                            <div>Age: {user.age}</div>
-                                            <div>Loc: {user.city}</div>
-                                            <div>Build: {user.build}</div>
-                                            <div>Host: {user.hosting}</div>
-                                        </div>
-                                    </div>
-                                    <div className="mt-6 border-t border-gray-800 pt-4">
-                                        <h4 className="text-xs text-gray-500 uppercase mb-2">Manifesto</h4>
-                                        <p className="text-sm text-gray-400 italic">"{user.bio}"</p>
-                                    </div>
-                                </div>
-                                <button onClick={logout} className="w-full border border-red-900 text-red-500 py-3 text-xs uppercase tracking-widest hover:bg-red-900/10">Terminate Session</button>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="fixed bottom-0 left-0 right-0 h-16 bg-black border-t border-gray-900 flex justify-around items-center px-2 z-50">
-                        <div onClick={()=>setView('browse')} className={`btn-nav ${view==='browse'?'active':''}`}><i className="fas fa-th-large"></i><span>Grid</span></div>
-                        <div onClick={()=>setView('chat')} className={`btn-nav ${view==='chat'?'active':''}`}><i className="fas fa-comment-alt"></i><span>Comms</span></div>
-                        <div onClick={()=>setView('me')} className={`btn-nav ${view==='me'?'active':''}`}><i className="fas fa-user-circle"></i><span>Dossier</span></div>
-                    </div>
+                <div className="flex gap-3 mt-4">
+                  <button onClick={back} className="w-1/3 border border-gray-800 text-gray-300 py-4 rounded">BACK</button>
+                  <button onClick={next} disabled={!canContinueStep4} className="w-2/3 bg-gold text-black font-bold py-4 rounded disabled:opacity-50">CONTINUE</button>
                 </div>
-            );
-        };
+              </>
+            )}
 
-        // --- ROOT ---
-        function App() {
-            const [mode, setMode] = useState('funnel');
-            const [user, setUser] = useState(null);
+            {step === 5 && (
+              <>
+                <h2 className="text-3xl text-white font-head mb-6">Logistics</h2>
+                <input className="input-std mb-4" placeholder="Primary City" value={data.city} onChange={e=>update('city', e.target.value)} />
+                <label className="text-gray-500 text-xs uppercase mb-2 block">Hosting</label>
+                <select className="input-std mb-4" value={data.hosting} onChange={e=>update('hosting', e.target.value)}>
+                  <option value="">Select...</option>
+                  {OPTIONS.hosting.map(h => <option key={h} value={h}>{h}</option>)}
+                </select>
 
-            useEffect(() => {
-                const saved = localStorage.getItem('vc_user_v5');
-                if(saved) { setUser(JSON.parse(saved)); setMode('dash'); }
-            }, []);
+                <div className="flex gap-3 mt-4">
+                  <button onClick={back} className="w-1/3 border border-gray-800 text-gray-300 py-4 rounded">BACK</button>
+                  <button onClick={next} disabled={!canContinueStep5} className="w-2/3 bg-gold text-black font-bold py-4 rounded disabled:opacity-50">CONTINUE</button>
+                </div>
+              </>
+            )}
 
-            const completeFunnel = (data) => {
-                localStorage.setItem('vc_user_v5', JSON.stringify(data));
-                setUser(data);
-                setMode('dash');
-            };
+            {step === 6 && (
+              <>
+                <h2 className="text-3xl text-white font-head mb-6">Interests</h2>
+                <div className="flex flex-wrap gap-3 mb-6">
+                  {OPTIONS.interests.map(i => (
+                    <button key={i} onClick={()=>toggleInterest(i)} className={`border px-3 py-2 rounded text-xs ${data.interests.includes(i) ? 'bg-gold text-black border-gold' : 'border-gray-800 text-gray-500'}`}>
+                      {i}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-3 mt-2">
+                  <button onClick={back} className="w-1/3 border border-gray-800 text-gray-300 py-4 rounded">BACK</button>
+                  <button onClick={next} className="w-2/3 bg-gold text-black font-bold py-4 rounded">CONTINUE</button>
+                </div>
+              </>
+            )}
 
-            return mode === 'funnel' ? <Funnel onComplete={completeFunnel} /> : <Dashboard user={user} logout={()=>{localStorage.removeItem('vc_user_v5'); setMode('funnel');}} />;
-        }
+            {step === 7 && (
+              <>
+                <h2 className="text-3xl text-white font-head mb-6">Verification</h2>
+                <label className="block w-full h-56 border-2 border-dashed border-gray-700 relative flex items-center justify-center cursor-pointer hover:border-gold transition mb-5 rounded">
+                  <input type="file" className="hidden" accept="image/*" onChange={handlePhoto} />
+                  {data.img
+                    ? <img src={data.img} className="w-full h-full object-cover rounded" alt="" />
+                    : <div className="text-center text-gray-500"><i className="fas fa-camera text-3xl mb-2"></i><p className="text-xs uppercase">Tap to Upload</p></div>}
+                </label>
+                <textarea className="input-std h-24 mb-4" placeholder="Manifesto (Bio) — min 10 chars" value={data.bio} onChange={e=>update('bio', e.target.value)}></textarea>
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
+                <div className="flex gap-3 mt-2">
+                  <button onClick={back} className="w-1/3 border border-gray-800 text-gray-300 py-4 rounded">BACK</button>
+                  <button onClick={next} disabled={!canContinueStep7} className="w-2/3 bg-gold text-black font-bold py-4 rounded disabled:opacity-50">CONFIRM</button>
+                </div>
+              </>
+            )}
+
+            {step === 8 && (
+              <>
+                <h2 className="text-3xl text-white font-head mb-6">The Protocol</h2>
+                <p className="text-gray-400 text-sm mb-6">Agree to the conduct rules. Violations trigger enforcement.</p>
+
+                <div className="check-group" onClick={()=>toggleRule('privacy')}>
+                  <div className={`check-box ${data.rules.privacy?'checked':''}`}><i className="fas fa-check text-xs"></i></div>
+                  <div><div className="text-white text-sm font-bold">Total Discretion</div><div className="text-gray-600 text-xs">No exposure outside the platform.</div></div>
+                </div>
+                <div className="check-group" onClick={()=>toggleRule('real')}>
+                  <div className={`check-box ${data.rules.real?'checked':''}`}><i className="fas fa-check text-xs"></i></div>
+                  <div><div className="text-white text-sm font-bold">Authenticity</div><div className="text-gray-600 text-xs">I am real; photos are current.</div></div>
+                </div>
+                <div className="check-group" onClick={()=>toggleRule('consent')}>
+                  <div className={`check-box ${data.rules.consent?'checked':''}`}><i className="fas fa-check text-xs"></i></div>
+                  <div><div className="text-white text-sm font-bold">Enthusiastic Consent</div><div className="text-gray-600 text-xs">Boundaries are absolute.</div></div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <button onClick={back} className="w-1/3 border border-gray-800 text-gray-300 py-4 rounded">BACK</button>
+                  <button onClick={next} disabled={!canContinueStep8} className="w-2/3 bg-gold text-black font-bold py-4 rounded disabled:opacity-50">I AGREE</button>
+                </div>
+              </>
+            )}
+
+            {step === 9 && (
+              <>
+                <h2 className="text-3xl text-white font-head mb-6">Credentials (Demo)</h2>
+                <input className="input-std mb-4" placeholder="Secure Username (min 3)" value={data.username} onChange={e=>update('username', e.target.value)} />
+                <p className="text-xs text-gray-600 mb-6">
+                  This demo does not implement real authentication. A real site must use server-side auth (Supabase/Auth).
+                </p>
+                <div className="flex gap-3">
+                  <button onClick={back} className="w-1/3 border border-gray-800 text-gray-300 py-4 rounded">BACK</button>
+                  <button
+                    onClick={()=>onComplete(data)}
+                    disabled={!canFinishStep9}
+                    className="w-2/3 bg-gold text-black font-bold py-4 rounded disabled:opacity-50"
+                  >
+                    ENTER DEMO
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    const Dashboard = ({ user, logout }) => {
+      const [view, setView] = useState('browse');
+      const [selectedMember, setSelectedMember] = useState(null);
+
+      const safeAvatar = user.img || "data:image/svg+xml;base64," + btoa(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
+          <rect width="100%" height="100%" fill="#111"/>
+          <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#444" font-family="Inter" font-size="14">NO PHOTO</text>
+        </svg>
+      `);
+
+      return (
+        <div className="flex flex-col h-screen bg-bg">
+          {selectedMember && <MemberDossier member={selectedMember} onClose={()=>setSelectedMember(null)} />}
+
+          <div className="h-16 border-b border-gray-900 flex items-center justify-between px-6 bg-panel/80 backdrop-blur z-20">
+            <span className="font-head text-xl text-gold">VELVET</span>
+            <div className="w-8 h-8 rounded-full bg-gray-800 border border-gold overflow-hidden">
+              <img src={safeAvatar} className="w-full h-full object-cover" alt="" />
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto pb-20 p-4">
+            {view === 'browse' && (
+              <div className="animate-in">
+                <h3 className="text-white font-bold mb-4 uppercase text-sm tracking-widest">Network</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {DB_MEMBERS.map(m => (
+                    <div key={m.id} className="bg-panel rounded overflow-hidden cursor-pointer relative group border border-gray-800" onClick={()=>setSelectedMember(m)}>
+                      <img src={m.img} className="w-full h-48 object-cover opacity-80 group-hover:opacity-100 transition" alt="" />
+                      <div className="absolute bottom-0 w-full p-3 bg-gradient-to-t from-black to-transparent">
+                        <div className="text-white font-bold">{m.name}</div>
+                        <div className="text-xs text-gold">{m.type}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {view === 'chat' && (
+              <div className="animate-in pt-6">
+                <div className="bg-panel border border-gray-800 p-6 rounded-lg">
+                  <h2 className="text-2xl text-white font-head mb-2">Comms</h2>
+                  <p className="text-sm text-gray-400">
+                    This demo has no backend, so chat is not implemented here. In the full website version, chat is enabled only after a mutual match and enforced server-side.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {view === 'me' && (
+              <div className="animate-in pt-6">
+                <div className="bg-panel border border-gray-800 p-6 rounded-lg mb-6">
+                  <div className="flex gap-4 items-start">
+                    <img src={safeAvatar} className="w-24 h-24 rounded object-cover border border-gray-700" alt="" />
+                    <div>
+                      <h2 className="text-2xl text-white font-head">{user.username}</h2>
+                      <p className="text-gold text-xs uppercase tracking-widest mt-1">Demo Member</p>
+                      <div className="flex gap-2 mt-3 flex-wrap">
+                        <span className="text-[10px] bg-gray-800 px-2 py-1 rounded text-gray-400">{user.type || "—"}</span>
+                        <span className="text-[10px] bg-gray-800 px-2 py-1 rounded text-gray-400">{user.role || "—"}</span>
+                        <span className="text-[10px] bg-gray-800 px-2 py-1 rounded text-gray-400">{user.opsec || "—"}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-6 border-t border-gray-800 pt-4">
+                    <h4 className="text-xs text-gray-500 uppercase mb-2">Profile</h4>
+                    <div className="text-white text-sm mb-4">{user.status || "—"} • {user.city || "—"}</div>
+
+                    <h4 className="text-xs text-gray-500 uppercase mb-2">Vitals</h4>
+                    <div className="text-sm text-gray-300 grid grid-cols-2 gap-2">
+                      <div>Age: {user.age || "—"}</div>
+                      <div>Loc: {user.city || "—"}</div>
+                      <div>Build: {user.build || "—"}</div>
+                      <div>Host: {user.hosting || "—"}</div>
+                    </div>
+                  </div>
+                  <div className="mt-6 border-t border-gray-800 pt-4">
+                    <h4 className="text-xs text-gray-500 uppercase mb-2">Manifesto</h4>
+                    <p className="text-sm text-gray-400 italic">"{user.bio || "—"}"</p>
+                  </div>
+                </div>
+                <button onClick={logout} className="w-full border border-red-900 text-red-500 py-3 text-xs uppercase tracking-widest hover:bg-red-900/10 rounded">
+                  Terminate Session
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="fixed bottom-0 left-0 right-0 h-16 bg-black border-t border-gray-900 flex justify-around items-center px-2 z-50">
+            <div onClick={()=>setView('browse')} className={`btn-nav ${view==='browse'?'active':''}`}><i className="fas fa-th-large"></i><span>Grid</span></div>
+            <div onClick={()=>setView('chat')} className={`btn-nav ${view==='chat'?'active':''}`}><i className="fas fa-comment-alt"></i><span>Comms</span></div>
+            <div onClick={()=>setView('me')} className={`btn-nav ${view==='me'?'active':''}`}><i className="fas fa-user-circle"></i><span>Dossier</span></div>
+          </div>
+        </div>
+      );
+    };
+
+    function App() {
+      const [mode, setMode] = useState('funnel');
+      const [user, setUser] = useState(null);
+
+      const completeFunnel = (data) => {
+        // In-memory only (no localStorage persistence)
+        setUser(data);
+        setMode('dash');
+      };
+
+      const logout = () => { setUser(null); setMode('funnel'); };
+
+      return mode === 'funnel'
+        ? <Funnel onComplete={completeFunnel} />
+        : <Dashboard user={user} logout={logout} />;
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
 </body>
 </html>
